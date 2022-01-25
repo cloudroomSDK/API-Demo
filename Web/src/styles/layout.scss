@@ -1,0 +1,55 @@
+@import '~@/styles/mixin.scss';
+
+::v-deep .main {
+  //桌面样式
+  &.desktop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    .control {
+      @include scrollBar;
+      width: 350px;
+      height: 100%;
+      overflow-y: auto;
+      padding: 36px;
+      float: left;
+      border-right: 1px solid #d3d3d3;
+      margin-top: 4px;
+    }
+    .right-container {
+      @include scrollBar;
+      position: relative;
+      height: 100%;
+      margin-left: 350px;
+      padding: 20px;
+      overflow-y: auto;
+    }
+  }
+  &.mobile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    .control {
+      flex: 6;
+      height: 300px;
+      overflow-y: auto;
+      border-bottom: 1px solid #eee;
+      padding: 5px 36px;
+    }
+    .right-container {
+      flex: 5;
+      overflow-y: auto;
+      position: relative;
+      padding: 5px 36px 50px 36px;
+      .el-empty {
+        padding: 0;
+      }
+    }
+  }
+}

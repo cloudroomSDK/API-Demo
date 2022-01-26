@@ -22,7 +22,7 @@
 <script>
 import { jsonp } from '@/utils'
 import { getToken } from '@/utils/auth'
-import SDKConfig from '@/config/sdk'
+import Cookies from 'js-cookie'
 export default {
   filters: {
     // 四舍五入保留两位小数
@@ -65,12 +65,13 @@ export default {
         fileName: this.info.fileName
       }
       jsonp({
-        url: `https://${SDKConfig.addr}/CLOUDROOM-API/netDisk/query`,
+        url: `https://${Cookies.get('addr')}/CLOUDROOM-API/netDisk/query`,
         data,
         success: (data) => {
           try {
             this.downloadUrl = data.Data.fileList[0].downUrl
           } catch (error) {
+            this.downloadUrl = '查询失败'
             console.log(error)
           }
         },

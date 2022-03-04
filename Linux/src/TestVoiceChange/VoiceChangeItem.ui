@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VoiceChangeItem</class>
+ <widget class="QWidget" name="VoiceChangeItem">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>327</width>
+    <height>50</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>音频设置</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QComboBox {
+	background: transparent;
+	border: 1px solid rgb(221,221,221);
+	border-radius: 4px;
+	min-height: 30px;
+	padding-left: 8px;
+	padding-right: 8px;
+	selection-background-color:rgb(80,145,255);
+}
+QComboBox:hover {
+	border-color:rgb(57,129,252);
+}
+QComboBox::drop-down {
+	padding-top: 5px;
+	image: url(:/Resources/dropDown.png);
+}
+QComboBox QAbstractItemView{
+	margin-top:1;
+	outline:0;	
+	border:1px solid rgb(225,225,225);
+	background-color:rgb(255,255,255);
+	selection-background-color:rgb(80,145,255);
+}
+QComboBox QAbstractItemView::item{
+	min-height:30px;
+	max-height:30px;
+}
+QComboBox QAbstractItemView::item:hover{
+    background-color:rgb(240,240,240);
+	color:rgb(45,45,45);
+}
+QComboBox QAbstractItemView::item:selected{
+    background-color:rgb(240,240,240);
+	color:rgb(45,45,45);
+}</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QLabel" name="lblUsername"/>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>201</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QComboBox" name="cbVoiceChoose">
+     <item>
+      <property name="text">
+       <string>原声</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>低沉</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>尖锐</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

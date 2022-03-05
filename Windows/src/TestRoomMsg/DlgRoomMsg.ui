@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgRoomMsg</class>
+ <widget class="QDialog" name="DlgRoomMsg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>538</width>
+    <height>389</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>房间消息</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#inputWidget {
+	min-height: 80px;
+	max-height: 80px;
+	background: rgb(255,255,255);
+	border-radius: 4px;
+}
+#teReceive {
+	border: 0px;
+	background: rgb(240,240,240);
+}
+#teInput {
+	border: 0px;
+}
+#btnSend {
+	background:rgb(255,255,255);
+	color: rgb(57,129,252);
+	border: 1px solid rgb(57,129,252);
+	border-radius: 2px;
+	min-height: 22px;
+	max-height: 22px;
+	min-width: 56px;
+	max-width: 56px;
+}
+#btnSend:hover, #btnSend:pressed {
+	color:rgb(255,255,255);
+	background: rgb(57,129,252);
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTextEdit" name="teReceive"/>
+   </item>
+   <item>
+    <widget class="QWidget" name="inputWidget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>6</number>
+      </property>
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QTextEdit" name="teInput"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSend">
+          <property name="text">
+           <string>发送</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

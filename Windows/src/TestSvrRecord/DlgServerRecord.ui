@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgServerRecord</class>
+ <widget class="QDialog" name="DlgServerRecord">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>341</width>
+    <height>90</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>云端录制</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#DlgServerRecord {
+	background: rgb(255,255,255);
+}
+QComboBox {
+	background: transparent;
+	border: 1px solid rgb(221,221,221);
+	border-radius: 4px;
+	min-height: 30px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+QComboBox:hover {
+	border-color:rgb(57,129,252);
+}
+QComboBox::drop-down {
+	padding-top: 5px;
+	image: url(:/Resources/dropDown.png);
+}
+QComboBox QAbstractItemView{
+	margin-top:1;
+	outline:0;	
+	border:1px solid rgb(225,225,225);
+	background-color:rgb(255,255,255);
+	selection-background-color:rgb(80,145,255);
+}
+QComboBox QAbstractItemView::item{
+	min-height:30px;
+	max-height:30px;
+}
+QComboBox QAbstractItemView::item:hover{
+    background-color:rgb(240,240,240);
+	color:rgb(45,45,45);
+}
+QComboBox QAbstractItemView::item:selected{
+    background-color:rgb(240,240,240);
+	color:rgb(45,45,45);
+}
+QPushButton {
+	background:rgb(57,129,252);
+	color: rgb(255,255,255);
+	border: 1px solid rgb(57,129,252);
+	border-radius: 2px;
+	min-height: 24px;
+	min-width: 60px;
+}
+QPushButton:hover, QPushButton:pressed {
+	background: rgb(5,117,197);
+}</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>10</number>
+   </property>
+   <property name="topMargin">
+    <number>10</number>
+   </property>
+   <property name="rightMargin">
+    <number>10</number>
+   </property>
+   <property name="bottomMargin">
+    <number>10</number>
+   </property>
+   <property name="horizontalSpacing">
+    <number>15</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>10</number>
+   </property>
+   <item row="0" column="3">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>格式：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QComboBox" name="cbDefinition">
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>标清</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>高清</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>超清</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>清晰度：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QComboBox" name="cbFormat">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <item>
+      <property name="text">
+       <string>mp4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>flv</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>avi</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QPushButton" name="btnStartRecord">
+       <property name="text">
+        <string>开始录制</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnStopRecord">
+       <property name="text">
+        <string>停止录制</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

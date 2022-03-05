@@ -1,0 +1,27 @@
+﻿<RCC>
+    <qresource prefix="/">
+        <file>Resources/camClosed.png</file>
+        <file>Resources/camMirror.png</file>
+        <file>Resources/camOpened.png</file>
+        <file>Resources/camRotate.png</file>
+        <file>Resources/media_pause.png</file>
+        <file>Resources/media_pause_hover.png</file>
+        <file>Resources/media_play.png</file>
+        <file>Resources/media_play_hover.png</file>
+        <file>Resources/media_stop.png</file>
+        <file>Resources/media_stop_hover.png</file>
+        <file>Resources/media_volume.png</file>
+        <file>Resources/micClosed.png</file>
+        <file>Resources/micLv_0.png</file>
+        <file>Resources/micLv_1.png</file>
+        <file>Resources/micLv_2.png</file>
+        <file>Resources/micLv_3.png</file>
+        <file>Resources/dropDown.png</file>
+        <file>Resources/arrowUp.png</file>
+        <file>Resources/arrowDown.png</file>
+        <file>Resources/net_max.png</file>
+        <file>Resources/net_min.png</file>
+        <file>Resources/custom_audio_16k16bit1ch.pcm</file>
+        <file>Resources/custom_video_1280x720.jpg</file>
+    </qresource>
+</RCC>

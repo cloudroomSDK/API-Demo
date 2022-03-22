@@ -1,0 +1,6 @@
+framework module CloudroomVideoSDK_IOS {
+  umbrella header "CloudroomVideoSDK_IOS.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+framework module CloudroomReplayKitExt {
+  umbrella header "CloudroomReplayKitExt.h"
+
+  export *
+  module * { export * }
+}

@@ -1,6 +1,3 @@
-group 'com.example.cloudroomvideosdk'
-version '1.0'
-
 buildscript {
     repositories {
         google()
@@ -12,44 +9,19 @@ buildscript {
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
         mavenCentral()
     }
 }
 
-apply plugin: 'com.android.library'
-
-android {
-    compileSdkVersion 28
-
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['libs']
-        }
-    }
-
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    defaultConfig {
-        minSdkVersion 16
-        
-        ndk {
-            abiFilters "armeabi-v7a"
-        }
-        externalNativeBuild {
-            cmake {
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-16', '-DANDROID_TOOLCHAIN=clang'
-            }
-        }
-    }
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    project.evaluationDependsOn(':app')
 }
 
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }

@@ -9,8 +9,10 @@
 /* Begin PBXBuildFile section */
 		160B520A278EDB4B003D78DC /* VideoCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160B5209278EDB4B003D78DC /* VideoCallViewController.swift */; };
 		160B520C278EE607003D78DC /* CustomCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160B520B278EE607003D78DC /* CustomCameraView.swift */; };
-		16307FF32787D55B005AC76E /* CloudroomVideoSDK_IOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 165EDF762786BEB900A34CC9 /* CloudroomVideoSDK_IOS.framework */; platformFilter = ios; };
-		16307FF42787D55C005AC76E /* CloudroomVideoSDK_IOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 165EDF762786BEB900A34CC9 /* CloudroomVideoSDK_IOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		160FEC3F283354E5006735C0 /* CloudroomVideoSDK_IOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 160FEC3E283354E5006735C0 /* CloudroomVideoSDK_IOS.framework */; };
+		160FEC40283354E5006735C0 /* CloudroomVideoSDK_IOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 160FEC3E283354E5006735C0 /* CloudroomVideoSDK_IOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		160FEC43283354FA006735C0 /* CloudroomReplayKitExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 160FEC42283354FA006735C0 /* CloudroomReplayKitExt.framework */; };
+		160FEC44283354FA006735C0 /* CloudroomReplayKitExt.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 160FEC42283354FA006735C0 /* CloudroomReplayKitExt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		16307FFB2787E1DB005AC76E /* CRSDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16307FFA2787E1DB005AC76E /* CRSDKHelper.swift */; };
 		16307FFE2788283C005AC76E /* EnterMeetingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16307FFD2788283C005AC76E /* EnterMeetingViewController.swift */; };
 		1630800027883D79005AC76E /* CRSDKLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16307FFF27883D79005AC76E /* CRSDKLogin.swift */; };
@@ -100,7 +102,6 @@
 		16F789E7278D559E000BD7C3 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F789E6278D559E000BD7C3 /* ReplayKit.framework */; };
 		16F789EA278D559E000BD7C3 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F789E9278D559E000BD7C3 /* SampleHandler.swift */; };
 		16F789EE278D559E000BD7C3 /* ScreenShareUpload.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 16F789E5278D559E000BD7C3 /* ScreenShareUpload.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		16F789F6278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F789F5278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework */; };
 		16F789FE278D6342000BD7C3 /* BaseNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F789FD278D6342000BD7C3 /* BaseNavigationController.swift */; };
 		16F78A00278D916B000BD7C3 /* CRCornerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F789FF278D916B000BD7C3 /* CRCornerButton.swift */; };
 		16F7E50E2796DF4300AEFA06 /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F7E50D2796DF4300AEFA06 /* Path.swift */; };
@@ -122,13 +123,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		16307FF52787D55C005AC76E /* Embed Frameworks */ = {
+		160FEC41283354E5006735C0 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				16307FF42787D55C005AC76E /* CloudroomVideoSDK_IOS.framework in Embed Frameworks */,
+				160FEC40283354E5006735C0 /* CloudroomVideoSDK_IOS.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		160FEC45283354FA006735C0 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				160FEC44283354FA006735C0 /* CloudroomReplayKitExt.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,6 +161,8 @@
 /* Begin PBXFileReference section */
 		160B5209278EDB4B003D78DC /* VideoCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCallViewController.swift; sourceTree = "<group>"; };
 		160B520B278EE607003D78DC /* CustomCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCameraView.swift; sourceTree = "<group>"; };
+		160FEC3E283354E5006735C0 /* CloudroomVideoSDK_IOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudroomVideoSDK_IOS.framework; path = Framework/CloudroomVideoSDK_IOS.framework; sourceTree = "<group>"; };
+		160FEC42283354FA006735C0 /* CloudroomReplayKitExt.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudroomReplayKitExt.framework; path = Framework/CloudroomReplayKitExt.framework; sourceTree = "<group>"; };
 		16307FFA2787E1DB005AC76E /* CRSDKHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRSDKHelper.swift; sourceTree = "<group>"; };
 		16307FFD2788283C005AC76E /* EnterMeetingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMeetingViewController.swift; sourceTree = "<group>"; };
 		16307FFF27883D79005AC76E /* CRSDKLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRSDKLogin.swift; sourceTree = "<group>"; };
@@ -167,7 +181,6 @@
 		165EDF702786BE2300A34CC9 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		165EDF722786BE2900A34CC9 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		165EDF742786BE3200A34CC9 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		165EDF762786BEB900A34CC9 /* CloudroomVideoSDK_IOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudroomVideoSDK_IOS.framework; path = ../../Framework/CloudroomVideoSDK_IOS.framework; sourceTree = "<group>"; };
 		165EDF7A2786C26100A34CC9 /* APIDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "APIDemo-Bridging-Header.h"; sourceTree = "<group>"; };
 		166BB2692786EC39003B8916 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		166BB26B2786F5AA003B8916 /* HomeFuntionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFuntionTableViewCell.swift; sourceTree = "<group>"; };
@@ -243,7 +256,6 @@
 		16F789EB278D559E000BD7C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		16F789F3278D5C34000BD7C3 /* APIDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = APIDemo.entitlements; sourceTree = "<group>"; };
 		16F789F4278D5C8C000BD7C3 /* ScreenShareUpload.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScreenShareUpload.entitlements; sourceTree = "<group>"; };
-		16F789F5278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudroomReplayKitExt.framework; path = ../../Framework/CloudroomReplayKitExt.framework; sourceTree = "<group>"; };
 		16F789F9278D5DA3000BD7C3 /* ScreenShareUpload-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ScreenShareUpload-Bridging-Header.h"; sourceTree = "<group>"; };
 		16F789FD278D6342000BD7C3 /* BaseNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNavigationController.swift; sourceTree = "<group>"; };
 		16F789FF278D916B000BD7C3 /* CRCornerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCornerButton.swift; sourceTree = "<group>"; };
@@ -264,7 +276,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				16F789E7278D559E000BD7C3 /* ReplayKit.framework in Frameworks */,
-				16F789F6278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework in Frameworks */,
+				160FEC43283354FA006735C0 /* CloudroomReplayKitExt.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,7 +294,7 @@
 				165EDF672786BDE700A34CC9 /* libbz2.tbd in Frameworks */,
 				165EDF652786BDD600A34CC9 /* libiconv.tbd in Frameworks */,
 				165EDF632786BDC700A34CC9 /* libz.tbd in Frameworks */,
-				16307FF32787D55B005AC76E /* CloudroomVideoSDK_IOS.framework in Frameworks */,
+				160FEC3F283354E5006735C0 /* CloudroomVideoSDK_IOS.framework in Frameworks */,
 				165EDF612786BDB800A34CC9 /* libc++.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -538,8 +550,8 @@
 		16FC05A02786983C008735E5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				16F789F5278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework */,
-				165EDF762786BEB900A34CC9 /* CloudroomVideoSDK_IOS.framework */,
+				160FEC42283354FA006735C0 /* CloudroomReplayKitExt.framework */,
+				160FEC3E283354E5006735C0 /* CloudroomVideoSDK_IOS.framework */,
 				165EDF742786BE3200A34CC9 /* AudioToolbox.framework */,
 				165EDF722786BE2900A34CC9 /* AVFoundation.framework */,
 				165EDF702786BE2300A34CC9 /* ExternalAccessory.framework */,
@@ -567,6 +579,7 @@
 				16F789E1278D559E000BD7C3 /* Sources */,
 				16F789E2278D559E000BD7C3 /* Frameworks */,
 				16F789E3278D559E000BD7C3 /* Resources */,
+				160FEC45283354FA006735C0 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -584,8 +597,8 @@
 				16FC058427869184008735E5 /* Sources */,
 				16FC058527869184008735E5 /* Frameworks */,
 				16FC058627869184008735E5 /* Resources */,
-				16307FF52787D55C005AC76E /* Embed Frameworks */,
 				16F789F2278D559E000BD7C3 /* Embed App Extensions */,
+				160FEC41283354E5006735C0 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -792,7 +805,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Framework";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScreenShareUpload/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScreenShareUpload;
@@ -825,7 +838,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Framework";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScreenShareUpload/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScreenShareUpload;
@@ -976,7 +989,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Framework";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = APIDemo/Info.plist;
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -1018,7 +1031,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Framework";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = APIDemo/Info.plist;
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;

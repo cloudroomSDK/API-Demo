@@ -1,6 +1,4 @@
-# CRVideoSDK cpp版本
-
-目录组织结构为：</p>
+# 目录组织结构
 --include</p>
 --lib</p>
 　|--x86</p>

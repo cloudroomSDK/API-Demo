@@ -1,0 +1,231 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical|center_horizontal"
+    android:orientation="horizontal">
+
+    <com.cloudroom.cloudroomvideosdk.MediaUIView
+        android:id="@+id/view_yuv_mediashare"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:onClick="onClick" />
+
+    <ImageView
+        android:id="@+id/ivPaly"
+        android:visibility="gone"
+        android:layout_width="82dp"
+        android:layout_height="82dp"
+        android:onClick="onClick"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/play" />
+
+    <TextView
+        android:id="@+id/tv_size"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="3dp"
+        android:background="@drawable/nickname_bg"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:singleLine="true"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="10sp" />
+
+    <ImageView
+        android:id="@+id/btn_media_catch"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/nickname_bg"
+        android:onClick="onViewClick"
+        android:padding="10dp"
+        android:src="@mipmap/catch_pic"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/view_media_option"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:background="#CC000000"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/btn_media_play"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:onClick="onViewClick"
+            android:padding="5dp"
+            android:src="@drawable/play" />
+
+        <ImageView
+            android:id="@+id/btn_media_pause"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:onClick="onViewClick"
+            android:padding="5dp"
+            android:src="@drawable/pause" />
+
+        <ImageView
+            android:id="@+id/btn_media_stop"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginLeft="10dp"
+            android:onClick="onViewClick"
+            android:padding="10dp"
+            android:src="@drawable/stop" />
+
+        <SeekBar
+            android:id="@+id/sb_media_time"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:max="100"
+            android:progress="0" />
+
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginLeft="10dp"
+            android:clickable="false"
+            android:padding="10dp"
+            android:src="@mipmap/speaker_volume" />
+
+        <SeekBar
+            android:id="@+id/sb_media_volume"
+            android:layout_width="100dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0"
+            android:max="255"
+            android:progress="0" />
+
+        <TextView
+            android:id="@+id/tv_media_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/view_media_share_option"
+        android:layout_width="match_parent"
+        android:layout_height="91dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="156dp"
+        android:layout_marginEnd="60dp"
+        android:background="@drawable/shape_corner"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:includeFontPadding="false"
+            android:text="选择文件："
+            android:textColor="@color/base_text_color"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_open_file"
+                android:layout_width="66dp"
+                android:layout_height="21dp"
+                android:background="#D9D9D9"
+                android:includeFontPadding="false"
+                android:onClick="onClick"
+                android:text="浏览..."
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvVideoName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:text="未选择文件"
+                android:textColor="@color/base_text_color" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/cb_play_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="本地播放"
+            android:visibility="gone" />
+
+        <CheckBox
+            android:id="@+id/cb_pase_end"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="15dp"
+            android:checked="false"
+            android:text="暂停在最后"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btn_open_url"
+            style="@style/CommonFillBtn"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="15dp"
+            android:onClick="onViewClick"
+            android:text="打开URL"
+            android:textSize="20sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llBtn"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/bg_black_translate"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:background="@drawable/shape_corner_blue"
+            android:includeFontPadding="false"
+            android:onClick="onClick"
+            android:text="开始播放"
+            android:textColor="#fff"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:background="@drawable/shape_corner_red"
+            android:includeFontPadding="false"
+            android:onClick="onClick"
+            android:text="停止播放"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </LinearLayout>
+</RelativeLayout>

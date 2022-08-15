@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 背景图 -->
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="20dp"/>
+            <solid android:color="#B1B1B1" />
+        </shape>
+    </item>
+    <!-- 第二进度条的背景色 -->
+    <!--<item android:id="@android:id/secondaryProgress">
+        <clip>
+            <shape android:shape="rectangle" >
+                <solid android:color="#98E3D9" />
+            </shape>
+        </clip>
+    </item>-->
+    <!-- <item android:id="@+android:id/background" android:drawable="@drawable/bar_dn" /> -->
+    <!-- 可拖动的进度条颜色 -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <corners android:radius="20dp"/>
+                <solid android:color="#B1B1B1" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

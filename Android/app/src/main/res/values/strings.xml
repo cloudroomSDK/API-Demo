@@ -1,0 +1,64 @@
+<resources>
+    <string name="app_name">云屋API DEMO</string>
+    <string name="cacel">取消</string>
+    <string name="ok">确定</string>
+    <string name="quit">退出</string>
+    <string name="prompt">提示</string>
+    <string name="setting">设置</string>
+    <string name="save">保存</string>
+    <string name="resore">恢复默认</string>
+    <string name="login_success">登录成功</string>
+    <string name="login_fail">登录失败</string>
+    <string name="loging">正在登录</string>
+    <string name="lineoff">掉线</string>
+    <string name="server_addr">服务器地址</string>
+    <string name="null_server">服务器地址不能为空</string>
+    <string name="colon">：</string>
+    <string name="account">App ID</string>
+    <string name="null_account">App ID不能为空</string>
+    <string name="pswd">App Secret</string>
+    <string name="null_pswd">App Secret不能为空</string>
+    <string name="datenc_type">通讯协议</string>
+    <string name="sdk_ver">SDK版本号：</string>
+    <string name="null_nickname">昵称不能为空</string>
+    <string name="create_meeting">创建房间</string>
+    <string name="input_meeting_id">请输入房间号</string>
+    <string name="meeting_id_prompt">请输入8位房间号</string>
+    <string name="enter_meeting">进入房间</string>
+    <string name="create_meet_fail">创建房间失败</string>
+    <string name="entering">正在连接房间中，请稍等……</string>
+    <string name="enter_success">成功进入房间</string>
+    <string name="enter_fail">进入房间失败</string>
+    <string name="open_camera">打开摄像头</string>
+    <string name="close_camera">关闭摄像头</string>
+    <string name="switch_camera">切换摄像头</string>
+    <string name="open_mic">打开麦克风</string>
+    <string name="close_mic">关闭麦克风</string>
+    <string name="screenshare_started">屏幕共享已开始</string>
+    <string name="screenshare_stopped">屏幕共享已结束</string>
+    <string name="im">聊天</string>
+    <string name="im_prompt">跟主持人聊点什么？</string>
+    <string name="send">发送</string>
+    <string name="send_null">发送内容不能为空</string>
+    <string name="video_resolution">分辨率</string>
+    <string name="video_fps">帧率</string>
+    <string name="meet_stopped">房间已结束</string>
+    <string name="meet_dropped">房间掉线</string>
+    <string name="exit_meeting">退出房间？</string>
+    <string name="welcome">%s，欢迎您！</string>
+    <string name="meet_prompt">房间号：%d</string>
+    <string name="start_screenshare">开始屏幕共享</string>
+    <string name="stop_screenshare">停止屏幕共享</string>
+
+    <string name="room_num">房间号：%d</string>
+    <string name="user_name">用户名：%s</string>
+    <string name="share_dpi">分辨率：%s</string>
+    <string name="share_tip">请在其他设备上使用观众身份进入相同的房间观看</string>
+    <string name="share_tip_sharing">您正在共享屏幕</string>
+
+    <!-- 房间 -->
+    <string name="err_meetid_prompt">请输入正确的房间号</string>
+    <string name="def_meet_sub">%s的房间</string>
+    <string name="create_meeting_prompt">如果该房间存在，您将自动加入正在进行中的房间；如果房间不存在，请点击下面的【创建房间】按钮，创建并自动加入到一个新的房间；</string>
+    <string name="or">或者</string>
+</resources>

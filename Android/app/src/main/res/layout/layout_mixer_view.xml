@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@color/bg_black_translate"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/localLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvTip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="14dp"
+            android:includeFontPadding="false"
+            android:text="请输入文件名"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:background="#fff"
+            android:includeFontPadding="false"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:singleLine="true"
+            app:layout_constraintLeft_toLeftOf="@+id/tvTip"
+            app:layout_constraintRight_toLeftOf="@+id/btnStart"
+            app:layout_constraintTop_toBottomOf="@+id/tvTip" />
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="13dp"
+            android:background="@drawable/shape_corner_blue"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:onClick="onClick"
+            android:text="开始录制"
+            android:textColor="#fff"
+            app:layout_constraintLeft_toRightOf="@+id/etName"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etName" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="13dp"
+            android:background="@drawable/shape_corner_red"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:onClick="onClick"
+            android:text="停止录制"
+            android:textColor="#fff"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="@+id/btnStart"
+            app:layout_constraintRight_toRightOf="@+id/btnStart"
+            app:layout_constraintTop_toTopOf="@+id/btnStart" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/btnStart2"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_corner_blue"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:onClick="onClick"
+        android:text="开始录制"
+        android:textColor="#fff"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnStop2"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_corner_red"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:onClick="onClick"
+        android:text="停止录制"
+        android:textColor="#fff"
+        android:visibility="gone" />
+</LinearLayout>
+
+

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="CRVIDEOSDK_UNKNOWERR">未知错误</string>
+    <string name="CRVIDEOSDK_OUTOF_MEM">内存不足</string>
+    <string name="CRVIDEOSDK_INNER_ERR">sdk内部错误</string>
+    <string name="CRVIDEOSDK_MISMATCHCLIENTVER">不支持的sdk版本</string>
+    <string name="CRVIDEOSDK_PARAM_ERR">参数错误</string>
+    <string name="CRVIDEOSDK_ERR_DATA">无效数据</string>
+    <string name="CRVIDEOSDK_ANCTPSWD_ERR">App ID或App Secret不正确</string>
+    <string name="CRVIDEOSDK_SERVER_EXCEPTION">服务异常</string>
+    <string name="CRVIDEOSDK_LOGINSTATE_ERROR">登录状态错误</string>
+    <string name="CRVIDEOSDK_KICKOUT_BY_RELOGIN">帐号在别处被使用</string>
+    <string name="CRVIDEOSDK_NOT_INIT">sdk未初始化</string>
+    <string name="CRVIDEOSDK_NOT_LOGIN">还没有登录</string>
+    <string name="CRVIDEOSDK_BASE64_COV_ERR">base64转换失败</string>
+    <string name="CRVIDEOSDK_CUSTOMAUTH_NOINFO">启用了第三方鉴权，但没有携带鉴权信息</string>
+    <string name="CRVIDEOSDK_CUSTOMAUTH_NOTSUPPORT">没有启用第三方鉴权，但携带了鉴权信息</string>
+    <string name="CRVIDEOSDK_CUSTOMAUTH_EXCEPTION">第三方鉴权服务异常</string>
+    <string name="CRVIDEOSDK_CUSTOMAUTH_FAILED">第三方鉴权不通过</string>
+    <string name="CRVIDEOSDK_TOKEN_TIMEOUT">token已过期</string>
+    <string name="CRVIDEOSDK_TOKEN_AUTHINFOERR">鉴权信息错误</string>
+    <string name="CRVIDEOSDK_TOKEN_APPIDNOTEXIST">appid不存在</string>
+    <string name="CRVIDEOSDK_TOKEN_AUTH_FAILED">鉴权校验失败</string>
+    <string name="CRVIDEOSDK_TOKEN_NOTTOKENTYPE">非token鉴权方式</string>
+    <string name="CRVIDEOSDK_ACCOUNT_EXPIRED">账号已过期</string>
+
+    <string name="CRVIDEOSDK_NETWORK_INITFAILED">网络初始化失败</string>
+    <string name="CRVIDEOSDK_NO_SERVERINFO">没有服务器信息</string>
+    <string name="CRVIDEOSDK_NOSERVER_RSP">服务器没有响应</string>
+    <string name="CRVIDEOSDK_CREATE_CONN_FAILED">创建连接失败</string>
+    <string name="CRVIDEOSDK_SOCKETEXCEPTION">socket异常</string>
+    <string name="CRVIDEOSDK_SOCKETTIMEOUT">网络超时</string>
+    <string name="CRVIDEOSDK_FORCEDCLOSECONNECTION">连接被关闭</string>
+    <string name="CRVIDEOSDK_CONNECTIONLOST">连接丢失</string>
+    <string name="CRVIDEOSDK_VOICEENG_INITFAILED">语音引擎初始化失败</string>
+    <string name="CRVIDEOSDK_SSL_ERR">ssl通信错误</string>
+    <string name="CRVIDEOSDK_RSPDAT_ERR">响应数据不正确</string>
+    <string name="CRVIDEOSDK_DATAENCRYPT_ERR">数据加密失败</string>
+    <string name="CRVIDEOSDK_DATADECRYPT_ERR">数据解密失败</string>
+
+    <string name="CRVIDEOSDK_QUE_ID_INVALID">队列ID错误</string>
+    <string name="CRVIDEOSDK_QUE_NOUSER">没有用户在排队</string>
+    <string name="CRVIDEOSDK_QUE_USER_CANCELLED">排队用户已取消</string>
+    <string name="CRVIDEOSDK_QUE_SERVICE_NOT_START">队列服务还未开启</string>
+    <string name="CRVIDEOSDK_ALREADY_OTHERQUE">已在其它队列排队(客户只能在一个队列排队)</string>
+
+    <string name="CRVIDEOSDK_INVALID_CALLID">无效的呼叫ID</string>
+    <string name="CRVIDEOSDK_ERR_CALL_EXIST">已在呼叫中</string>
+    <string name="CRVIDEOSDK_ERR_BUSY">对方忙</string>
+    <string name="CRVIDEOSDK_ERR_OFFLINE">对方不在线</string>
+    <string name="CRVIDEOSDK_ERR_NOANSWER">对方无应答</string>
+    <string name="CRVIDEOSDK_ERR_USER_NOT_FOUND">用户不存在</string>
+    <string name="CRVIDEOSDK_ERR_REFUSE">对方拒接</string>
+
+    <string name="CRVIDEOSDK_MEETNOTEXIST">会议不存在或已结束</string>
+    <string name="CRVIDEOSDK_AUTHERROR">会议密码不正确</string>
+    <string name="CRVIDEOSDK_MEMBEROVERFLOWERROR">会议终端数量已满（购买的license不够)</string>
+    <string name="CRVIDEOSDK_RESOURCEALLOCATEERROR">分配会议资源失败</string>
+    <string name="CRVIDEOSDK_MEETROOMLOCKED">会议已加锁</string>
+    <string name="CRVIDEOSDK_BALANCELESSERROR">余额不足</string>
+    <string name="CRVIDEOSDK_SEVICE_NOTENABLED">业务权限未开启</string>
+    <string name="CRVIDEOSDK_ALREADYLOGIN">不能再次登录</string>
+
+    <string name="CRVIDEOSDK_CATCH_SCREEN_ERR">抓屏失败</string>
+    <string name="CRVIDEOSDK_RECORD_MAX">单次录制达到最大时长(8h)</string>
+    <string name="CRVIDEOSDK_RECORD_NO_DISK">磁盘空间不够</string>
+    <string name="CRVIDEOSDK_RECORD_SIZE_ERR">录像的分辨率超出限制</string>
+
+    <string name="CRVIDEOSDK_SENDFAIL">发送失败</string>
+    <string name="CRVIDEOSDK_CONTAIN_SENSITIVEWORDS">有敏感词语</string>
+
+    <string name="CRVIDEOSDK_SENDCMD_LARGE">发送信令数据过大</string>
+    <string name="CRVIDEOSDK_SENDBUFFER_LARGE">发送数据过大</string>
+    <string name="CRVIDEOSDK_SENDDATA_TARGETINVALID">目标用户不存在</string>
+    <string name="CRVIDEOSDK_SENDFILE_FILEINERROR">文件错误</string>
+    <string name="CRVIDEOSDK_TRANSID_INVALID">无效的发送id</string>
+
+    <string name="CRVIDEOSDK_RECORDFILE_STATE_ERR">状态错误不可上传，取消上传</string>
+    <string name="CRVIDEOSDK_RECORDFILE_NOT_EXIST">录制文件不存在</string>
+    <string name="CRVIDEOSDK_RECORDFILE_UPLOAD_FAILED">上传失败，失败原因参考日志</string>
+    <string name="CRVIDEOSDK_RECORDFILE_DEL_FAILED">移除本地文件失败</string>
+
+    <string name="CRVIDEOSDK_IPCAM_URLERR">网络摄像头url不正</string>
+    <string name="CRVIDEOSDK_IPCAM_ALREADYEXIST">网络摄像头已存在</string>
+    <string name="CRVIDEOSDK_IPCAM_TOOMANYCAM">网络摄像头达到最大数量</string>
+
+    <string name="CRVIDEOSDK_FILE_NOT_EXIST">文件不存在</string>
+    <string name="CRVIDEOSDK_FILE_READ_ERR">文件读失败</string>
+    <string name="CRVIDEOSDK_FILE_WRITE_ERR">文件写失败</string>
+
+</resources>

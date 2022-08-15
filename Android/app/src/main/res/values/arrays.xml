@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="datenc_types">
+        <item>http</item>
+        <item>https(CA证书)</item>
+        <item>https(自签名SSL证书)</item>
+    </string-array>
+
+    <string-array name="videosizes">
+        <item>360*360</item>
+        <item>480*480</item>
+        <item>720*720</item>
+    </string-array>
+    <string-array name="fps">
+        <item>10</item>
+        <item>15</item>
+        <item>24</item>
+    </string-array>
+</resources>

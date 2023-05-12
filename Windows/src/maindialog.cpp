@@ -3,11 +3,11 @@
 #include "ui_maindialog.h"
 #include "./TestLocRecord/DlgLocalRecord.h"
 #include "./TestSvrRecord/DlgServerRecord.h"
-#include "./TestVideoWall/KVideoUI.h"
+#include "./TestVideoWall/KVideoui.h"
 #include "./TestVideoWall/VideoWallPage.h"
 #include "./TestCustomAudioCapture/CustomAudioCapture.h"
 #include "./TestCustomVideoCaptureRender/CustomVideoCaptureRender.h"
-#include "./TestMediaPlay/MediaPlayUI.h"
+#include "./TestMediaPlay/MediaPlayui.h"
 #include "./TestScreenShare/ScreenShareui.h"
 #include "./TestAudioSetting/DlgAudioSet.h"
 #include "./TestVideoSetting/DlgVideoSet.h"
@@ -256,7 +256,7 @@ void MainDialog::slot_btnMediaClicked()
 		{
 			if (mInfo._userID != getMyUserID())
 			{
-				QMessageBox::information(this, tr("提示"), tr("他人正在共享影音，不能再共享。")); 
+				QMessageBox::information(this, tr("提示"), tr("他人正在共享影音，不能再共享。"));
 				return;
 			}
 			g_sdkMain->getSDKMeeting().stopPlayMedia();

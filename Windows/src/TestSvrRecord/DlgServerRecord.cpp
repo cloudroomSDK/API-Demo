@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "DlgServerRecord.h"
 #include "maindialog.h"
 #include "DlgLoginSet.h"

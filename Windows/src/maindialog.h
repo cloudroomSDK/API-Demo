@@ -1,4 +1,4 @@
-#ifndef MAINDIALOG_H
+﻿#ifndef MAINDIALOG_H
 #define MAINDIALOG_H
 
 #include "DlgLogin.h"

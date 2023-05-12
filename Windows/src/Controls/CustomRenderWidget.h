@@ -1,4 +1,4 @@
-#ifndef CUSTOMRENDERWIDGET_H
+﻿#ifndef CUSTOMRENDERWIDGET_H
 #define CUSTOMRENDERWIDGET_H
 
 class CustomRenderWidget : public QWidget, public CRCustomRenderHandler

@@ -11,11 +11,22 @@ CustomRenderWidget::CustomRenderWidget(QWidget *parent, CRVSDK_STREAM_VIEWTYPE v
 	connect(this, SIGNAL(s_recvFrame(qint64)), this, SLOT(update()));
 
 	m_bLocMirror = false;
+	enabledRender(true);
 }
 
 CustomRenderWidget::~CustomRenderWidget()
 {
 	g_sdkMain->getSDKMeeting().rmCustomRender(this);
+}
+
+void CustomRenderWidget::enabledRender(bool bEnale)
+{
+	m_enabledRender = bEnale;
+	if (!m_enabledRender)
+	{
+		clearFrame();
+	}
+	update();
 }
 
 CRVideoFrame CustomRenderWidget::getFrame()
@@ -47,6 +58,10 @@ void CustomRenderWidget::setLocMirror(bool bMirror)
 
 void CustomRenderWidget::onRenderFrameDat(const CRVideoFrame &frm)
 {
+	if (!m_enabledRender)
+	{
+		return;
+	}
 	{
 		QMutexLocker locker(&m_frameLock);
 		m_frame = frm;
@@ -56,6 +71,7 @@ void CustomRenderWidget::onRenderFrameDat(const CRVideoFrame &frm)
 
 void CustomRenderWidget::paintEvent(QPaintEvent *event)
 {
+	
 	CRVideoFrame frm = getFrame();
 	KeepAspectRatioDrawer::DrawImage(this, frm, CRVSDK_RENDERMD_FIT, m_bLocMirror);
 }

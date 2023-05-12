@@ -8,6 +8,7 @@
 #include "./TestCustomAudioCapture/CustomAudioCapture.h"
 #include "./TestCustomVideoCaptureRender/CustomVideoCaptureRender.h"
 #include "./TestMediaPlay/MediaPlayUI.h"
+#include "./TestScreenShare/ScreenShareUI.h"
 #include "./TestAudioSetting/DlgAudioSet.h"
 #include "./TestVideoSetting/DlgVideoSet.h"
 #include "./TestRoomMsg/DlgRoomMsg.h"
@@ -38,6 +39,7 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	m_customAudioCapture = NULL;
 	m_customVideoCaptureRender = NULL;
 	m_mediaPlayUI = NULL;
+	m_screeShareUI = NULL;
 	m_videoWallPage = NULL;
 	m_dlgRoomAttrs = NULL;
 	m_dlgUserSelect = NULL;
@@ -62,6 +64,8 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	connect(ui->btnNetCamera, &QPushButton::clicked, this, &MainDialog::slot_btnNetCameraClicked);
 	connect(ui->btnVoiceChange, &QPushButton::clicked, this, &MainDialog::slot_btnVoiceChangeClicked);
 	connect(ui->btnEchoTest, &QPushButton::clicked, this, &MainDialog::slot_btnEchoTestClicked);
+	connect(ui->btnStartScreenShare, &QPushButton::clicked, this, &MainDialog::slot_btnStartScreenClicked);
+	connect(ui->btnStopScreenShare, &QPushButton::clicked, this, &MainDialog::slot_btnStopScreenClicked);
 
 	QLayout *pLayout = ui->mainFuncWidget->layout();
 	pLayout->setSpacing(VIDEO_WALL_SPACE);
@@ -70,6 +74,12 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	m_mediaPlayUI->hide();
 	pLayout->addWidget(m_mediaPlayUI);
 	connect(m_mediaPlayUI, &MediaPlayUI::s_mediaPlaying, this, &MainDialog::slot_mediaPlaying);
+
+	ui->btnStopScreenShare->hide();
+	m_screeShareUI = new ScreenShareUI(this);
+	m_screeShareUI->hide();
+	pLayout->addWidget(m_screeShareUI);
+	connect(m_screeShareUI, &ScreenShareUI::s_shareStateChanged, this, &MainDialog::slot_screenShareStateChanged);
 
 	m_videoWallPage = new VideoWallPage(this);
 	m_videoWallPage->setVideoWallMode(true);
@@ -102,6 +112,22 @@ QVariant MainDialog::getRecordContents(const QSize &recSize)
 	//按9宫格摆视频来计算位置(以下计算中，位置宽高均为2的倍数，能避免混图之后间隙不均匀现象）
 	int videoUIH = ((recSize.height() - 2 * VIDEO_WALL_SPACE) / 3) & 0xFFFFFFFE;
 	int videoUIW = (int(videoUIH * 16 / 9.0 + 0.5)) & 0xFFFFFFFE;
+
+	//屏幕共享中
+	if (m_screeShareUI->isVisibleTo(this))
+	{
+		int screenH = (recSize.height() - videoUIH - VIDEO_WALL_SPACE) & 0xFFFFFFFE;
+		QVariantMap item;
+		item["type"] = CRVSDK_MIXCONT_SCREEN_SHARED;
+		item["left"] = 0;
+		item["top"] = 0;
+		item["width"] = recSize.width();
+		item["height"] = screenH;
+		item["keepAspectRatio"] = 1;
+		contents.append(item);
+
+		contentYPos += screenH + VIDEO_WALL_SPACE;
+	}
 
 	//影音共享中
 	if (m_mediaPlayUI->isVisibleTo(this))
@@ -212,8 +238,15 @@ void MainDialog::slot_btnSvrRecordClicked()
 	}
 	m_dlgSvrRecord->show();
 }
+
 void MainDialog::slot_btnMediaClicked()
 {
+	//屏幕共享中，不能使用该功能
+	if (g_sdkMain->getSDKMeeting().getScreenShareInfo()._state == 1)
+	{
+		QMessageBox::information(this, tr("提示"), tr("请先停止屏幕共享"));
+		return;
+	}
 	QString filters = tr("常见格式(*.mp4 *.mp3 *.flv *.avi *.wmv *.mkv *.mov *.3gp *.wma *.wav);;所有文件(*.*)");
 	QString fileName = QFileDialog::getOpenFileName(this, "打开文件", QString(), filters);
 	if (fileName.length() > 0)
@@ -237,6 +270,47 @@ void MainDialog::slot_mediaPlaying(bool bPlaying)
 {
 	m_mediaPlayUI->setVisible(bPlaying);
 	m_videoWallPage->setVideoWallMode(bPlaying ? false : true);
+	emit s_viewChanged();
+}
+
+void MainDialog::slot_btnStartScreenClicked()
+{
+	//影音共享中，不能使用该功能
+	if (g_sdkMain->getSDKMeeting().getMediaInfo()._state != CRVSDK_MEDIAST_STOPPED)
+	{
+		QMessageBox::information(this, tr("提示"), tr("请先停止影音共享"));
+		return;
+	}
+	//屏幕共享中，不能使用该功能
+	if (g_sdkMain->getSDKMeeting().getScreenShareInfo()._state == 1)
+	{
+		QMessageBox::information(this, tr("提示"), tr("他人正在共享屏幕，不能再共享。"));
+		return;
+	}
+
+	//g_sdkMain->getSDKMeeting().setScreenShareCfg(CRScreenShareCfg());
+	g_sdkMain->getSDKMeeting().startScreenShare();
+}
+
+void MainDialog::slot_btnStopScreenClicked()
+{
+	//屏幕共享中，不能使用该功能
+	CRScreenShareInfo shareInfo = g_sdkMain->getSDKMeeting().getScreenShareInfo();
+	if (shareInfo._state == 1 && shareInfo._sharerUserID != m_myUserId)
+	{
+		QMessageBox::information(this, tr("提示"), tr("他人正在共享屏幕，不能停止。"));
+		return;
+	}
+
+	g_sdkMain->getSDKMeeting().stopScreenShare();
+}
+
+void MainDialog::slot_screenShareStateChanged(bool bShare)
+{
+	m_screeShareUI->setVisible(bShare);
+	m_videoWallPage->setVideoWallMode(bShare ? false : true);
+	ui->btnStartScreenShare->setVisible(!bShare);
+	ui->btnStopScreenShare->setVisible(bShare);
 	emit s_viewChanged();
 }
 

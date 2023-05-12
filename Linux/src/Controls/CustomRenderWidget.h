@@ -18,6 +18,8 @@ public:
 	void setLocMirror(bool bMirror);
 	bool getLocMirror() { return m_bLocMirror; }
 
+	//是否启用render
+	void enabledRender(bool bEnale);
 protected:
 	void onRenderFrameDat(const CRVideoFrame &frm) override;
 
@@ -29,7 +31,7 @@ signals:
 
 private:
 	bool				m_bLocMirror;
-
+	bool				m_enabledRender;
 	CRVideoFrame		m_frame;
 	QMutex				m_frameLock;
 

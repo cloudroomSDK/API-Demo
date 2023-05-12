@@ -101,13 +101,8 @@ void DlgServerRecord::slot_btnStartRecordClicked()
 	mixerCfgMap["videoFileCfg"] = videoFileCfgMap;
 
 	QByteArray mixerCfg = QJsonDocument::fromVariant(mixerCfgMap).toJson();
-	CRBase::CRString rsltMixerID;
-	CRVSDK_ERR_DEF err = g_sdkMain->getSDKMeeting().createCloudMixer(mixerCfg.constData(), rsltMixerID);
-	if (err != CRVSDKERR_NOERR)
-	{
-		QMessageBox::information(this, tr("云端录制"), tr("录制失败（%1） ").arg(getErrDesc(err)));
-		return;
-	}
+	CRBase::CRString rsltMixerID = g_sdkMain->getSDKMeeting().createCloudMixer(mixerCfg.constData());
+	
 	m_recordSize = recordSize;
     m_mixerID = rsltMixerID.constData();
 	this->setWindowTitle(tr("云端录制：%1").arg(m_mixerID));
@@ -182,25 +177,25 @@ void DlgServerRecord::notifyCloudMixerOutputInfoChanged(const char* mixerID, con
 	}
 	//文件输出信息
 	QVariantMap outputInfoMap = QJsonDocument::fromJson(jsonStr).toVariant().toMap();
-	CRVSDK_MIXER_FILE_STATE fileState = (CRVSDK_MIXER_FILE_STATE)outputInfoMap["state"].toInt();
+	CRVSDK_CLOUDMIXER_OUTPUT_STATE fileState = (CRVSDK_CLOUDMIXER_OUTPUT_STATE)outputInfoMap["state"].toInt();
 	switch (fileState)
 	{
-	case CRVSDK::CRVSDK_MFS_NORECORD:
+	case CRVSDK::CRVSDK_CLOUDMO_NULL:
 		break;
-	case CRVSDK::CRVSDK_MFS_RECORDING:
+	case CRVSDK::CRVSDK_CLOUDMO_RUNNING:
 		break;
-	case CRVSDK::CRVSDK_MFS_RECORDED:
+	case CRVSDK::CRVSDK_CLOUDMO_STOPPED:
 		break;
-	case CRVSDK::CRVSDK_MFS_RECORDFAIL:
+	case CRVSDK::CRVSDK_CLOUDMO_FAIL:
 		QMessageBox::information(this, tr("云端录制"), tr("录制文件失败（%1） ").arg(outputInfoMap["errDesc"].toString()));	
 		break;
-	case CRVSDK::CRVSDK_MFS_UPLOADING:
+	case CRVSDK::CRVSDK_CLOUDMO_UPLOADING:
 		break;
-	case CRVSDK::CRVSDK_MFS_UPLOADED:
+	case CRVSDK::CRVSDK_CLOUDMO_UPLOADED:
 		//上传完成
 		showResultDlg();
 		break;
-	case CRVSDK::CRVSDK_MFS_UPLOADFAIL:
+	case CRVSDK::CRVSDK_CLOUDMO_UPLOADFAIL:
 		QMessageBox::information(this, tr("云端录制"), tr("上传文件失败（%1） ").arg(outputInfoMap["errDesc"].toString()));
 		break;
 	default:

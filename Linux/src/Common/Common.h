@@ -3,7 +3,7 @@
 
 inline QString stdStrToQStr(const std::string &a)
 {
-	return QString::fromUtf8(a.c_str(), a.length());
+    return QString::fromUtf8(a.c_str(), (int)a.length());
 }
 inline std::string qStrToStdStr(const QString &a)
 {

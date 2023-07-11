@@ -1,0 +1,181 @@
+<!-- 视频通话 -->
+<template>
+	<view class="content">
+		<view class="main">
+			<view class="image">
+				<image src="@/static/audio.png" mode="aspectFit" />
+			</view>
+			<view class="audio-value">
+				<view class="item" v-for="item in memberList" :key="item.userId">
+					<view><text class="text">{{item.nickName}}-{{item.energyValue }}</text></view>
+					<view class="progress">
+						<view class="value" :style="item.energyValue | energyToWidth"></view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="btn-box">
+			<button class="btn primary" @click="toggleMicState">
+				<text class="btn-text">{{curMicState ? '关闭麦克风':'打开麦克风'}}</text>
+			</button>
+			<button class="btn primary" @click="toggleEarDevices">
+				<text class="btn-text">{{speakerOut ? '切换为听筒':'切换为扬声器'}}</text>
+			</button>
+			<button class="btn danger" @click="exit">
+				<text class="btn-text">挂断</text>
+			</button>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				userInfo: null,
+				RTCSDK: null,
+				curMicState: true, //麦克风开启状态
+				speakerOut: true, //扬声器输出
+				memberList: [],
+			};
+		},
+		onLoad({ roomId }) {
+			uni.setNavigationBarTitle({
+				title: `房间号：${roomId}`
+			});
+			this.RTCSDK = getApp().globalData.RTCSDK.getInstance();
+			this.userInfo = getApp().globalData.userInfo;
+			this.handleEvents();
+			this.memberList = this.RTCSDK.getAllMembers();
+			this.AllVideoInfo = this.RTCSDK.getAllVideoInfo(this.userInfo.userId);
+
+			this.RTCSDK.setDefaultVideo(this.userInfo.userId, this.curCamId);
+		},
+		mounted() {
+			if (this.curMicState) {
+				this.RTCSDK.openMic(this.userInfo.userId);
+			}
+		},
+		destroyed() {
+			this.RTCSDK.exitMeeting();
+			this.handleEvents(false);
+		},
+		filters: {
+			energyToWidth(value) {
+				if (!value) {
+					return `width: 0`;
+				}
+				const width = 330; //能量条的宽度
+				const result = width / 10 * value;
+				return `width: ${result}rpx`;
+			}
+		},
+		methods: {
+			handleEvents(bool = true) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("userLeftMeeting", this._userLeftMeeting);
+				handle("userEnterMeeting", this._userEnterMeeting);
+				handle("audioStatusChanged", this._audioStatusChanged);
+				handle("micEnergyUpdate", this._micEnergyUpdate)
+			},
+			//开关麦克风
+			toggleMicState() {
+				this.curMicState = !this.curMicState;
+				if (this.curMicState) {
+					this.RTCSDK.openMic(this.userInfo.userId);
+				} else {
+					this.RTCSDK.closeMic(this.userInfo.userId);
+				}
+			},
+			//切换听筒或扬声器
+			toggleEarDevices() {
+				this.speakerOut = !this.speakerOut;
+				this.RTCSDK.setSpeakerOut(this.speakerOut);
+			},
+			//挂断
+			exit() {
+				uni.navigateBack();
+			},
+			_userEnterMeeting({ userID }) {
+				const memberInfo = this.RTCSDK.getMemberInfo(userID);
+				this.memberList.push(memberInfo);
+			},
+			_userLeftMeeting({ userID }) {
+				const idx = this.memberList.findIndex(item => item.userId === userID);
+				if (idx > -1) {
+					this.memberList.splice(idx, 1);
+				}
+			},
+			_audioStatusChanged({ userID, newStatus }) {
+				if (userID == this.userInfo.userId) {
+					//进入到这里可能是别人改变了自己的麦克风开关
+					this.curMicState = newStatus === 3;
+				}
+			},
+			_micEnergyUpdate({ userID, oldLevel, newLevel }) {
+				console.log('_micEnergyUpdate', userID, newLevel)
+				const idx = this.memberList.findIndex(item => item.userId === userID);
+				if (idx > -1) {
+					const memberInfo = this.memberList[idx];
+					memberInfo.energyValue = newLevel;
+					this.$set(this.memberList, idx, memberInfo)
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content {
+		flex: 1;
+
+		.main {
+			flex: 1;
+			background-color: #1d232f;
+			align-items: center;
+
+			.audio-value {
+				// width: 410rpx;
+				padding: 26rpx 40rpx 10rpx;
+				background-color: #0e1117;
+
+				.item {
+					margin-bottom: 30rpx;
+
+					.text {
+						font-size: 28rpx;
+						color: $uni-bg-color;
+					}
+
+					.progress {
+						width: 330rpx;
+						height: 10rpx;
+						background-color: #373F50;
+						border-radius: 5rpx;
+						margin-top: 10rpx;
+
+						.value {
+							height: 10rpx;
+							background: #09DB00;
+							border-radius: 5rpx;
+						}
+					}
+				}
+			}
+		}
+
+		.btn-box {
+			padding: 20rpx 0 0;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-around;
+			flex-wrap: wrap;
+			background-color: #070604;
+
+			.btn {
+				width: 340rpx;
+				margin-bottom: 20rpx;
+			}
+		}
+	}
+</style>

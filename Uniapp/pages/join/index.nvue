@@ -1,0 +1,151 @@
+<template>
+	<view>
+		<view class="card">
+			<view class="input-from">
+				<view><text class="title">请输入房间号：</text></view>
+				<view class="wrapper">
+					<input v-model='roomId' class="uni-input" type="number" maxlength="8" placeholder="roomId" />
+				</view>
+			</view>
+			<button class="btn primary" @click="join"><text class="btn-text">进入房间</text></button>
+			<view class="or">
+				<view class="line left"></view>
+				<text class="text">或者</text>
+				<view class="line right"></view>
+			</view>
+			<button class="btn primary plain" @click="create"><text class="btn-text">创建房间</text></button>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { showToast, showLoading, hideLoading } from '@/util/index.js'
+	import permision from "@/js_sdk/wa-permission/permission.js"
+	import constantDesc from '@/util/constantDesc.js'
+	export default {
+		data() {
+			return {
+				roomId: '',
+				RTCSDK: null,
+				type: null,
+			};
+		},
+		onLoad({ type }) {
+			this.type = type;
+			this.RTCSDK = getApp().globalData.RTCSDK.getInstance();
+			this.handleEvents();
+			this.roomId = uni.getStorageSync('historyRoomId');
+		},
+		destroyed() {
+			this.handleEvents(false);
+		},
+		methods: {
+			join() {
+				if (this.roomId.length !== 8) {
+					showToast(`请输入正确的会议号`);
+					return;
+				}
+				showLoading(undefined, true);
+				this.RTCSDK.enterMeeting(this.roomId);
+			},
+			handleEvents(bool = true) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("enterMeetingRslt", this._enterMeetingRslt);
+				handle("createMeetingSuccess", this._createMeetingSuccess);
+				handle("createMeetingFail", this._createMeetingFail);
+			},
+			//点击创建会议
+			create() {
+				showLoading(undefined, true);
+				this.RTCSDK.createMeeting();
+			},
+			async _enterMeetingRslt({ sdkErr }) {
+				console.log('enterMeetingRslt', sdkErr)
+				hideLoading()
+				if (sdkErr !== 0) {
+					showToast(`进入会议失败，错误码: ${sdkErr},${constantDesc[sdkErr]}`, 3000);
+					return;
+				}
+
+				uni.setStorage({
+					key: 'historyRoomId',
+					data: this.roomId
+				})
+
+				if (uni.getSystemInfoSync().platform == "ios") {
+					await permision.judgeIosPermission("camera")
+					await permision.judgeIosPermission("record")
+				}
+
+				if (uni.getSystemInfoSync().platform == "android") {
+					await permision.requestAndroidPermission('android.permission.RECORD_AUDIO')
+					await permision.requestAndroidPermission('android.permission.CAMERA')
+					await permision.requestAndroidPermission('android.permission.READ_PHONE_STATE')
+				}
+
+				// uni.redirectTo({
+				uni.navigateTo({
+					url: `/pages/examples/${this.type}?roomId=${this.roomId}`,
+					fail: () => {
+						this.RTCSDK.exitMeeting();
+						showToast(`功能模块未开发`);
+					}
+				})
+			},
+			_createMeetingSuccess({ meetInfo }) {
+				this.roomId = String(meetInfo.ID);
+				this.join();
+			},
+			_createMeetingFail({ sdkErr }) {
+				hideLoading()
+				showToast(`创建会议失败，错误码: ${sdkErr},${constantDesc[sdkErr]}`, 3000);
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.card {
+		background-color: $uni-bg-color;
+		margin-top: 22rpx;
+		padding: 56rpx 54rpx 90rpx;
+
+		.input-from {
+			margin-bottom: 44rpx;
+
+			.title {
+				font-size: 30rpx;
+				color: #666666;
+			}
+
+			.uni-input {
+				padding: 0 20rpx;
+				margin-top: 24rpx;
+				border-radius: 5rpx;
+				border: 1px solid $uni-border-color;
+				height: 80rpx;
+			}
+		}
+
+		.or {
+			text-align: center;
+			margin: 42rpx 0;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+
+			.line {
+				height: 1rpx;
+				width: 250rpx;
+				background-color: $uni-text-color-grey;
+
+			}
+
+			.text {
+				font-size: 30rpx;
+				color: $uni-text-color-grey;
+			}
+		}
+	}
+</style>

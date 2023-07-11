@@ -1,0 +1,182 @@
+<!-- 视频通话 -->
+<template>
+	<view class="content">
+		<view class="main">
+			<list class="list" ref="list">
+				<cell>
+					<view class="chat-box" :class="{'isMyMessage': userInfo.userId === chat.userID}" v-for="(chat,index) in chatList" :key="chat.messageId">
+						<view class="info">
+							<text class="time-text">{{chat.time | formatTime('hh:ss')}}</text>
+							<text class="userid-text" v-if="userInfo.userId !== chat.userID">{{chat.userID}}:</text>
+						</view>
+						<text class="message-text">{{chat.text}}</text>
+					</view>
+				</cell>
+			</list>
+		</view>
+		<view class="bottom">
+			<input type="text" v-model="text" class="input" confirm-type='send' @confirm='send' ref="chatInput">
+			<button class="btn primary" @click="send"><text class="btn-text">发送</text></button>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { showToast } from '../../util';
+	export default {
+		data() {
+			return {
+				userInfo: null,
+				RTCSDK: null,
+				text: '',
+				chatList: [],
+			};
+		},
+		filters: {
+			formatTime(timeStr = null, fromatStr) {
+				let time = timeStr ? new Date(timeStr) : new Date()
+				if (time === 'Invalid Date') return '传入每二个参数不是时间'
+				let year = time.getFullYear();
+				let month = time.getMonth() + 1;
+				let day = time.getDate();
+				let hours = time.getHours();
+				let minutes = time.getMinutes();
+				let milliseconds = time.getSeconds();
+				let week = 0;
+				if (/W/.test(newStr)) {
+					week = (time.getTime() - new Date(year + '/1/1').getTime()) / 1000 / 60 / 60 / 24 / 7;
+					week = parseInt(week);
+				}
+
+				let newStr = fromatStr;
+				//正常处理,小于 10 补 0
+				newStr = newStr.replace(/(YYYY)/, year)
+				newStr = newStr.replace(/(MM)/, month < 10 ? '0' + month : month)
+				newStr = newStr.replace(/(DD)/, day < 10 ? '0' + day : day)
+				newStr = newStr.replace(/(hh)/, hours < 10 ? '0' + hours : hours)
+				newStr = newStr.replace(/(mm)/, minutes < 10 ? '0' + minutes : minutes)
+				newStr = newStr.replace(/(ss)/, milliseconds < 10 ? '0' + milliseconds : milliseconds)
+				newStr = newStr.replace(/(WW)/, week < 10 ? '0' + week : week)
+				// 不补零处理
+				newStr = newStr.replace(/M/, month)
+				newStr = newStr.replace(/D/, day)
+				newStr = newStr.replace(/h/, hours)
+				newStr = newStr.replace(/m/, minutes)
+				newStr = newStr.replace(/s/, milliseconds)
+				newStr = newStr.replace(/W/, week)
+				return newStr;
+			}
+		},
+		onLoad({ roomId }) {
+			uni.setNavigationBarTitle({
+				title: `房间号：${roomId}`
+			});
+			this.RTCSDK = getApp().globalData.RTCSDK.getInstance();
+			this.userInfo = getApp().globalData.userInfo;
+			this.handleEvents();
+		},
+		destroyed() {
+			this.RTCSDK.exitMeeting();
+			this.handleEvents(false);
+		},
+		methods: {
+			handleEvents(bool = true) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("notifyMeetingCustomMsg", this._notifyMeetingCustomMsg);
+			},
+			send() {
+				const data = {
+					CmdType: 'IM',
+					IMMsg: this.text
+				}
+
+				this.RTCSDK.sendMeetingCustomMsg(JSON.stringify(data));
+				this.$refs.chatInput.blur();
+				this.text = '';
+			},
+			_notifyMeetingCustomMsg({ fromUserID, text }) {
+				try {
+					const data = JSON.parse(text);
+					if (data.CmdType === 'IM') {
+						const chat = {
+							userID: fromUserID,
+							text: data.IMMsg,
+							time: Date.now(),
+							messageId: String(Math.random())
+						}
+						this.chatList.push(chat);
+					}
+				} catch (e) {
+					showToast(`收到来自${fromUserID}的消息`)
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content {
+		flex: 1;
+
+		.main {
+			flex: 1;
+			background-color: $uni-bg-color;
+
+			.list {
+				padding-top: 20rpx;
+			}
+
+			.chat-box {
+				padding: 0 46rpx;
+
+				&.isMyMessage {
+					align-items: flex-end;
+				}
+
+				.info {
+					flex-direction: row;
+
+					.time-text {
+						color: $uni-text-color-grey;
+						font-size: 28rpx;
+					}
+
+					.userid-text {
+						margin-left: 12rpx;
+						color: $uni-text-color-inverse;
+						font-size: 28rpx;
+					}
+				}
+
+				.message-text {
+					color: $uni-text-color-inverse;
+					padding-bottom: 24rpx;
+					font-size: 28rpx;
+				}
+			}
+		}
+
+		.bottom {
+			height: 124rpx;
+			background: #f0f0f0;
+			flex-direction: row;
+			padding: 0 20rpx;
+			align-items: center;
+
+			.input {
+				flex: 1;
+				height: 80rpx;
+				background-color: $uni-bg-color;
+				border-radius: 10rpx;
+				margin-right: 10rpx;
+				padding: 0 20rpx;
+			}
+
+			.btn {
+				width: 114rpx;
+				height: 80rpx;
+				border-radius: 10rpx;
+			}
+		}
+	}
+</style>

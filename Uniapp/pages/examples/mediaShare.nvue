@@ -1,0 +1,226 @@
+<!-- 视频通话 -->
+<template>
+	<view class="content">
+		<view class="start" v-if="!mediaInfo || (mediaInfo && mediaInfo.state == MediaState.stop)">
+			<view class="main">
+				<view class="file-box">
+					<text class="first-text">选择文件:</text>
+					<view class="sec">
+						<button class="btn" @click="selectFile"><text class="btn-text">浏览...</text></button>
+						<text v-if="file && file.fileName" class="sec-text">{{file.fileName}}</text>
+						<text v-else class="sec-text">未选择文件</text>
+					</view>
+				</view>
+			</view>
+
+		</view>
+		<view v-else class="video-box">
+			<rtcsdk-mediaView class="mediaUIView" @click="pause"></rtcsdk-mediaView>
+			<view class="pause" v-if="mediaInfo.state == MediaState.pause">
+				<image class="img" src="@/static/pause.png" mode="aspectFit" />
+			</view>
+		</view>
+
+		<view class="bottom" v-if="!mediaInfo || (mediaInfo && isMyShare)">
+			<button class="btn primary" @click="start" v-if="!mediaInfo">
+				<text class="btn-text">开始播放</text>
+			</button>
+			<view class="btn danger" @click="stop" v-if="mediaInfo && isMyShare">
+				<text class="btn-text">停止播放</text>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { createEnum, showToast } from '@/util'
+	const MediaState = createEnum(['start', 'pause', 'stop']);
+	export default {
+		data() {
+			return {
+				roomId: '',
+				userInfo: null,
+				RTCSDK: null,
+				MediaState: createEnum(['start', 'pause', 'stop']), //房间内是否开启了影音共享
+				isMyShare: false, //是否自己开启的影音共享
+				mediaInfo: null,
+				file: null,
+			};
+		},
+		onLoad({ roomId }) {
+			this.roomId = roomId;
+			uni.setNavigationBarTitle({ title: `房间号：${roomId}` });
+			this.RTCSDK = getApp().globalData.RTCSDK.getInstance();
+			this.userInfo = getApp().globalData.userInfo;
+			this.handleEvents();
+
+			const mediaInfo = this.RTCSDK.getMediaInfo();
+			if (mediaInfo.state !== this.MediaState.stop) {
+				this.mediaInfo = mediaInfo;
+			}
+		},
+		destroyed() {
+			this.handleEvents(false);
+			this.RTCSDK.exitMeeting();
+		},
+		methods: {
+			handleEvents(bool = true) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("notifyMediaStart", this._notifyMediaStart);
+				handle("notifyMediaPause", this._notifyMediaPause);
+				handle("notifyMediaStop", this._notifyMediaStop);
+			},
+			selectFile() {
+				uni.chooseVideo({
+					sourceType: ['album'],
+					compressed: false,
+					success: (res) => {
+						this.file = {
+							fileName: res.tempFilePath.split('/').pop(),
+							tempFilePath: res.tempFilePath,
+							size: res.size,
+							duration: res.duration,
+							width: res.width,
+							height: res.height
+						};
+					}
+				})
+			},
+			// 开启媒体共享
+			start() {
+				if (!this.file) {
+					return showToast('请先选择文件');
+				}
+				this.isMyShare = true;
+				this.RTCSDK.startPlayMedia(this.file.tempFilePath, 0)
+			},
+			// 暂停影音共享
+			pause() {
+				if (this.isMyShare) {
+					const bool = this.mediaInfo.state == MediaState.start
+					this.$set(this.mediaInfo, 'state', bool ? MediaState.pause : MediaState.start);
+					this.RTCSDK.pausePlayMedia(bool);
+				}
+			},
+			// 停止影音共享
+			stop() {
+				this.mediaInfo = null;
+				this.isMyShare = false;
+				this.RTCSDK.stopPlayMedia()
+			},
+			_notifyMediaStart({ userID }) {
+				this.isMyShare = userID === this.userInfo.userId;
+				this.mediaInfo = {
+					mediaName: "",
+					userID: userID,
+					state: MediaState.start
+				};
+			},
+			_notifyMediaPause(e) {
+				this.$set(this.mediaInfo, 'state', e.pause ? MediaState.pause : MediaState.start)
+			},
+			_notifyMediaStop(e) {
+				this.isMyShare = false;
+				this.mediaInfo = null;
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content {
+		flex: 1;
+		background-color: #333;
+
+		.start {
+			flex: 1;
+
+			.main {
+				flex: 1;
+				align-items: center;
+				justify-content: center;
+
+				.file-box {
+					width: 538rpx;
+					height: 182rpx;
+					background: $uni-bg-color;
+					border: 1px solid #E3E3E3;
+					border-radius: 10rpx;
+					padding: 44rpx 50rpx 50rpx;
+
+					.first-text {
+						font-size: 30rpx;
+					}
+
+					.sec {
+						margin-top: 20rpx;
+						flex-direction: row;
+						align-items: center;
+
+						.btn {
+							width: 133rpx;
+							height: 42rpx;
+							background: #D9D9D9;
+							border-radius: 5rpx;
+
+							.btn-text {
+								color: #333;
+								font-size: 28rpx;
+							}
+						}
+
+						.sec-text {
+							margin-left: 14rpx;
+							font-size: 30rpx;
+							color: #333333;
+						}
+					}
+				}
+			}
+		}
+
+		.video-box {
+			flex: 1;
+			position: relative;
+
+			.mediaUIView {
+				flex: 1;
+			}
+
+			.pause {
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				justify-content: center;
+				align-items: center;
+
+				.img {
+					width: 165rpx;
+					height: 165rpx;
+				}
+			}
+		}
+
+		.bottom {
+			height: 160rpx;
+			width: 750rpx;
+			background-color: #060709;
+			align-items: center;
+			justify-content: center;
+			flex-direction: row;
+
+			.btn {
+				width: 250rpx;
+				height: 60rpx;
+				align-items: center;
+				.btn-text {
+					height: 60rpx;
+					line-height: 60rpx;
+					font-size: 28rpx;
+				}
+			}
+		}
+	}
+</style>

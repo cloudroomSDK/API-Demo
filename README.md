@@ -13,7 +13,7 @@
 [/Linux](./Windows)|Linux|C++|[云屋RTC Linux SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
 [/Web](./Web)|Web|JS|[云屋RTC Web SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Web)
 [/Flutter](./Flutter)|Mobile|Dart|[云屋RTC Flutter SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Flutter)
-[/uni-app](./uni-app)|Mobile|JS|[云屋RTC uni-app SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Web)
+[/uni-app](./uni-app)|Mobile|JS|[云屋RTC uni-app SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=uniapp)
 
 ## 联系我们
 - 更多示例见 [官方SDK示例](https://github.com/cloudroomSDK)

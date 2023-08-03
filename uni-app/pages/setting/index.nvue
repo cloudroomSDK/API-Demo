@@ -1,0 +1,130 @@
+<template>
+	<view class="content">
+		<view class="card">
+			<view class="input-from">
+				<view><text class="title">服务器地址：</text></view>
+				<view class="wrapper">
+					<input v-model='addr' class="uni-input" placeholder="服务器地址" />
+				</view>
+			</view>
+			<view class="input-from">
+				<view><text class="title">APP ID :</text></view>
+				<view class="wrapper">
+					<input v-model='appId' class="uni-input" placeholder="appid" />
+				</view>
+			</view>
+			<view class="input-from">
+				<view><text class="title">APP Secret :</text></view>
+				<view class="wrapper">
+					<input v-model='appSecret' class="uni-input" type="text" password />
+				</view>
+			</view>
+		</view>
+		<button @click="reset" class="btn primary">
+			<text class="btn-text">恢复默认</text>
+		</button>
+		<div class="version">
+			<text class="text">version: {{version}}</text>
+		</div>
+	</view>
+</template>
+
+<script>
+	const app = getApp();
+	const loginInfo = app.globalData.loginInfo;
+	import { defaultLoginInfo } from '@/config/index.js';
+	export default {
+		data() {
+			return {
+				RTCSDK: null,
+				addr: '',
+				appId: '',
+				appSecret: '',
+				version: app.globalData.version
+			}
+		},
+		onLoad() {
+			this.RTCSDK = app.globalData.RTCSDK.getInstance();
+
+			const { addr, appId, appSecret } = loginInfo;
+			this.addr = addr;
+			this.appId = appId;
+			this.appSecret = appSecret;
+			setTimeout(() => {
+				this.appSecret = appSecret; //密码框要延迟一会才能赋值
+			}, 500)
+		},
+		onNavigationBarButtonTap(e) {
+			const { addr, appId, appSecret } = defaultLoginInfo;
+
+			if (loginInfo.addr !== this.addr || loginInfo.appId !== this.appId || loginInfo.appSecret !== this.appSecret) {
+				loginInfo.addr = this.addr;
+				loginInfo.appId = this.appId;
+				loginInfo.appSecret = this.appSecret;
+				if (app.globalData.isLogin) {
+					this.RTCSDK.logout();
+					app.globalData.isLogin = false;
+				}
+
+				try {
+					uni.setStorageSync('loginInfo', JSON.stringify(loginInfo));
+				} catch (e) {
+					// error
+				}
+			}
+			uni.navigateBack()
+		},
+		methods: {
+			reset() {
+				const { addr, appId, appSecret } = defaultLoginInfo
+				this.addr = addr;
+				this.appId = appId;
+				this.appSecret = appSecret;
+			}
+		}
+	}
+</script>
+
+
+<style lang="scss">
+	.content {
+		position: relative;
+		.card {
+			background-color: $uni-bg-color;
+			padding: 14rpx 54rpx 60rpx;
+			margin-top: 22rpx;
+
+			.input-from {
+				.title {
+					font-size: 28rpx;
+					color: $uni-text-color-inverse;
+					margin: 46rpx 0 24rpx 0;
+				}
+
+				.wrapper {
+					.uni-input {
+						height: 80rpx;
+						padding: 0 20rpx;
+						border-radius: 5rpx;
+						border: 1rpx solid $uni-border-color;
+					}
+				}
+			}
+		}
+
+		.btn {
+			margin: 90rpx 54rpx;
+		}
+
+		.version {
+			position: fixed;
+			bottom: 20rpx;
+			width: 750rpx;
+			.text {
+				text-align: center;
+				font-size: 28rpx;
+				color: #666;
+			}
+		}
+	}
+</style>

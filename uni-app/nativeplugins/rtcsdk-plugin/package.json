@@ -1,0 +1,100 @@
+{
+	"name": "rtcsdk-plugin",
+	"id": "rtcsdk-plugin",
+	"version": "1.0.1",
+	"description": "",
+	"_dp_type": "nativeplugin",
+	"_dp_nativeplugin": {
+		"android": {
+			"plugins": [{
+				"type": "module",
+				"name": "rtcsdk-plugin",
+				"class": "com.rtc.sdk.Main"
+			}, {
+				"type": "component",
+				"name": "rtcsdk-videoView",
+				"class": "com.rtc.sdk.VideoUIViewComponent"
+			}, {
+				"type": "component",
+				"name": "rtcsdk-screenView",
+				"class": "com.rtc.sdk.ScreenShareUIViewComponent"
+			}, {
+				"type": "component",
+				"name": "rtcsdk-mediaView",
+				"class": "com.rtc.sdk.MediaUIViewComponent"
+			}],
+
+			"integrateType": "aar",
+			"parameters": {},
+			"abis": [
+				"armeabi-v7a",
+				"arm64-v8a",
+				"x86"
+			],
+			"dependencies": [
+				"com.github.cloudroomSDK:cloudroomvideo_android_library:6e84920a7a"
+			]
+		},
+		"ios": {
+			"plugins": [{
+				"type": "module",
+				"name": "rtcsdk-plugin",
+				"class": "RTCSDK"
+			}, {
+				"type": "component",
+				"name": "rtcsdk-videoView",
+				"class": "VideoUIViewComponent"
+			}, {
+				"type": "component",
+				"name": "rtcsdk-screenView",
+				"class": "ScreenShareUIViewComponent"
+			}, {
+				"type": "component",
+				"name": "rtcsdk-mediaView",
+				"class": "MediaUIViewComponent"
+			}],
+			"integrateType": "framework",
+			"frameworks": [
+				"CloudroomVideoSDK_IOS.framework",
+                "RTCSDKUniPlugin_iOS.framework",
+                "CoreServices.framework",
+                "libc++.tbd",
+                "libz.tbd",
+                "Security.framework",
+                "SystemConfiguration.framework",
+                "AudioToolbox.framework",
+                "VideoToolbox.framework",
+                "libiconv.tbd",
+                "UIKit.framework",
+                "AVFoundation.framework",
+                "CoreMedia.framework"
+			],
+			"embedFrameworks": [
+				"CloudroomVideoSDK_IOS.framework"
+			],
+			"capabilities": { 
+				"entitlements": { 
+				"com.apple.security.application-groups": "group.com.rtc.RTCSDKUniPlugin"
+				},
+				"plists": {
+                    "LSSupportsOpeningDocumentsInPlace": true,
+                    "UIFileSharingEnabled": true
+				}
+			},
+			"plists": {
+			},
+			"privacies": [
+				"NSCameraUsageDescription",
+				"NSMicrophoneUsageDescription"
+			],
+			"embedSwift": false,
+			"deploymentTarget": 11.0,
+			"validArchitectures": [ 
+				"arm64"
+			],
+			"resources": [
+				
+			]
+		}
+	}
+}

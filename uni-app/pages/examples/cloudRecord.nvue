@@ -1,0 +1,303 @@
+<!-- 视频通话 -->
+<template>
+	<view class="content">
+		<view class="video-box">
+			<view class="myVideo">
+				<rtcsdk-video-view class="video-ui" :usrVideoId="{ userId: userInfo.userId }" />
+				<view class="video-text">
+					<text class="text">{{userInfo.nickname}}</text>
+				</view>
+			</view>
+			<view class="videoList">
+				<view class="video" v-for="item in openCamList" :key="item.userId">
+					<rtcsdk-video-view class="video-ui" :usrVideoId="{ userId: item.userId }" />
+					<view class="video-text">
+						<text class="text">{{item.nickName}}</text>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="bottom">
+			<button :key="recordState==2" :class="[recordState == RecordState.recording?'danger':'primary','btn']" @click="recordBtnTap" :loading="recordState==RecordState.starting">
+				<text class="btn-text" v-if="recordState === RecordState.noStart">云端录制</text>
+				<text class="btn-text" v-else-if="recordState === RecordState.starting">启动中</text>
+				<text class="btn-text" v-else>结束录制</text>
+			</button>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { createEnum, showToast } from '@/util'
+	import mixin from './mixin'
+	import { RtcsdkVideoView } from '@/RTCSDK/component';
+
+	const RecordState = createEnum(['noStart', 'starting', 'recording']); // 0:未开始。1:云端录制启动中。2:录制中
+	import constantDesc from '@/util/constantDesc.js'
+	export default {
+		mixins: [mixin],
+		components: {
+			RtcsdkVideoView
+		},
+		data() {
+			return {
+				memberList: [],
+				recordState: RecordState.noStart,
+				RecordState: RecordState,
+				myMixerId: null,
+				roomId: null,
+			};
+		},
+		computed: {
+			//打开了摄像头的成员列表
+			openCamList() {
+				const openCamList = this.memberList.filter(item => item.userId !== this.userInfo.userId && item.videoStatus === 3);
+				if (openCamList.length > 9) {
+					openCamList.length = 9;
+				}
+				return openCamList;
+			}
+		},
+		onLoad({ roomId }) {
+			this.roomId = roomId;
+			this.memberList = this.RTCSDK.getAllMembers();
+
+			//获取前后置摄像头
+			const devicePosition = this.RTCSDK.getMyVideoPosition();
+			//将前置摄像头设置为默认摄像头
+			this.RTCSDK.setDefaultVideo(this.userInfo.userId, devicePosition.front);
+
+			this.RTCSDK.getAllCloudMixerInfo().some(mixerInfo => {
+				if (mixerInfo.owner === this.userInfo.userId) {
+					this.myMixerId = mixerInfo.ID;
+					this.recordState = mixerInfo.state;
+					return true;
+				}
+			})
+		},
+		mounted() {
+			this.RTCSDK.openVideo(this.userInfo.userId);
+			this.RTCSDK.openMic(this.userInfo.userId);
+		},
+		methods: {
+			handleEventsPage(bool) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("userLeftMeeting", this._userLeftMeeting);
+				handle("userEnterMeeting", this._userEnterMeeting);
+				handle("videoStatusChanged", this._videoStatusChanged);
+				handle("createCloudMixerFailed", this._createCloudMixerFailed);
+				handle("cloudMixerInfoChanged", this._cloudMixerInfoChanged);
+				handle("cloudMixerStateChanged", this._cloudMixerStateChanged);
+			},
+			recordBtnTap() {
+				if (this.recordState === RecordState.noStart) {
+					this.createMixer();
+					this.recordState = RecordState.starting;
+				} else {
+					this.RTCSDK.destroyCloudMixer(this.myMixerId);
+					this.recordState = RecordState.noStart;
+				}
+			},
+			createMixer() {
+				const date = new Date();
+				const year = date.getFullYear(),
+					month = String(date.getMonth() + 1).padStart(2, '0'),
+					day = String(date.getDate()).padStart(2, '0'),
+					hour = String(date.getHours()).padStart(2, '0'),
+					min = String(date.getMinutes()).padStart(2, '0'),
+					sec = String(date.getSeconds()).padStart(2, '0');
+
+				const fileName = `/${year}-${month}-${day}/${year}-${month}-${day}_${hour}-${min}-${sec}_Uniapp_API_${this.roomId}.mp4`
+				const cfg = {
+					mode: 0,
+					videoFileCfg: {
+						svrPathName: fileName,
+						vWidth: 1280,
+						vHeight: 720,
+						vFps: 15,
+						layoutConfig: this.createRecordLayout()
+					}
+				}
+				this.myMixerId = this.RTCSDK.createCloudMixer(cfg);
+			},
+			updateMixer() {
+				if (this.recordState === RecordState.recording) {
+					const cfg = {
+						videoFileCfg: {
+							layoutConfig: this.createRecordLayout()
+						}
+					}
+					this.RTCSDK.updateCloudMixerContent(this.myMixerId, cfg);
+				}
+			},
+			createRecordLayout() {
+				return [{
+					//自己的视频
+					type: 0,
+					top: 0,
+					left: 0,
+					width: 1280,
+					height: 720,
+					keepAspectRatio: 1,
+					param: { camid: `${this.userInfo.userId}.-1` }
+				}].concat(
+					// 只录制打开摄像头的前9位成员
+					this.openCamList.slice(0, 9).map((item, idx) => {
+						return {
+							//其他成员的视频
+							type: 0,
+							top: (idx % 3) * 190,
+							left: 960 - (parseInt(idx / 3)) * 330,
+							width: 320,
+							height: 180,
+							keepAspectRatio: 1,
+							param: { camid: `${item.userId}.-1` }
+						}
+					})
+				).concat([{
+					//时间戳
+					type: 10,
+					top: 650,
+					left: 900,
+					keepAspectRatio: 1,
+					param: {
+						text: '%timestamp%'
+					}
+				}])
+			},
+			_userEnterMeeting({ userID }) {
+				const memberInfo = this.RTCSDK.getMemberInfo(userID);
+				this.memberList.push(memberInfo);
+			},
+			_userLeftMeeting({ userID }) {
+				const idx = this.memberList.findIndex(item => item.userId === userID);
+				if (idx > -1) {
+					this.memberList.splice(idx, 1);
+				}
+				this.updateMixer();
+			},
+			_videoStatusChanged({ userID, newStatus }) {
+				if (userID == this.userInfo.userId) {
+					//进入到这里可能是别人改变了自己的摄像头开关
+					this.curCamState = newStatus === 3;
+				} else {
+					const idx = this.memberList.findIndex(item => item.userId === userID);
+					if (idx > -1) {
+						this.memberList[idx].videoStatus = newStatus;
+					}
+				}
+
+				this.updateMixer();
+			},
+			_cloudMixerInfoChanged({ mixerID }) {
+
+			},
+			_createCloudMixerFailed({ mixerID, sdkErr }) {
+				if (mixerID === this.myMixerId) {
+					this.recordState = RecordState.noStart;
+					showToast(`开启失败，错误码: ${sdkErr},${constantDesc[sdkErr]}`)
+				}
+			},
+			_cloudMixerStateChanged({ mixerID, state }) {
+				if (mixerID === this.myMixerId) {
+					this.recordState = state;
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content {
+		flex: 1;
+
+		.video-box {
+			flex: 1;
+			background-color: #1d232f;
+			position: relative;
+
+			.myVideo {
+				width: 750rpx;
+				flex: 1;
+				position: relative;
+
+				.video-ui {
+					width: 750rpx;
+					flex: 1;
+				}
+
+				.video-text {
+					position: absolute;
+					top: 20rpx;
+					left: 20rpx;
+					background-color: rgba(0, 0, 0, .6);
+					padding: 4rpx 10rpx;
+					border-radius: 10rpx;
+
+					.text {
+						font-size: 24rpx;
+						color: #fff;
+					}
+				}
+			}
+
+			.videoList {
+				position: absolute;
+				right: 0;
+				top: 10rpx;
+				right: 5rpx;
+				display: flex;
+				flex-wrap: wrap-reverse;
+				flex-direction: column;
+				width: 492rpx;
+				height: 830rpx;
+
+				.video {
+					width: 144rpx;
+					height: 256rpx;
+					background-color: #000;
+					margin-bottom: 20rpx;
+					margin-left: 20rpx;
+					position: relative;
+
+					.video-ui {
+						width: 144rpx;
+						height: 256rpx;
+					}
+
+					.video-text {
+						position: absolute;
+						top: 10rpx;
+						left: 10rpx;
+						background-color: rgba(0, 0, 0, .6);
+						padding: 4rpx 10rpx;
+						border-radius: 10rpx;
+
+						.text {
+							font-size: 12rpx;
+							color: #fff;
+						}
+					}
+				}
+			}
+		}
+
+		.bottom {
+			position: absolute;
+			bottom: 0;
+			width: 750rpx;
+			background: rgba(0, 0, 0, 0.8);
+			padding: 50rpx 0;
+			align-items: center;
+
+			.btn {
+				width: 164rpx;
+				height: 60rpx;
+
+				.btn-text {
+					font-size: 28rpx;
+				}
+			}
+		}
+	}
+</style>

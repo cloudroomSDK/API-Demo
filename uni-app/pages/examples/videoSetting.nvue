@@ -1,0 +1,308 @@
+<!-- 视频通话 -->
+<template>
+	<view class="content">
+		<view class="video-box">
+			<view class="myVideo">
+				<rtcsdk-video-view class="video-ui" :usrVideoId="{ userId: userInfo.userId }" />
+				<view class="video-text">
+					<text class="text">{{userInfo.nickname}}</text>
+				</view>
+			</view>
+			<view class="videoList">
+				<view class="video" v-for="item in openCamList" :key="item.userId">
+					<rtcsdk-video-view class="video-ui" :usrVideoId="{ userId: item.userId }" />
+					<view class="video-text">
+						<text class="text">{{item.nickName}}</text>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="bottom">
+			<view class="resolution-ratio">
+				<text class="text">分辨率</text>
+				<view class="btn-group">
+					<button class="btn plain" :class="{primary:index==curSizeIdx}" v-for="(str,index) in ['360P','480P','720P','1080P']" :key="index" @click="swittchResolutionRatio(index)">
+						<text class="btn-text">{{str}}</text>
+					</button>
+				</view>
+			</view>
+			<view class="slider-box">
+				<text class="text">码率</text>
+				<slider class="slider" :value="curRate" @change="setVideoCfg({maxbps: curRate})" @changing="curRate = $event.detail.value" step="10000" min="0" :max="codeMaxRate" />
+				<text class="value">{{curRate / 1000}} kbps</text>
+			</view>
+			<view class="slider-box">
+				<text class="text">帧率</text>
+				<slider class="slider" :value="curFps" min="5" max="30" @change="setVideoCfg({fps: curFps})" @changing="curFps = $event.detail.value" />
+				<text class="value">{{curFps}} fps</text>
+			</view>
+			<view class="exit">
+				<button class="btn danger" @click="exit">
+					<text class="btn-text">退出</text>
+				</button>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import mixin from './mixin'
+	import { RtcsdkVideoView } from '@/RTCSDK/component';
+	const sizeArr = [
+		//高，宽，最大码率
+		[640, 360, 420], //360p
+		[848, 480, 780], //480p
+		[1280, 720, 1200], //720p
+		[1920, 1080, 2400], //1080p
+	]
+	export default {
+		mixins: [mixin],
+		components: {
+			RtcsdkVideoView
+		},
+		data() {
+			return {
+				speakerOut: true, //扬声器输出
+				curSizeIdx: 0,
+				codeMaxRate: 420000,
+				curRate: -1,
+				curFps: 24,
+				memberList: [],
+			};
+		},
+		computed: {
+			//打开了摄像头的成员列表
+			openCamList() {
+				const openCamList = this.memberList.filter(item => item.userId !== this.userInfo.userId && item.videoStatus === 3);
+				if (openCamList.length > 9) {
+					openCamList.length = 9;
+				}
+				return openCamList;
+			}
+		},
+		onLoad() {
+			this.memberList = this.RTCSDK.getAllMembers();
+			this.AllVideoInfo = this.RTCSDK.getAllVideoInfo(this.userInfo.userId);
+
+			const devicePosition = this.RTCSDK.getMyVideoPosition();
+			this.RTCSDK.setDefaultVideo(this.userInfo.userId, devicePosition.front);
+			this.RTCSDK.openVideo(this.userInfo.userId);
+			this.RTCSDK.openMic(this.userInfo.userId);
+			this.swittchResolutionRatio(1);
+			this.$nextTick(() => {
+				const cfg = this.RTCSDK.getVideoCfg();
+				this.curFps = cfg.fps;
+				this.curRate = cfg.maxbps;
+			});
+		},
+		methods: {
+			handleEventsPage(bool) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("userLeftMeeting", this._userLeftMeeting);
+				handle("userEnterMeeting", this._userEnterMeeting);
+				handle("videoStatusChanged", this._videoStatusChanged);
+			},
+			exit() {
+				uni.navigateBack();
+			},
+			//切换了分辨率
+			swittchResolutionRatio(idx) {
+				const size = sizeArr[idx];
+				this.codeMaxRate = size[2] * 1000;
+				this.curRate = size[2] * 1000;
+				this.curSizeIdx = idx;
+				this.setVideoCfg({
+					size: {
+						width: size[0],
+						height: size[1],
+					},
+					maxbps: size[2] * 1000
+				});
+			},
+			setVideoCfg(cfg) {
+				const oldCfg = this.RTCSDK.getVideoCfg();
+				console.log('old', oldCfg)
+				const newCfg = {
+					...oldCfg,
+					...cfg
+				}
+				console.log('newCfg', newCfg)
+				this.RTCSDK.setVideoCfg(newCfg);
+			},
+			_userEnterMeeting({ userID }) {
+				const memberInfo = this.RTCSDK.getMemberInfo(userID);
+				this.memberList.push(memberInfo);
+			},
+			_userLeftMeeting({ userID }) {
+				const idx = this.memberList.findIndex(item => item.userId === userID);
+				if (idx > -1) {
+					this.memberList.splice(idx, 1);
+				}
+			},
+			_videoStatusChanged({ userID, newStatus }) {
+				if (userID !== this.userInfo.userId) {
+					const idx = this.memberList.findIndex(item => item.userId === userID);
+					if (idx > -1) {
+						this.memberList[idx].videoStatus = newStatus;
+					}
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content {
+		flex: 1;
+
+		.video-box {
+			flex: 1;
+			background-color: #1d232f;
+			position: relative;
+
+			.myVideo {
+				width: 750rpx;
+				flex: 1;
+				position: relative;
+
+				.video-ui {
+					width: 750rpx;
+					flex: 1;
+				}
+
+				.video-text {
+					position: absolute;
+					top: 20rpx;
+					left: 20rpx;
+					background-color: rgba(0, 0, 0, .6);
+					padding: 4rpx 10rpx;
+					border-radius: 10rpx;
+
+					.text {
+						font-size: 24rpx;
+						color: #fff;
+					}
+				}
+			}
+
+			.videoList {
+				position: absolute;
+				right: 0;
+				top: 10rpx;
+				right: 5rpx;
+				display: flex;
+				flex-wrap: wrap-reverse;
+				flex-direction: column;
+				width: 492rpx;
+				height: 830rpx;
+
+				.video {
+					width: 144rpx;
+					height: 256rpx;
+					background-color: #000;
+					margin-bottom: 20rpx;
+					margin-left: 20rpx;
+					position: relative;
+
+					.video-ui {
+						width: 144rpx;
+						height: 256rpx;
+					}
+
+					.video-text {
+						position: absolute;
+						top: 10rpx;
+						left: 10rpx;
+						background-color: rgba(0, 0, 0, .6);
+						padding: 4rpx 10rpx;
+						border-radius: 10rpx;
+
+						.text {
+							font-size: 12rpx;
+							color: #fff;
+						}
+					}
+				}
+			}
+		}
+
+		.bottom {
+			position: absolute;
+			bottom: 0;
+			width: 750rpx;
+			padding: 50rpx;
+			display: flex;
+			background-color: rgba(0, 0, 0, .8);
+
+			.resolution-ratio {
+				margin-bottom: 50rpx;
+
+				.text {
+					color: $uni-bg-color;
+					margin-bottom: 30rpx;
+					font-size: 28rpx;
+				}
+
+				.btn-group {
+					flex-direction: row;
+					justify-content: space-between;
+
+					.btn {
+						width: 140rpx;
+						height: 60rpx;
+
+						.btn-text {
+							font-size: 28rpx;
+						}
+					}
+				}
+			}
+
+			.exit {
+				margin-top: 30rpx;
+
+				.btn {
+					width: 200rpx;
+					height: 60rpx;
+
+					.btn-text {
+						font-size: 28rpx;
+					}
+				}
+			}
+
+			.slider-box {
+				flex-direction: row;
+				align-items: center;
+				width: 750rpx;
+				justify-content: space-between;
+				margin-bottom: 30rpx;
+
+				.text {
+					color: $uni-bg-color;
+					font-size: 28rpx;
+					// width: 200rpx;
+				}
+
+				.slider {
+					// width: 100rpx;
+				}
+
+				.value {
+					margin-left: 20rpx;
+					width: 200rpx;
+					font-size: 28rpx;
+					color: $uni-bg-color;
+				}
+			}
+
+			.exit {
+				align-items: center;
+
+				.btn {
+					width: 200rpx;
+				}
+			}
+		}
+	}
+</style>

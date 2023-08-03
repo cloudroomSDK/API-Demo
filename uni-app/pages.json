@@ -1,0 +1,66 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"fontSrc": "/static/setting-icon/iconfont.ttf",
+							"text": "\ue602",
+							"fontSize": "20px"
+						}]
+					}
+				}
+			}
+		}, {
+			"path": "pages/setting/index",
+			"style": {
+				"navigationBarTitleText": "设置",
+				"app-plus": {
+					"titleNView": {
+						"titleSize": "36rpx",
+						"buttons": [{
+							"text": "保存",
+							"fontSize": "36rpx"
+						}]
+					}
+				}
+			}
+		}, {
+			"path": "pages/join/index",
+			"style": {
+				"navigationBarTitleText": "视频通话"
+			}
+		}, {
+			"path": "pages/examples/videoCall"
+		}, {
+			"path": "pages/examples/screenShare"
+		}, {
+			"path": "pages/examples/audioCall"
+		}, {
+			"path": "pages/examples/mediaShare"
+		}, {
+			"path": "pages/examples/chat"
+		}, {
+			"path": "pages/examples/videoSetting"
+		}, {
+			"path": "pages/examples/localRecord"
+		}, {
+			"path": "pages/examples/cloudRecord"
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "云屋API DEMO",
+		"navigationBarBackgroundColor": "#3981FC",
+		"backgroundColor": "#f0f0f0",
+		"app-plus": {
+			"titleNView": {
+				"titleSize": "36rpx"
+				// "titleColor": "#333"
+			}
+		}
+	},
+	"uniIdRouter": {}
+}

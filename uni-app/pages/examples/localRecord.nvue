@@ -1,0 +1,390 @@
+<!-- 视频通话 -->
+<template>
+	<view class="content">
+		<view class="video-box">
+			<view class="myVideo">
+				<rtcsdk-video-view class="video-ui" :usrVideoId="{ userId: userInfo.userId }" />
+				<view class="video-text">
+					<text class="text">{{userInfo.nickname}}</text>
+				</view>
+			</view>
+			<view class="videoList">
+				<view class="video" v-for="item in openCamList" :key="item.userId">
+					<rtcsdk-video-view class="video-ui" :usrVideoId="{ userId: item.userId }" />
+					<view class="video-text">
+						<text class="text">{{item.nickName}}</text>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="bottom">
+			<view class=""><text class="text">文件名:</text></view>
+			<view class="content">
+				<input class="input" type="text" v-model="fileNameInput" disabled>
+				<button :key="recordState==2" :class="[recordState == RecordState.recording?'danger':'primary','btn',{disabled: inputDisabled}]" @click="recordBtnTap" :loading="recordState==RecordState.starting" :disabled="inputDisabled">
+					<text class="btn-text" v-if="recordState === RecordState.noStart">开始录制</text>
+					<text class="btn-text" v-else-if="recordState === RecordState.starting">启动中</text>
+					<text class="btn-text" v-else>结束录制</text>
+				</button>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { showToast, createEnum, readAppDir } from '@/util'
+	import mixin from './mixin'
+	import constantDesc from '@/util/constantDesc.js'
+	import { RtcsdkVideoView } from '@/RTCSDK/component';
+	// 0:未开始。1:云端录制启动中。2:录制中
+	const RecordState = createEnum(['noStart', 'starting', 'recording']);
+	export default {
+		mixins: [mixin],
+		components: {
+			RtcsdkVideoView
+		},
+		data() {
+			return {
+				memberList: [],
+				recordState: RecordState.noStart,
+				RecordState: RecordState,
+				myMixerId: '1',
+				fileNameInput: '',
+				curFileName: null,
+				roomId: null,
+				inputDisabled: true
+			};
+		},
+		computed: {
+			//打开了摄像头的成员列表
+			openCamList() {
+				const openCamList = this.memberList.filter(item => item.userId !== this.userInfo.userId && item.videoStatus === 3);
+				if (openCamList.length > 9) {
+					openCamList.length = 9;
+				}
+				return openCamList;
+			}
+		},
+		onLoad({ roomId }) {
+			this.roomId = roomId;
+			this.memberList = this.RTCSDK.getAllMembers();
+
+			//获取前后置摄像头
+			const devicePosition = this.RTCSDK.getMyVideoPosition();
+			//将前置摄像头设置为默认摄像头
+			this.RTCSDK.setDefaultVideo(this.userInfo.userId, devicePosition.front);
+
+			this.createLocMixer(); //创建本地混图器
+
+			const allRecordFiles = this.RTCSDK.getAllRecordFiles();
+			console.log(allRecordFiles)
+		},
+		mounted() {
+			this.RTCSDK.openVideo(this.userInfo.userId);
+			this.RTCSDK.openMic(this.userInfo.userId);
+		},
+		destroyed() {
+			this.RTCSDK.destroyLocMixer(this.myMixerId);
+		},
+		methods: {
+			handleEventsPage(bool) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("userLeftMeeting", this._userLeftMeeting);
+				handle("userEnterMeeting", this._userEnterMeeting);
+				handle("videoStatusChanged", this._videoStatusChanged);
+				handle("locMixerOutputInfo", this._locMixerOutputInfo);
+			},
+			async recordBtnTap() {
+				if (this.recordState === RecordState.noStart) {
+					const date = new Date();
+					const year = date.getFullYear(),
+						month = String(date.getMonth() + 1).padStart(2, '0'),
+						day = String(date.getDate()).padStart(2, '0'),
+						hour = String(date.getHours()).padStart(2, '0'),
+						min = String(date.getMinutes()).padStart(2, '0'),
+						sec = String(date.getSeconds()).padStart(2, '0');
+					const dir = await readAppDir();
+					const fileName = `${year}-${month}-${day}_${hour}-${min}-${sec}_Uniapp.mp4`;
+					const path = `${dir}/record/${fileName}`
+					const errCode = this.RTCSDK.addLocMixerOutput(this.myMixerId, [{
+						type: 0,
+						fileName: path,
+						encryptType: 0,
+					}]);
+					this.curFileName = path;
+					this.fileNameInput = fileName;
+					this.recordState = RecordState.starting;
+					if (errCode === 0) {
+						this.recordState = RecordState.recording;
+					}
+				} else {
+					this.RTCSDK.rmLocMixerOutput(this.myMixerId, [this.curFileName]);
+					this.curFileName = null;
+					this.recordState = RecordState.noStart;
+				}
+			},
+			createLocMixer() {
+				const mixerCfg = {
+					dstResolution: {
+						width: 1280,
+						height: 720
+					},
+					frameRate: 15,
+					bitRate: 1000000,
+					defaultQP: 26,
+					gop: 15,
+				}
+				const layout = this.createRecordLayout();
+				const sdkErr = this.RTCSDK.createLocMixer(this.myMixerId, mixerCfg, layout);
+				if (sdkErr === 0) {
+					this.inputDisabled = false;
+				} else {
+					showToast(`开启混图器失败,错误码: ${sdkErr},${constantDesc[sdkErr]}`);
+				}
+			},
+			updateMixer() {
+				const sdkErr = this.RTCSDK.updateLocMixerContent(this.myMixerId, this.createRecordLayout());
+				if (sdkErr !== 0) {
+					showToast(`更新混图器失败,错误码: ${sdkErr},${constantDesc[sdkErr]}`);
+				}
+			},
+			createRecordLayout() {
+				const layout = [{
+					//自己的视频
+					type: 0,
+					top: 0,
+					left: 0,
+					width: 1280,
+					height: 720,
+					userId: this.userInfo.userId,
+					camId: -1,
+				}].concat(this.openCamList.slice(0, 9).map((item, idx) => {
+					return {
+						//其他成员的视频
+						type: 0,
+						top: (idx % 3) * 190,
+						left: 960 - (parseInt(idx / 3)) * 330,
+						width: 320,
+						height: 180,
+						userId: item.userId,
+						camId: -1
+					}
+				}));
+
+				//一些测试代码
+				/* const layout = [{
+					//自己的视频
+					type: 0,
+					top: 0,
+					left: 0,
+					width: 1280,
+					height: 720,
+					userId: this.userInfo.userId,
+					keepAspectRatio: 0,
+					// camId: -1,
+				}, {
+					//文字和时间戳
+					type: 10,
+					width: 0,
+					height: 0,
+					top: 660,
+					left: 800,
+					text: '当前时间: %timestamp%',
+					color: "#ffffff", //采用argb，前两位代表透明度
+					background: '#88000000', //采用argb，前两位代表透明度
+					'font-size': 20,
+					'text-margin': 5
+				}]; */
+
+				/* // 录制图片的测试代码，注意这是异步的调用，无法直接添加进数组
+				uni.downloadFile({
+					url: 'https://fakeimg.pl/350x200/?text=Siman',
+					success: async (res) => {
+						if (res.statusCode === 200) {
+							const doc = await readAppDir(plus.io.PRIVATE_DOC);
+							const path = doc + res.tempFilePath.replace('_doc/', '');
+							this.RTCSDK.setPicResource('photo', path);
+							layout.push({
+								//添加图片
+								type: 1,
+								top: 0,
+								left: 0,
+								width: 100,
+								height: 100,
+								resId: 'photo'
+							})
+						}
+					}
+				});*/
+
+				console.log('layout: ', layout);
+				return layout;
+			},
+			// 上传录制文件到云平台
+			uploadRecordFile(nameOrUrl) {
+				const date = new Date();
+				const year = date.getFullYear(),
+					month = String(date.getMonth() + 1).padStart(2, '0'),
+					day = String(date.getDate()).padStart(2, '0'),
+					hour = String(date.getHours()).padStart(2, '0'),
+					min = String(date.getMinutes()).padStart(2, '0'),
+					sec = String(date.getSeconds()).padStart(2, '0');
+
+				const svrPathFileName = `/${year}-${month}-${day}/${year}-${month}-${day}_${hour}-${min}-${sec}_Uniapp_API_${this.roomId}.mp4`;
+				const filename = nameOrUrl.split('/').pop();
+				this.RTCSDK.uploadRecordFile(filename, svrPathFileName);
+			},
+			_userEnterMeeting({ userID }) {
+				const memberInfo = this.RTCSDK.getMemberInfo(userID);
+				this.memberList.push(memberInfo);
+			},
+			_userLeftMeeting({ userID }) {
+				const idx = this.memberList.findIndex(item => item.userId === userID);
+				if (idx > -1) {
+					this.memberList.splice(idx, 1);
+				}
+				this.updateMixer();
+			},
+			_videoStatusChanged({ userID, newStatus }) {
+				if (userID == this.userInfo.userId) {
+					//进入到这里可能是别人改变了自己的摄像头开关
+					this.curCamState = newStatus === 3;
+				} else {
+					const idx = this.memberList.findIndex(item => item.userId === userID);
+					if (idx > -1) {
+						this.memberList[idx].videoStatus = newStatus;
+					}
+				}
+
+				this.updateMixer();
+			},
+			_locMixerOutputInfo({ mixerID, nameOrUrl, outputInfo }) {
+				if (mixerID === this.myMixerId) {
+					if (outputInfo.state === 2) {
+						showToast(`录制完成，存储目录: ${nameOrUrl}`, 5000);
+						// this.uploadRecordFile(nameOrUrl);
+					} else if (outputInfo.state === 3) {
+						this.recordState = RecordState.noStart;
+						showToast(`录制失败，错误码: ${outputInfo.errCode},${constantDesc[outputInfo.errCode]}`);
+					}
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content {
+		flex: 1;
+
+		.video-box {
+			flex: 1;
+			background-color: #1d232f;
+			position: relative;
+
+			.myVideo {
+				width: 750rpx;
+				flex: 1;
+				position: relative;
+
+				.video-ui {
+					width: 750rpx;
+					flex: 1;
+				}
+
+				.video-text {
+					position: absolute;
+					top: 20rpx;
+					left: 20rpx;
+					background-color: rgba(0, 0, 0, .6);
+					padding: 4rpx 10rpx;
+					border-radius: 10rpx;
+
+					.text {
+						font-size: 24rpx;
+						color: #fff;
+					}
+				}
+			}
+
+			.videoList {
+				position: absolute;
+				right: 0;
+				top: 10rpx;
+				right: 5rpx;
+				display: flex;
+				flex-wrap: wrap-reverse;
+				flex-direction: column;
+				width: 492rpx;
+				height: 830rpx;
+
+				.video {
+					width: 144rpx;
+					height: 256rpx;
+					background-color: #000;
+					margin-bottom: 20rpx;
+					margin-left: 20rpx;
+					position: relative;
+
+					.video-ui {
+						width: 144rpx;
+						height: 256rpx;
+					}
+
+					.video-text {
+						position: absolute;
+						top: 10rpx;
+						left: 10rpx;
+						background-color: rgba(0, 0, 0, .6);
+						padding: 4rpx 10rpx;
+						border-radius: 10rpx;
+
+						.text {
+							font-size: 12rpx;
+							color: #fff;
+						}
+					}
+				}
+			}
+		}
+
+		.bottom {
+			position: absolute;
+			bottom: 0;
+			width: 750rpx;
+			background: rgba(0, 0, 0, 0.8);
+			padding: 50rpx 40rpx;
+
+			.text {
+				color: $uni-bg-color;
+				font-size: 30rpx;
+				text-align: left;
+			}
+
+			.content {
+				flex-direction: row;
+				margin-top: 20rpx;
+
+				.input {
+					flex: 1;
+					background-color: $uni-bg-color;
+					height: 60rpx;
+					margin-right: 20rpx;
+					font-size: 28rpx;
+					padding: 0 10rpx;
+					border-radius: 4rpx;
+				}
+
+				.btn {
+					width: 164rpx;
+					height: 60rpx;
+
+					.btn-text {
+						font-size: 28rpx;
+					}
+				}
+			}
+
+		}
+	}
+</style>

@@ -1,0 +1,17 @@
+{
+  "ScreenShareUpload.appex": {
+    "identifier": "com.rtc.RTCSDKUniPlugin.ScreenShareUpload",
+    "profile": "iosRTCSDKUniPluginScreenShareUploadadhoc.mobileprovision",
+    "frameworks": [
+        "CloudroomReplayKitExt.framework",
+        "libc++.tbd",
+        "ReplayKit.framework"
+        ],
+    "plists": {
+      
+    },
+    "entitlements": {
+        "com.apple.security.application-groups": "group.com.rtc.RTCSDKUniPlugin"
+    }
+  }
+}

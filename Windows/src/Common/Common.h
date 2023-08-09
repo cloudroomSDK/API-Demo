@@ -19,6 +19,10 @@ inline QString crStrToQStr(const CRString &a)
 {
 	return QString::fromUtf8(a.constData(), a.length());
 }
+inline QByteArray crStrToByteArray(const CRString &a)
+{
+	return QByteArray(a.constData(), a.length());
+}
 
 QString GetPlatFormName();
 

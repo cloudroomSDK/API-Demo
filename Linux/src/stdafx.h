@@ -20,6 +20,7 @@ using namespace CRVSDK;
 
 #include "Common.h"
 #include "ErrDesc.h"
+#include "ObjsDef.h"
 
 extern QString g_cfgFile;
 extern CRVideoSDKMain*	g_sdkMain;

@@ -2,10 +2,9 @@
 #define MEDIATOOLBAR_H
 
 #include "ui_mediatoolbar.h"
-class CloudroomMediaUI;
+
 class MediaToolBar : public QFrame
 {
-	friend class CloudroomMediaUI;
 	Q_OBJECT
 
 signals:

@@ -69,17 +69,16 @@ void DlgVideoSet::slot_camSelChanged(int idx)
 
 void DlgVideoSet::slot_resolutionChanged(int idx)
 {
-	QSize newSize = ui.cbBx_resolution->itemData(idx).toSize();
-	m_vCfg._size.setSize(newSize.width(), newSize.height());
+	m_vCfg._size = ui.cbBx_resolution->itemData(idx).toSize();
 
 	//同步修改bps
 	ui.sld_bps->blockSignals(true);
 	int defKBps = 350;
-	if(m_vCfg._size.cy >= 720)
+	if(m_vCfg._size.width() >= 720)
 	{
 		defKBps = 1000;
 	}
-	else if(m_vCfg._size.cy >= 480)
+	else if(m_vCfg._size.height() >= 480)
 	{
 		defKBps = 500;
 	}
@@ -89,7 +88,8 @@ void DlgVideoSet::slot_resolutionChanged(int idx)
 	ui.lbl_bps->setText(QString("%1kbps").arg(defKBps));
 	ui.sld_bps->blockSignals(false);
 
-	g_sdkMain->getSDKMeeting().setVideoCfg(m_vCfg);
+	QByteArray jsonCfg = StructToJson(m_vCfg);
+	g_sdkMain->getSDKMeeting().setVideoCfg(jsonCfg.constData());
 }
 
 void DlgVideoSet::slot_fpsChanged(int idx)
@@ -97,7 +97,8 @@ void DlgVideoSet::slot_fpsChanged(int idx)
 	int newFps = ui.cbBx_fps->itemData(idx).toInt();
 	m_vCfg._fps = newFps;
 
-	g_sdkMain->getSDKMeeting().setVideoCfg(m_vCfg);
+	QByteArray jsonCfg = StructToJson(m_vCfg);
+	g_sdkMain->getSDKMeeting().setVideoCfg(jsonCfg.constData());
 }
 
 void DlgVideoSet::slot_bpsChanged(int val)
@@ -106,7 +107,8 @@ void DlgVideoSet::slot_bpsChanged(int val)
 	m_vCfg._maxbps = setbps;
 	ui.lbl_bps->setText(QString("%1kbps").arg(setbps / 1000));
 
-	g_sdkMain->getSDKMeeting().setVideoCfg(m_vCfg);
+	QByteArray jsonCfg = StructToJson(m_vCfg);
+	g_sdkMain->getSDKMeeting().setVideoCfg(jsonCfg.constData());
 }
 
 void DlgVideoSet::slot_videoTransModeChanged(int id)
@@ -122,7 +124,8 @@ void DlgVideoSet::slot_videoTransModeChanged(int id)
 		m_vCfg._max_qp = 40;
 	}
 
-	g_sdkMain->getSDKMeeting().setVideoCfg(m_vCfg);
+	QByteArray jsonCfg = StructToJson(m_vCfg);
+	g_sdkMain->getSDKMeeting().setVideoCfg(jsonCfg.constData());
 }
 
 void DlgVideoSet::initVideoParams()
@@ -135,7 +138,8 @@ void DlgVideoSet::initVideoParams()
 	ui.rb_qualityMode->blockSignals(true);
 	ui.rb_smoothMode->blockSignals(true);
 
-	m_vCfg = g_sdkMain->getSDKMeeting().getVideoCfg();
+	CRString jsonStr = g_sdkMain->getSDKMeeting().getVideoCfg();
+	m_vCfg = JsonToStruct<VideoCfg>(crStrToByteArray(jsonStr));
 
 	int findFps = 8;
 	if(m_vCfg._fps >= 24)
@@ -150,12 +154,12 @@ void DlgVideoSet::initVideoParams()
 
 	QSize findSz(640, 360);
 	int defKBps = 350;
-	if(m_vCfg._size.cy >= 720)
+	if(m_vCfg._size.width() >= 720)
 	{
 		findSz = QSize(1280, 720);
 		defKBps = 1000;
 	}
-	else if(m_vCfg._size.cy >= 480)
+	else if(m_vCfg._size.height() >= 480)
 	{
 		findSz = QSize(848, 480);
 		defKBps = 500;

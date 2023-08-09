@@ -1,15 +1,32 @@
 QT += core gui widgets
-CONFIG += c++11 precompile_header
+CONFIG += precompile_header qt
 DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
-contains(QT_ARCH, i386): ARCHITECTURE = x86
-else: ARCHITECTURE = $$QT_ARCH
+#DEFINES += _GLIBCXX_USE_CXX11_ABI=0
 
 TEMPLATE = app
 TARGET = APIDemo
-DESTDIR = $$PWD/bin/$$ARCHITECTURE
+msvc {
+contains(QT_ARCH, i386): ARCHITECTURE = x86
+else: ARCHITECTURE = $$QT_ARCH
+QMAKE_LFLAGS_RELEASE += /MAP
+QMAKE_CFLAGS_RELEASE += /Zi
+QMAKE_LFLAGS_RELEASE += /debug /opt:ref
+INCLUDEPATH += $$PWD/CRVideoSDK/include
 
+LIBS += -L$$PWD/CRVideoSDK/lib/$$ARCHITECTURE/ -lCRBase -lCRVideoSDKCpp
+}
+linux {
+ARCHITECTURE=$$QMAKE_HOST.arch
+contains(QMAKE_HOST.arch, aarch64) || linux-aarch64-gnu-g++{
+ARCHITECTURE=aarch64
+}
+INCLUDEPATH += $$PWD/CRVideoSDK/include
+LIBS += -L$$PWD/CRVideoSDK/lib/$$ARCHITECTURE -lCRBase -lCRVideoSDKCpp
+QMAKE_LFLAGS += -Wl,-rpath,./:$$PWD/CRVideoSDK/lib/$$ARCHITECTURE
+DEFINES += LINUX
+}
+DESTDIR = $$PWD/bin/$$ARCHITECTURE
 
 PRECOMPILED_HEADER = $$PWD/src/stdafx.h
 
@@ -32,30 +49,12 @@ INCLUDEPATH += \
     $$PWD/src/TestVoiceChange \
     $$PWD/src/TestTestScreenShare
 
-
-msvc {
-QMAKE_LFLAGS_RELEASE += /MAP
-QMAKE_CFLAGS_RELEASE += /Zi
-QMAKE_LFLAGS_RELEASE += /debug /opt:ref
-INCLUDEPATH += $$PWD/CRVideoSDK/include
-
-LIBS += -L$$PWD/CRVideoSDK/lib/$$ARCHITECTURE/ -lCRBase -lCRVideoSDKCpp
-}
-
-
-linux {
-INCLUDEPATH += $$PWD/CRVideoSDK/include
-LIBS += -L$$PWD/CRVideoSDK/lib/$$QT_ARCH/ -lCRBase -lCRVideoSDKCpp
-QMAKE_LFLAGS += -Wl,-rpath,./:$$PWD/CRVideoSDK/lib/$$QT_ARCH/
-DEFINES += LINUX
-}
-
-
 SOURCES += \
     src/stdafx.cpp \
     src/main.cpp \
     src/Common/Common.cpp \
     src/Common/ErrDesc.cpp \
+	src/Common/JsonHelper.cpp \
     src/Common/KeepAspectRatioDrawer.cpp \
     src/Controls/CustomRenderWidget.cpp \
     src/Controls/CanvasWidget.cpp \
@@ -64,6 +63,7 @@ SOURCES += \
     src/DlgLogin.cpp \
     src/DlgLoginSet.cpp \
     src/maindialog.cpp \
+    src/ObjsDef.cpp \
     src/TestAudioSetting/DlgAudioSet.cpp \
     src/TestCustomAudioCapture/CustomAudioCapture.cpp \
     src/TestCustomVideoCaptureRender/CustomVideoCaptureRender.cpp \
@@ -82,12 +82,15 @@ SOURCES += \
     src/TestEchoTest/DlgEchoTest.cpp \
     src/TestNetCamera/DlgNetCamera.cpp \
     src/TestVoiceChange/DlgVoiceChange.cpp \
-    src/TestScreenShare/ScreenShareUI.cpp
+    src/TestScreenShare/ScreenShareUI.cpp \
+    src/TestScreenShare/ScreenMarkView.cpp \
+    src/TestScreenShare/DlgScreenMark.cpp
 
 HEADERS += \
     src/stdafx.h \
     src/Common/Common.h \
     src/Common/ErrDesc.h \
+	src/Common/JsonHelper.h \
     src/Common/KeepAspectRatioDrawer.h \
     src/Controls/CustomRenderWidget.h \
     src/Controls/CanvasWidget.h \
@@ -96,6 +99,7 @@ HEADERS += \
     src/DlgLogin.h \
     src/DlgLoginSet.h \
     src/maindialog.h \
+    src/ObjsDef.h \
     src/TestAudioSetting/DlgAudioSet.h \
     src/TestCustomAudioCapture/CustomAudioCapture.h \
     src/TestCustomVideoCaptureRender/CustomVideoCaptureRender.h \
@@ -114,7 +118,9 @@ HEADERS += \
     src/TestEchoTest/DlgEchoTest.h \
     src/TestNetCamera/DlgNetCamera.h \
     src/TestVoiceChange/DlgVoiceChange.h \
-    src/TestScreenShare/ScreenShareUI.h
+    src/TestScreenShare/ScreenShareUI.h \
+    src/TestScreenShare/ScreenMarkView.h \
+    src/TestScreenShare/DlgScreenMark.h 
 
 FORMS += \
     src/DlgLogin.ui \
@@ -141,7 +147,8 @@ FORMS += \
     src/TestNetCamera/DlgNetCamera.ui \
     src/TestVoiceChange/DlgVoiceChange.ui \
     src/TestVoiceChange/VoiceChangeItem.ui \
-    src/TestScreenShare/ScreenShareUI.ui
+    src/TestScreenShare/ScreenShareUI.ui \
+    src/TestScreenShare/ScreenSharerToolBar.ui
 
 RESOURCES += \
     src/APIDemo.qrc

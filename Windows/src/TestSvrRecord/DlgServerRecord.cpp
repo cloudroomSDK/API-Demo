@@ -30,6 +30,7 @@ DlgServerRecord::DlgServerRecord(QWidget *parent)
 
 DlgServerRecord::~DlgServerRecord()
 {
+	g_sdkMain->getSDKMeeting().destroyCloudMixer(m_mixerID.toUtf8().constData());
 	g_sdkMain->getSDKMeeting().RmCallBack(this);
 }
 
@@ -180,7 +181,7 @@ void DlgServerRecord::notifyCloudMixerOutputInfoChanged(const char* mixerID, con
 	CRVSDK_CLOUDMIXER_OUTPUT_STATE fileState = (CRVSDK_CLOUDMIXER_OUTPUT_STATE)outputInfoMap["state"].toInt();
 	switch (fileState)
 	{
-	case CRVSDK::CRVSDK_CLOUDMO_NULL:
+	case CRVSDK::CRVSDK_LOCMO_STARTED:
 		break;
 	case CRVSDK::CRVSDK_CLOUDMO_RUNNING:
 		break;

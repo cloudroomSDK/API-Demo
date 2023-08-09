@@ -54,6 +54,7 @@ SOURCES += \
     src/main.cpp \
     src/Common/Common.cpp \
     src/Common/ErrDesc.cpp \
+	src/Common/JsonHelper.cpp \
     src/Common/KeepAspectRatioDrawer.cpp \
     src/Controls/CustomRenderWidget.cpp \
     src/Controls/CanvasWidget.cpp \
@@ -62,6 +63,7 @@ SOURCES += \
     src/DlgLogin.cpp \
     src/DlgLoginSet.cpp \
     src/maindialog.cpp \
+    src/ObjsDef.cpp \
     src/TestAudioSetting/DlgAudioSet.cpp \
     src/TestCustomAudioCapture/CustomAudioCapture.cpp \
     src/TestCustomVideoCaptureRender/CustomVideoCaptureRender.cpp \
@@ -80,12 +82,15 @@ SOURCES += \
     src/TestEchoTest/DlgEchoTest.cpp \
     src/TestNetCamera/DlgNetCamera.cpp \
     src/TestVoiceChange/DlgVoiceChange.cpp \
-    src/TestScreenShare/ScreenShareUI.cpp
+    src/TestScreenShare/ScreenShareUI.cpp \
+    src/TestScreenShare/ScreenMarkView.cpp \
+    src/TestScreenShare/DlgScreenMark.cpp
 
 HEADERS += \
     src/stdafx.h \
     src/Common/Common.h \
     src/Common/ErrDesc.h \
+	src/Common/JsonHelper.h \
     src/Common/KeepAspectRatioDrawer.h \
     src/Controls/CustomRenderWidget.h \
     src/Controls/CanvasWidget.h \
@@ -94,6 +99,7 @@ HEADERS += \
     src/DlgLogin.h \
     src/DlgLoginSet.h \
     src/maindialog.h \
+    src/ObjsDef.h \
     src/TestAudioSetting/DlgAudioSet.h \
     src/TestCustomAudioCapture/CustomAudioCapture.h \
     src/TestCustomVideoCaptureRender/CustomVideoCaptureRender.h \
@@ -112,7 +118,9 @@ HEADERS += \
     src/TestEchoTest/DlgEchoTest.h \
     src/TestNetCamera/DlgNetCamera.h \
     src/TestVoiceChange/DlgVoiceChange.h \
-    src/TestScreenShare/ScreenShareUI.h
+    src/TestScreenShare/ScreenShareUI.h \
+    src/TestScreenShare/ScreenMarkView.h \
+    src/TestScreenShare/DlgScreenMark.h 
 
 FORMS += \
     src/DlgLogin.ui \
@@ -139,7 +147,8 @@ FORMS += \
     src/TestNetCamera/DlgNetCamera.ui \
     src/TestVoiceChange/DlgVoiceChange.ui \
     src/TestVoiceChange/VoiceChangeItem.ui \
-    src/TestScreenShare/ScreenShareUI.ui
+    src/TestScreenShare/ScreenShareUI.ui \
+    src/TestScreenShare/ScreenSharerToolBar.ui
 
 RESOURCES += \
     src/APIDemo.qrc

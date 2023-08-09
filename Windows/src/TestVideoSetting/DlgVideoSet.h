@@ -28,7 +28,7 @@ protected:
 
 private:
 	Ui::DlgVideoSet ui;
-	CRVideoCfg		m_vCfg;
+	VideoCfg		m_vCfg;
 	int				m_defKBps;
 
 	enum VIDEO_TRANS_MODE {VTM_QUALITY, VTM_SMOOTH, VTM_BUTT};

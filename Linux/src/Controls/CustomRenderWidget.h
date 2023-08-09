@@ -20,6 +20,10 @@ public:
 
 	//是否启用render
 	void enabledRender(bool bEnale);
+
+signals:
+	void s_recvFrame(qint64 ts);
+
 protected:
 	void onRenderFrameDat(const CRVideoFrame &frm) override;
 
@@ -27,7 +31,7 @@ protected:
 	void paintEvent(QPaintEvent *event) override;
 
 signals:
-	void s_recvFrame(qint64 timeStamp);
+	void s_update();
 
 private:
 	bool				m_bLocMirror;

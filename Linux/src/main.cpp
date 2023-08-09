@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	CRMainThreadDispatch_Qt *pDispatch = new CRMainThreadDispatch_Qt(&a);
     g_sdkMain = CRVideoSDKMain::create(strAppPath.toUtf8().constData(), pDispatch);
 #else
-    g_sdkMain = CRVideoSDKMain::create(strAppPath.toUtf8().constData());
+	g_sdkMain = CRVideoSDKMain::create(strAppPath.toUtf8().constData(), "{\"LogLevel\":0}");
 #endif
 	if (g_sdkMain == NULL)
 	{

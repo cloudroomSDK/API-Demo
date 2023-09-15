@@ -17,6 +17,6 @@
 
 ## 联系我们
 - 更多示例见 [官方SDK示例](https://github.com/cloudroomSDK)
-- 完整的 API 文档见 [文档中心](https://sdk.cloudroom.com/sdkdoc/Windows/)
+- 完整的 API 文档见 [文档中心](https://docs.cloudroom.com/sdk/document/intro/README?platform=Web)
 - 如果需要售后技术支持, 你可以在 [云屋官网](https://sdk.cloudroom.com) 联系在线客服
 - 如果发现了示例代码的 bug，欢迎提交 [issue](https://github.com/cloudroomSDK/API-Demo/issues)

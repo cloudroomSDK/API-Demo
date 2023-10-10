@@ -46,3 +46,30 @@ npm run lint
 # 代码格式检查并自动修复
 npm run lint -- --fix
 ```
+
+## node 18及以上版本报错
+
+报错：ERR_OSSL_EVP_UNSUPPORTED
+```bash
+# 方式一: windows 环境下（必须在cmd窗口中运行）
+set NODE_OPTIONS=--openssl-legacy-provider
+
+# 方式二: mac 或者 linux 环境下（必须在终端中运行）
+export NODE_OPTIONS=--openssl-legacy-provider
+
+# 方式三: 在IDE或者VSCode中运行
+$env:NODE_OPTIONS="--openssl-legacy-provider"
+
+# 最后再启动项目
+npm run dev
+```
+
+您也可以修改`package.json`文件中的启动命令来解决这个问题
+```json
+"scripts": {
+    "dev": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "build:prod": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
+    "build:stage": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build --mode staging",
+    "preview": "set NODE_OPTIONS=--openssl-legacy-provider && node build/index.js --preview --report"
+}
+```

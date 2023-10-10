@@ -1,8 +1,8 @@
-# Web API Demo
+# H5 API Demo
 
 > 项目展示了 WebRTC API 接口的使用场景，方便客户了解 API 接口功能并快速接入到现有工程中。
 
-[在线演示](https://sdk.cloudroom.com/web/rtc/apidemo/)   [技术文档](https://docs.cloudroom.com/sdk/document/intro/README?platform=Web)
+[在线演示](https://sdk.cloudroom.com/web/rtc/apidemo/)   [技术文档](https://sdk.cloudroom.com/sdkdoc/H5/)
 
 项目采用vue + vue-cli + vuex + vue-router + element-ui技术栈。
 

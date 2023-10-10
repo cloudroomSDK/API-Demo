@@ -105,27 +105,27 @@ export default {
         ],
         frame: [
           {
-            label: '5帧/秒',
+            label: '5 fps',
             value: 5
           },
           {
-            label: '10帧/秒',
+            label: '10 fps',
             value: 10
           },
           {
-            label: '15帧/秒',
+            label: '15 fps',
             value: 15
           },
           {
-            label: '20帧/秒',
+            label: '20 fps',
             value: 20
           },
           {
-            label: '25帧/秒',
+            label: '25 fps',
             value: 25
           },
           {
-            label: '30帧/秒',
+            label: '30 fps',
             value: 30
           }
         ],

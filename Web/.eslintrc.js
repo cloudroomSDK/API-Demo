@@ -96,12 +96,15 @@ module.exports = {
     CRVideo_AddOrUpdateUserAttrsRslt:'readonly',
     CRVideo_NotifyUserAttrsChanged:'readonly',
 
-    CRVideo_GetSvrMixerState:'readonly',
-    CRVideo_StartSvrMixer:'readonly',
-    CRVideo_StopSvrMixer:'readonly',
-    CRVideo_UpdateSvrMixerContent:'readonly',
-    CRVideo_SvrMixerStateChanged:'readonly',
-    CRVideo_SvrMixerOutputInfo:'readonly',
+    CRVideo_CreateCloudMixer: 'readonly',
+    CRVideo_UpdateCloudMixerContent: 'readonly',
+    CRVideo_DestroyCloudMixer: 'readonly',
+    CRVideo_GetAllCloudMixerInfo: 'readonly',
+    CRVideo_GetCloudMixerInfo: 'readonly',
+    CRVideo_CreateCloudMixerFailed: 'readonly',
+    CRVideo_CloudMixerStateChanged: 'readonly',
+    CRVideo_CloudMixerOutputInfoChanged: 'readonly',
+    CRVideo_CloudMixerInfoChanged: 'readonly'
   },
 
   // add your custom rules here

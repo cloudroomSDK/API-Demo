@@ -10,6 +10,7 @@
         <div class="first">
           <span class="time">{{ item.time | parseTime('HH:mm') }}</span><span v-if="UID !== item.UID">&nbsp;{{ item.UID }}：</span>
         </div>
+        <!-- <div class="text" v-html="item.msg"></div> -->
         <div class="text">{{ item.msg }}</div>
       </div>
     </div>
@@ -20,9 +21,19 @@
         :rows="3"
         resize="none"
         placeholder="请输入内容"
-        @keyup.enter.native.capture="send"
+        @keyup.ctrl.enter.native="send"
       />
-      <el-button class="btn" type="primary" plain @click="send">发送</el-button>
+      <el-tooltip
+        class="item"
+        effect="light"
+        :open-delay="300"
+        content="按Ctrl+Enter键发送消息"
+        placement="bottom"
+      >
+        <el-button
+          class="btn" type="primary" plain @click="send"
+        >发送</el-button>
+      </el-tooltip>
     </div>
   </div>
 </template>
@@ -30,13 +41,6 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
-  filters: {
-    getTimeValue(date) {
-      const h = ('0' + date.getHours()).slice(-2)
-      const m = ('0' + date.getMinutes()).slice(-2)
-      return `${h}:${m}`
-    }
-  },
   data() {
     return {
       textarea: '',
@@ -122,6 +126,7 @@ export default {
       .text {
         line-height: 18px;
         max-width: 95%;
+        white-space: pre-wrap;
       }
     }
   }

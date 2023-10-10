@@ -1,5 +1,3 @@
-import { randomNumber } from '@/utils/index'
-
 CRVideo_LoginSuccess.callback = (UID, cookie) => {
   const { resolve, nickName } = cookie
   resolve({
@@ -33,10 +31,8 @@ export const SDKInit = {
       })
   },
   // 登录
-  Login({ AppId, MD5_AppSecret }) {
+  Login({ AppId, MD5_AppSecret, UID, nickName }) {
     return new Promise((resolve, reject) => {
-      const UID = `H5_${randomNumber(4)}`
-      const nickName = UID
       CRVideo_Login(AppId, MD5_AppSecret, nickName, UID, undefined, {
         AppId,
         MD5_AppSecret,

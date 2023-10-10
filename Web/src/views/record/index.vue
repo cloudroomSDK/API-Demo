@@ -13,7 +13,8 @@
           type="danger"
           :disabled="meetingState !== 2 || recordState === 0"
           @click="clickEndBtn"
-        >结束录制</el-button>
+        >结束录制
+        </el-button>
       </ButtonGroup>
       <div class="block">
         <div class="text">录制清晰度:</div>
@@ -44,14 +45,13 @@
       </div>
       <div class="checkboxGroup">
         <el-checkbox
-          v-model="recordConfig.onlyMe" @change="updateContents"
+          v-model="recordConfig.onlyMe" @change="updateLayout"
         >只录自己</el-checkbox>
         <el-checkbox
-          v-model="recordConfig.showTime" @change="updateContents"
+          v-model="recordConfig.showTime" @change="updateLayout"
         >录制时戳</el-checkbox>
         <el-checkbox
-          v-model="recordConfig.showNickname"
-          @change="updateContents"
+          v-model="recordConfig.showNickname" @change="updateLayout"
         >录制昵称水印</el-checkbox>
       </div>
       <MemberList />
@@ -70,6 +70,7 @@ import MemberList from '@/components/MemberList'
 import VideoView from '@/components/VideoView'
 import RecordToast from '@/components/recordToast'
 import RoomIdMixin from '../RoomIdMixin'
+import SDKError from '@/SDK/Code'
 import { parseTime } from '@/utils'
 
 import { mapGetters } from 'vuex'
@@ -85,8 +86,7 @@ export default {
   mixins: [RoomIdMixin],
   data() {
     return {
-      isMyStart: false, // 我开启的录制
-      id: 0, // 当前录制的id
+      mixerId: null, // 当前录制的id
       recordState: 0, // 录制状态 0:未开启，1：启动中，2：录制中
       recordConfig: {
         // 录制配置
@@ -100,20 +100,20 @@ export default {
         // 清晰度
         {
           text: '360p',
-          w: 640,
-          h: 360,
+          W: 640,
+          H: 360,
           bitRate: 400000
         },
         {
           text: '480p',
-          w: 856,
-          h: 480,
+          W: 856,
+          H: 480,
           bitRate: 600000
         },
         {
           text: '720p',
-          w: 1280,
-          h: 720,
+          W: 1280,
+          H: 720,
           bitRate: 1200000
         }
       ],
@@ -129,91 +129,99 @@ export default {
       if (newValue === 2) {
         CRVideo_OpenVideo(this.UID) // SDK主调接口：打开摄像头
         CRVideo_OpenMic(this.UID) // SDK主调接口：打开麦克风
+        this.updateRecordState() // 更新录制状态
       }
-
-      this.recordState = CRVideo_GetSvrMixerState() // SDK主调接口：获取云端录制状态
     },
     memberList: {
       handler() {
-        if (this.meetingState === 2 && this.recordState === 2) {
-          this.updateContents()
+        if (this.meetingState === 2) {
+          this.updateLayout()
         }
       },
       deep: true
     }
   },
   created() {
-    CRVideo_SvrMixerStateChanged.callback = this.SvrMixerStateChanged // SDK回调接口：通知云端录制状态发生了变化
-    this.$SDKCallBack.$on('CRVideo_SvrMixerOutputInfo', this.SvrMixerOutputInfo) // SDK回调接口：通知云端录制文件生成进度
+    CRVideo_CreateCloudMixerFailed.callback = this.CreateCloudMixerFailed // SDK回调接口：启动云端录制、云端直播失败通知
+    CRVideo_CloudMixerStateChanged.callback = this.CloudMixerStateChanged // SDK回调接口：通知云端录制状态发生了变化
+    CRVideo_CloudMixerOutputInfoChanged.callback =
+      this.CloudMixerOutputInfoChanged // SDK回调接口：通知云端录制文件生成进度
   },
   destroyed() {
-    CRVideo_SvrMixerStateChanged.callback = null
-    this.$SDKCallBack.$off(
-      'CRVideo_SvrMixerOutputInfo',
-      this.SvrMixerOutputInfo
-    )
+    CRVideo_CreateCloudMixerFailed.callback = null
+    CRVideo_CloudMixerOutputInfoChanged.callback = null
+    CRVideo_CloudMixerStateChanged.callback = null
   },
   methods: {
+    // 更新录制状态
+    updateRecordState() {
+      // SDK主调接口：获取云端录制状态
+      CRVideo_GetAllCloudMixerInfo().some((item) => {
+        if (item.owner === this.UID) {
+          this.mixerId = item.ID
+          this.recordState = item.state
+          if (item.state === 2) {
+            this.updateLayout()
+          }
+          return true
+        }
+      })
+    },
     clickStartBtn() {
+      const { definition, frameRate, onlyMe } = this.recordConfig
+      const { W, H, bitRate } = this.definitionConfig[definition]
+
+      const svrPathName =
+        parseTime(new Date(), '/YYYY-MM-DD/YYYY-MM-DD_HH-mm-ss') +
+        `_Web_API_${this.roomId}.mp4`
+      const cfg = {
+        mode: 0, // 录制合流模式
+        videoFileCfg: {
+          svrPathName,
+          vWidth: W,
+          vHeight: H,
+          vFps: frameRate,
+          vBps: bitRate,
+          aChannelContent: onlyMe ? [this.UID] : [], // 如果只录制自己，则声音也只录制自己的
+          layoutConfig: this.createVideoLayout()
+        }
+      }
+      this.mixerId = CRVideo_CreateCloudMixer(cfg) // SDK主调接口：创建云端混图器
       this.recordState = 1
-      this.id++
-      const cfgs = this.getCfg(this.id) // 获取生成视频的配置
-      const contents = this.getContnets(this.id) // 获取需要录制的内容
-      const outputs = this.createOutputs(this.id) // 获取视频输出的配置
-      console.log(cfgs, contents, outputs)
-      this.isMyStart = true
-      CRVideo_StartSvrMixer(cfgs, contents, outputs) // SDK主调接口：开启云端录制
     },
     clickEndBtn() {
-      CRVideo_StopSvrMixer() // SDK主调接口：结束云端录制
+      CRVideo_DestroyCloudMixer(this.mixerId) // SDK主调接口：消毁云端混图器
     },
-    // 生成录制文件配置
-    getCfg(id) {
-      const { definition, frameRate } = this.recordConfig
-      const videoConfig = this.definitionConfig[definition]
-      const cfg = {
-        width: videoConfig.w,
-        height: videoConfig.h,
-        frameRate: frameRate,
-        bitRate: videoConfig.bitRate
-      }
-      return [
-        {
-          id,
-          streamTypes: 3,
-          cfg
-        }
-      ]
-    },
-    // 生成录制内容
-    getContnets(id) {
+    // 创建录制内容
+    createVideoLayout() {
       const { onlyMe, definition, showNickname, showTime } = this.recordConfig
       const videoConfig = this.definitionConfig[definition]
-      const { w, h } = videoConfig
-      const recordList = [] // 需要录制的成员
+      const { W, H } = videoConfig
+      const recordMemberList = [] // 成员列表
 
       if (onlyMe) {
+        // 只录制自己
         const myInfo = this.memberList.find((item) => item.userID === this.UID)
-        if (myInfo && myInfo.videoStatus === 3) recordList.push(myInfo)
+        if (myInfo && myInfo.videoStatus === 3) recordMemberList.push(myInfo)
       } else {
+        // 只录制开启摄像头的成员
         this.memberList.forEach((item) => {
-          // 只录制开启摄像头的成员
           if (item.videoStatus === 3) {
-            recordList.push(item)
+            recordMemberList.push(item)
           }
         })
       }
 
       let row = 0 // 云端录制的分为几行几列
       let col = 0
-      if (recordList.length > 9) recordList.length = 9 // 最大录制9个摄像头
-      if (recordList.length <= 1) {
+      if (recordMemberList.length > 9) recordMemberList.length = 9 // 最大录制9个摄像头
+      if (recordMemberList.length <= 1) {
         row = 1
         col = 1
-      } else if (recordList.length <= 2) {
+      } else if (recordMemberList.length <= 2) {
         row = 1
         col = 2
-      } else if (recordList.length <= 4) {
+      } else if (recordMemberList.length <= 4) {
         row = 2
         col = 2
       } else {
@@ -221,18 +229,18 @@ export default {
         col = 3
       }
 
-      const contents = []
-      if (recordList.length) {
-        const itemW = w / col // 单个成员视频的宽度
-        const itemH = h / row // 单个成员视频的高度
-        recordList.forEach((item, idx) => {
+      const layout = [] // 录制的视图内容
+      if (recordMemberList.length) {
+        const itemW = W / col // 单个成员视频的宽度
+        const itemH = H / row // 单个成员视频的高度
+        recordMemberList.forEach((item, idx) => {
           const left = (idx % col) * itemW
           const top = parseInt(idx / col) * itemH
-          const width = w / col
-          const height = h / row
+          const width = W / col
+          const height = H / row
 
           // 往录制内容里添加成员视频
-          contents.push({
+          layout.push({
             type: 0,
             left, // 视频的x坐标
             top, // 视频的y坐标
@@ -245,99 +253,113 @@ export default {
           })
           // 往录制内容里添加成员昵称
           if (showNickname) {
-            contents.push({
-              type: 7,
+            layout.push({
+              type: 10,
               left: left + 20, // 视频的x坐标
               top: top + 20, // 视频的y坐标
               param: {
-                text: `<span style='font-size:14px;color:#e21918'>${item.nickname}</span>`
+                color: '#e21918',
+                'font-size': 14,
+                text: item.nickname
               }
             })
           }
         })
       } else {
         // 没有成员开启摄像头时，放一段提示文本在视频上
-        contents.push({
-          type: 7,
-          left: w / 2 - 150, // 视频的x坐标
-          top: h / 2 - 100, // 视频的y坐标
-          width: 300,
-          height: 200,
+        layout.push({
+          type: 10,
+          left: W / 2 - 150, // 视频的x坐标
+          top: H / 2 - 100, // 视频的y坐标
           param: {
-            text: `<span style='font-size:30px;color:#ffffff'>暂无成员开启摄像头</span>`
+            color: '#ffffff',
+            'font-size': 30,
+            text: '暂无成员开启摄像头'
           }
         })
       }
 
       // 往录制内容里添加时间
       if (showTime) {
-        const height = 40
-        const width = parseInt(w / 4)
-        contents.push({
-          type: 4,
-          left: w - width - 10,
-          top: h - height - 10,
-          width,
-          height,
-          keepAspectRatio: 1
-        })
-      }
-      return [
-        {
-          id,
-          content: contents
-        }
-      ]
-    },
-    // 生成录制文件输出配置
-    createOutputs(id) {
-      // /2022-01-17/2022-01-17_14-12-04_H5_API_69293670.mp4
-      const filename =
-        parseTime(new Date(), '/YYYY-MM-DD/YYYY-MM-DD_HH-mm-ss') +
-        `_H5_API_${this.roomId}.mp4`
-
-      return [
-        {
-          id,
-          output: [
-            {
-              type: 0,
-              filename
-            }
-          ]
-        }
-      ]
-    },
-    // 更新录制内容
-    updateContents() {
-      if (this.isMyStart) {
-        CRVideo_UpdateSvrMixerContent(this.getContnets(this.id)) // SDK主调接口：更新云端录制内容
-      }
-    },
-    // 通知云端录制状态变化
-    SvrMixerStateChanged(MIXER_STATE, code) {
-      this.recordState = MIXER_STATE
-    },
-    // 云端录制文件、云端直播推流信息变化
-    SvrMixerOutputInfo(MixerOutputInfo) {
-      if (MixerOutputInfo.state === 2) {
-        this.recordResultToast.push(MixerOutputInfo)
-        const element = this.$createElement(RecordToast, {
-          props: {
-            info: MixerOutputInfo
+        layout.push({
+          type: 10,
+          left: W - 340,
+          top: H - 50,
+          param: {
+            color: '#ffffff',
+            'font-size': 18,
+            text: '%timestamp%'
           }
         })
-        this.$notify({
-          title: MixerOutputInfo.fileName,
-          duration: 0,
-          message: element
-        })
-      } else {
-        const idx = this.recordResultToast.findIndex(
-          (item) => item.id === MixerOutputInfo.id
-        )
-        if (idx > -1) {
-          this.recordResultToast[idx].state = MixerOutputInfo.state
+      }
+      return layout
+    },
+    // 更新录制内容
+    updateLayout() {
+      if (this.recordState !== 2) return
+
+      const { onlyMe } = this.recordConfig
+      const cloudMixerCfg = {
+        videoFileCfg: {
+          aChannelContent: onlyMe ? [this.UID] : [], // 如果只录制自己，则声音也只录制自己的
+          layoutConfig: this.createVideoLayout()
+        }
+      }
+
+      CRVideo_UpdateCloudMixerContent(this.mixerId, cloudMixerCfg) // SDK主调接口：更新云端混图器
+    },
+    // 启动云端录制、云端直播失败通知
+    CreateCloudMixerFailed(mixerID, sdkErr) {
+      if (mixerID !== this.mixerId) return
+      this.mixerId = null
+      this.recordState = 0
+
+      this.$message({
+        message: `启动录制失败！错误码：${sdkErr},${SDKError[sdkErr]}`,
+        type: 'error'
+      })
+    },
+    // 云端录制、云端直播状态变化通知
+    CloudMixerStateChanged(mixerID, state, exParam, operUserID) {
+      if (mixerID !== this.mixerId) return
+      this.recordState = state
+    },
+    // 云端录制文件、云端直播推流信息变化
+    CloudMixerOutputInfoChanged(mixerID, outputInfo) {
+      if (mixerID !== this.mixerId) return
+      switch (outputInfo.state) {
+        case 2: {
+          this.recordResultToast.push(outputInfo)
+          const element = this.$createElement(RecordToast, {
+            props: {
+              info: outputInfo
+            }
+          })
+          this.$notify({
+            title: outputInfo.fileName,
+            duration: 0,
+            message: element
+          })
+          break
+        }
+        case 3:
+          this.$message({
+            message: `录制出错！错误码：${outputInfo.errCode},${outputInfo.errDesc}`,
+            type: 'error'
+          })
+          break
+        case 6:
+          // stateStr = '上传失败'
+          break
+
+        default: {
+          const idx = this.recordResultToast.findIndex(
+            (item) => item.id === outputInfo.id
+          )
+          if (idx > -1) {
+            this.recordResultToast[idx].state = outputInfo.state
+          }
+          break
         }
       }
     }
@@ -350,21 +372,27 @@ export default {
   display: flex;
   align-items: center;
   height: 50px;
+
   .text {
     width: 100px;
   }
+
   .right {
     flex: 1;
   }
 }
+
 .checkboxGroup {
   line-height: 30px;
+
   .el-checkbox {
     width: 50%;
     margin-right: 0;
+
     ::v-deep .el-checkbox__input.is-checked + .el-checkbox__label {
       color: #3981fc;
     }
+
     ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner,
     .el-checkbox__input.is-indeterminate .el-checkbox__inner {
       background-color: #3981fc;

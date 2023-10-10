@@ -105,7 +105,7 @@ export default {
       }
 
       Cookies.set(lastRoomId, this.roomId) // 添加cookie，刷新或者下次进入再填充此房间号
-      this.$message.success(`已加入新建的房间`)
+      this.$message.success(`已加入房间`)
       this.$store.commit('state/SET_MEETING_STATE', 2)
     },
     // 会议掉线通知

@@ -7,8 +7,8 @@ const Arr = [
   'CRVideo_EnterMeetingRslt',
   'CRVideo_MeetingDropped',
   'CRVideo_MicEnergyUpdate',
-  'CRVideo_VideoDevChanged',
-  'CRVideo_SvrMixerOutputInfo'
+  'CRVideo_OpenVideoFailed',
+  'CRVideo_VideoDevChanged'
 ]
 
 const noDebugArr = ['CRVideo_MicEnergyUpdate']

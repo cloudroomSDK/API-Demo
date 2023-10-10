@@ -33,7 +33,7 @@
             tabindex="2"
             auto-complete="on"
           >
-            <span slot="prefix" class="text">AppId：</span>
+            <span slot="prefix" class="text">AppID：</span>
           </el-input>
         </el-form-item>
 

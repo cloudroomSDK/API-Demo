@@ -1,4 +1,4 @@
-console.log(`version: 1.0.0`)
+console.log(`version: 1.0.2`)
 import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets

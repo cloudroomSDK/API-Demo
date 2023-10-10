@@ -41,6 +41,17 @@ export default {
         CRVideo_OpenMic(this.UID) // SDK主调接口：打开麦克风
       }
     }
+  },
+  created() {
+    this.$SDKCallBack.$on('CRVideo_OpenVideoFailed', this.OpenVideoFailed)
+  },
+  destroyed() {
+    this.$SDKCallBack.$off('CRVideo_OpenVideoFailed', this.OpenVideoFailed)
+  },
+  methods: {
+    OpenVideoFailed(errDesc) {
+      this.$message.error('打开摄像头失败,可能的原因有：设备被占用、用户未授权访问、硬件设备发生错误等')
+    }
   }
 }
 </script>

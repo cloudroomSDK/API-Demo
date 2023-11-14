@@ -224,7 +224,24 @@ void ScreenMarkView::mouseMoveEvent(QMouseEvent *event)
 {
 	if(m_bMarking)
 	{
-		m_drawMark._markUserData.push_back(getUnScaledValue(event->pos()).toPoint());
+		QPoint curPos = event->pos();
+		if (curPos.x() < 0)
+		{
+			curPos.setX(0); 
+		}
+		if (curPos.y() < 0)
+		{
+			curPos.setY(0);
+		}
+		if (curPos.x() > this->width())
+		{
+			curPos.setX(this->width());
+		}
+		if (curPos.y() > this->height())
+		{
+			curPos.setY(this->height());
+		}
+		m_drawMark._markUserData.push_back(getUnScaledValue(curPos).toPoint());
 		drawLastLine(m_drawMark);
 
 		int pointCount = m_drawMark._markUserData.size();

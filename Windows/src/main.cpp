@@ -55,12 +55,8 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 
 	g_cfgFile = strAppPath + "/APIDemo.ini";
-#ifdef LINUX
 	CRMainThreadDispatch_Qt *pDispatch = new CRMainThreadDispatch_Qt(&a);
-    g_sdkMain = CRVideoSDKMain::create(strAppPath.toUtf8().constData(), pDispatch);
-#else
-	g_sdkMain = CRVideoSDKMain::create(strAppPath.toUtf8().constData(), "{\"LogLevel\":0}");
-#endif
+	g_sdkMain = CRVideoSDKMain::create(strAppPath.toUtf8().constData(), pDispatch);
 	if (g_sdkMain == NULL)
 	{
 		QMessageBox::information(NULL, QObject::tr("提示"), QObject::tr("创建sdk对象失败!"));

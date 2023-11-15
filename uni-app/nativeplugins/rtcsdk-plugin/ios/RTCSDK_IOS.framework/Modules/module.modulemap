@@ -1,0 +1,6 @@
+framework module RTCSDK_IOS {
+  umbrella header "RTCSDK_IOS.h"
+
+  export *
+  module * { export * }
+}

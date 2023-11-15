@@ -68,8 +68,8 @@ export default class RtcCloud {
 		eventBus.off(event, func);
 		return this;
 	}
-	getCloudroomVideoSDKVer() {
-		return RtcPlugin.GetCloudroomVideoSDKVer();
+	getRTCSDKVer() {
+		return RtcPlugin.GetRTCSDKVer();
 	}
 	isNotificationPermissionOpen() {
 		return RtcPlugin.isNotificationPermissionOpen();

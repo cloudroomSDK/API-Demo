@@ -7,20 +7,21 @@
 		},
 		onLaunch: function() {
 			console.log('App Launch')
-			const app = getApp();
-			app.globalData.version = plus.runtime.version;
+			//热更新不会退出原生层，反初始化使原生层重置
+			this.globalData.RTCSDK.getInstance().uninit();
+			this.globalData.version = plus.runtime.version;
 			//读取登录服务器、账号、密码
 			try {
 				const value = uni.getStorageSync('loginInfo');
 				if (value) {
 					const obj = JSON.parse(value);
-					app.globalData.loginInfo = obj;
+					this.globalData.loginInfo = obj;
 				} else {
 					throw '';
 				}
 			} catch (e) {
 				const obj = defaultLoginInfo;
-				app.globalData.loginInfo = defaultLoginInfo;
+				this.globalData.loginInfo = defaultLoginInfo;
 			}
 
 			//生成userId和nickname
@@ -28,7 +29,7 @@
 				const value = uni.getStorageSync('userInfo');
 				if (value) {
 					const obj = JSON.parse(value);
-					app.globalData.userInfo = obj;
+					this.globalData.userInfo = obj;
 				} else {
 					throw '';
 				}
@@ -38,7 +39,7 @@
 					userId: userId,
 					nickname: userId,
 				}
-				app.globalData.userInfo = userInfo;
+				this.globalData.userInfo = userInfo;
 				uni.setStorageSync('userInfo', JSON.stringify(userInfo));
 			}
 		},

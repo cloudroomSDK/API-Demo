@@ -1,9 +1,9 @@
 {
     "name" : "Api Demo",
-    "appid" : "",
+    "appid" : "__UNI__0C4E355",
     "description" : "",
-    "versionName" : "1.0.2",
-    "versionCode" : 102,
+    "versionName" : "1.0.5",
+    "versionCode" : 105,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -15,6 +15,9 @@
             "waiting" : true,
             "autoclose" : true,
             "delay" : 0
+        },
+        "compatible" : {
+            "ignoreVersion" : true //true表示忽略版本检查提示框，HBuilderX1.9.0及以上版本支持  
         },
         /* 模块配置 */
         "modules" : {

@@ -1,7 +1,7 @@
 {
 	"name": "rtcsdk-plugin",
 	"id": "rtcsdk-plugin",
-	"version": "1.0.1",
+	"version": "1.0.4",
 	"description": "",
 	"_dp_type": "nativeplugin",
 	"_dp_nativeplugin": {
@@ -32,14 +32,14 @@
 				"x86"
 			],
 			"dependencies": [
-				"com.github.cloudroomSDK:cloudroomvideo_android_library:6e84920a7a"
+				"com.github.cloudroomSDK:cloudroomvideo_android_library:4.4.9"
 			]
 		},
 		"ios": {
 			"plugins": [{
 				"type": "module",
 				"name": "rtcsdk-plugin",
-				"class": "RTCSDK"
+				"class": "RTCSDKUniPlugin"
 			}, {
 				"type": "component",
 				"name": "rtcsdk-videoView",
@@ -55,7 +55,7 @@
 			}],
 			"integrateType": "framework",
 			"frameworks": [
-				"CloudroomVideoSDK_IOS.framework",
+				"RTCSDK_IOS.framework",
                 "RTCSDKUniPlugin_iOS.framework",
                 "CoreServices.framework",
                 "libc++.tbd",
@@ -70,7 +70,7 @@
                 "CoreMedia.framework"
 			],
 			"embedFrameworks": [
-				"CloudroomVideoSDK_IOS.framework"
+				"RTCSDK_IOS.framework"
 			],
 			"capabilities": { 
 				"entitlements": { 

@@ -1,5 +1,3 @@
 .build_config
-# unpackage/
-!/unpackage
-/unpackage/*
-!/unpackage/res/
+unpackage/
+.svn

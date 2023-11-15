@@ -37,7 +37,9 @@
 <script>
 	import mixin from './mixin'
 	import { RtcsdkScreenView } from '@/RTCSDK/component';
-	
+	import { showToast } from '@/util'
+	import constantDesc from '@/util/constantDesc.js'
+
 	export default {
 		mixins: [mixin],
 		components: {
@@ -54,7 +56,7 @@
 		onLoad({ roomId }) {
 			this.roomId = roomId;
 			this.curShareState = this.RTCSDK.isScreenShareStarted();
-			
+
 			const cfg = this.RTCSDK.getScreenShareCfg();
 			// 共享帧率
 			cfg.maxFps = 12;
@@ -73,6 +75,7 @@
 				handle("audioStatusChanged", this._audioStatusChanged);
 				handle("notifyScreenShareStarted", this._notifyScreenShareStarted);
 				handle("notifyScreenShareStopped", this._notifyScreenShareStopped);
+				handle("startScreenShareRslt", this._startScreenShareRslt);
 				handle("stopScreenShareRslt", this._stopScreenShareRslt);
 			},
 			//开关麦克风
@@ -93,6 +96,7 @@
 					title: "Uniapp Api Demo",
 					contentText: "正在进行屏幕共享"
 				});
+
 			},
 			// 停止屏幕共享
 			stopScreenShare() {
@@ -100,8 +104,16 @@
 				this.isMyShare = false;
 				this.RTCSDK.stopScreenShare();
 			},
+			// 开起屏幕共享的回调
+			_startScreenShareRslt({ sdkErr }) {
+				if (sdkErr !== 0) {
+					showToast(`开启屏幕共享失败,错误码: ${sdkErr},${constantDesc[sdkErr]}`);
+					this.curShareState = false;
+					this.isMyShare = false;
+				}
+			},
 			//ios点击系统层的"停止直播"，会进入该回调
-			_stopScreenShareRslt({sdkErr}){
+			_stopScreenShareRslt({ sdkErr }) {
 				this.curShareState = false;
 				this.isMyShare = false;
 			},

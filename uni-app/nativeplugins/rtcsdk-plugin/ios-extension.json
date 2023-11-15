@@ -3,7 +3,7 @@
     "identifier": "com.rtc.RTCSDKUniPlugin.ScreenShareUpload",
     "profile": "iosRTCSDKUniPluginScreenShareUploadadhoc.mobileprovision",
     "frameworks": [
-        "CloudroomReplayKitExt.framework",
+        "RTCReplaykitExt.framework",
         "libc++.tbd",
         "ReplayKit.framework"
         ],

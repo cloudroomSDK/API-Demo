@@ -1,0 +1,82 @@
+$mainColor: #3981FC;
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $colors: (
+    'primary': (
+      'base': $mainColor,
+    ),
+  ),
+);
+@use "element-plus/theme-chalk/src/index.scss" as *;
+
+.dialog,.el-dialog {
+  .el-dialog__body {
+      padding: 20px !important;
+  }
+}
+
+.el-drawer__header {
+  margin-bottom: 0;
+}
+.el-main {
+  --el-main-padding: 0;
+}
+.el-menu {
+  border-right: 0;
+}
+.el-drawer__body {
+  --el-drawer-padding-primary: 0;
+}
+
+.el-button {
+  &.is-plain {
+    background-color: transparent;
+    border-color: #fff;
+    color: #fff;
+    &:hover {
+      color: #fff;
+      background-color: $mainColor;
+      border-color: $mainColor;
+    }
+  }
+  &.el-button--primary {
+    background-color: $mainColor;
+    &:hover {
+      background-color: #74a7fd;
+      border-color: #74a7fd;
+    }
+    &.is-plain {
+      background-color: transparent;
+      border-color: $mainColor;
+      color: $mainColor;
+      &:hover {
+        color: #fff;
+        background-color: $mainColor;
+      }
+    }
+    &.is-disabled {
+      background-color: #ccc;
+      border-color: #ccc;
+      color: #fff;
+      &:hover {
+        background-color:#ccc;
+        border-color:#ccc;
+      }
+    }
+  }
+  &.el-button--danger {
+    background-color: #f56c6c;
+    border-color: #f56c6c;
+    &.is-disabled {
+      background-color: #ccc;
+      border-color: #ccc;
+      &:hover {
+        background-color:#ccc;
+        border-color:#ccc;
+      }
+    }
+    &:hover {
+      background-color: #f89898;
+      border-color: #f89898;
+    }
+  }
+}

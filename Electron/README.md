@@ -12,7 +12,7 @@
 
 ```bash
 git clone git@github.com:cloudroomSDK/API-Demo.git
-cd cd API-Demo/Electron
+cd API-Demo/Electron
 npm install
 npm run dev
 ```

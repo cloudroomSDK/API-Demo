@@ -61,26 +61,26 @@ extension CommonMeetingViewController: CloudroomVideoMeetingCallBack, CloudroomV
     
     func readCameraDivices() {
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
-        cameraDivices = (cloudroomVideoMeeting?.getAllVideoInfo(myUserId())) as? [UsrVideoInfo]
+        cameraDivices = (cloudroomVideoMeeting.getAllVideoInfo(myUserId())) as? [UsrVideoInfo]
     }
     
     func setupDefaultCamera() {
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
-        let currentVideo = cloudroomVideoMeeting?.getDefaultVideo(myUserId())
+        let currentVideo = cloudroomVideoMeeting.getDefaultVideo(myUserId())
         if let item = cameraDivices?[1], item.videoID != currentVideo {
-            cloudroomVideoMeeting?.setDefaultVideo(item.userId, videoID: item.videoID)
+            cloudroomVideoMeeting.setDefaultVideo(item.userId, videoID: item.videoID)
         }
     }
     
     func exchangeCamera() {
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
-        let currentVideo = cloudroomVideoMeeting?.getDefaultVideo(myUserId())
+        let currentVideo = cloudroomVideoMeeting.getDefaultVideo(myUserId())
         
         guard let cameraDivices = cameraDivices, cameraDivices.count > 0 else {return}
         
         for item in cameraDivices {
             if item.videoID != currentVideo {
-                cloudroomVideoMeeting?.setDefaultVideo(item.userId, videoID: item.videoID)
+                cloudroomVideoMeeting.setDefaultVideo(item.userId, videoID: item.videoID)
             }
         }
     }

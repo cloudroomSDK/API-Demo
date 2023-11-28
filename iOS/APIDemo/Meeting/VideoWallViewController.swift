@@ -37,7 +37,7 @@ class VideoWallViewController: CommonMeetingViewController {
         
         let videoMeeting = CloudroomVideoMeeting.shareInstance()
         
-        guard let watchableVideos = videoMeeting?.getWatchableVideos() as? Array<UsrVideoId> else { return }
+        guard let watchableVideos = videoMeeting.getWatchableVideos() as? Array<UsrVideoId> else { return }
         
         if members.count == 0 {
             members.append(contentsOf: watchableVideos)
@@ -159,7 +159,7 @@ extension VideoWallViewController {
         
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
         
-        guard let watchableVideos = cloudroomVideoMeeting?.getWatchableVideos() as? Array<UsrVideoId>, watchableVideos.count > 0 else { return recContent }
+        guard let watchableVideos = cloudroomVideoMeeting.getWatchableVideos() as? Array<UsrVideoId>, watchableVideos.count > 0 else { return recContent }
         
         let videos = watchableVideos.filter { (item) -> Bool in
             if item.userId == myUserId() {

@@ -33,7 +33,7 @@ class ScreenShareViewController: CommonMeetingViewController {
         if startShareButton.currentTitle == "开始屏幕共享" {
             
             let cfg = CloudroomVideoMeeting.shareInstance().getScreenShareCfg()
-            cfg?.maxFPS = 8
+            cfg.maxFPS = 8
             CloudroomVideoMeeting.shareInstance().setScreenShareCfg(cfg)
             
             CloudroomVideoMeeting.shareInstance().startScreenShare()

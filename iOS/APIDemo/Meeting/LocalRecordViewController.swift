@@ -60,8 +60,8 @@ class LocalRecordViewController: VideoWallViewController {
         let alert = UIAlertController.init(title: "退出房间", message: "您正在进行本地录制，退出房间将结束云端录制", preferredStyle: .alert)
         
         let okay = UIAlertAction.init(title: "确定", style: .default) { UIAlertAction in
-            cloudroomVideoMeeting?.destroyLocMixer("1")
-            cloudroomVideoMeeting?.exitMeeting()
+            cloudroomVideoMeeting.destroyLocMixer("1")
+            cloudroomVideoMeeting.exitMeeting()
             self.navigationController?.popViewController(animated: true)
         }
         
@@ -83,7 +83,7 @@ class LocalRecordViewController: VideoWallViewController {
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
         
         guard let title = recordButton.currentTitle, title == "开始录制" else {
-            cloudroomVideoMeeting?.destroyLocMixer("1")
+            cloudroomVideoMeeting.destroyLocMixer("1")
             recordButton.setTitle("开始录制", for: .normal)
             recordButton.backgroundColor = UIColor.init("3981FC")
             return
@@ -100,9 +100,9 @@ class LocalRecordViewController: VideoWallViewController {
         
         let cfg = mixerCfg()
         let recContent = videoMixerContent()
-        let rslt = cloudroomVideoMeeting?.createLocMixer(mixerID, cfg: cfg, content: recContent)
+        let rslt = cloudroomVideoMeeting.createLocMixer(mixerID, cfg: cfg, content: recContent)
         guard rslt == CRVIDEOSDK_NOERR else {
-            let error = "创建本地录制失败:\(rslt?.rawValue ?? 0)"
+            let error = "创建本地录制失败:\(rslt.rawValue ?? 0)"
             self.view.makeToast(error)
             print(error)
             return
@@ -115,9 +115,9 @@ class LocalRecordViewController: VideoWallViewController {
         
         let mixerOutput = MixerOutput()
         mixerOutput.outputs = outputCfgs
-        let rslt2 = cloudroomVideoMeeting?.addLocMixer(mixerID, outputs: mixerOutput)
+        let rslt2 = cloudroomVideoMeeting.addLocMixer(mixerID, outputs: mixerOutput)
         guard rslt2 == CRVIDEOSDK_NOERR else {
-            let error = "添加本地录制输出失败:\(rslt?.rawValue ?? 0)"
+            let error = "添加本地录制输出失败:\(rslt.rawValue ?? 0)"
             self.view.makeToast(error)
             print(error)
             return

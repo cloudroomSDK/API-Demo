@@ -13,5 +13,5 @@ public func DocumemtPath() -> String {
 }
 
 func SDKPath() -> String {
-    return DocumemtPath().appending("/CloudroomVideoSDK")
+    return DocumemtPath().appending("/CRVideoSDK")
 }

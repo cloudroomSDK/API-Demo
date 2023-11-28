@@ -26,7 +26,7 @@ class MixerRecordViewController: VideoWallViewController {
     
     override func backToPrevious() {
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
-        let svrState = cloudroomVideoMeeting?.getSvrRecordState()
+        let svrState = cloudroomVideoMeeting.getSvrRecordState()
         guard svrState != MIXER_STATE.NO_RECORD, recordButton.currentTitle == "结束录制" else {
             super.backToPrevious()
             return
@@ -36,8 +36,8 @@ class MixerRecordViewController: VideoWallViewController {
         let alert = UIAlertController.init(title: "退出房间", message: "您正在进行云端录制，退出房间将结束云端录制", preferredStyle: .alert)
         
         let okay = UIAlertAction.init(title: "确定", style: .default) { UIAlertAction in
-            cloudroomVideoMeeting?.stopSvrMixer()
-            cloudroomVideoMeeting?.exitMeeting()
+            cloudroomVideoMeeting.stopSvrMixer()
+            cloudroomVideoMeeting.exitMeeting()
             self.navigationController?.popViewController(animated: true)
         }
         
@@ -57,7 +57,7 @@ class MixerRecordViewController: VideoWallViewController {
         guard code == CRVIDEOSDK_NOERR else { return }
         
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
-        let svrState = cloudroomVideoMeeting?.getSvrRecordState()
+        let svrState = cloudroomVideoMeeting.getSvrRecordState()
         guard svrState != MIXER_STATE.NO_RECORD else {
             return
         }
@@ -69,12 +69,12 @@ class MixerRecordViewController: VideoWallViewController {
     @IBAction func recordAction(_ sender: Any) {
 
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
-        let svrState = cloudroomVideoMeeting?.getSvrRecordState()
+        let svrState = cloudroomVideoMeeting.getSvrRecordState()
         
         
         
         guard let title = recordButton.currentTitle, title == "开始录制", svrState == MIXER_STATE.NO_RECORD else {
-            cloudroomVideoMeeting?.stopSvrMixer()
+            cloudroomVideoMeeting.stopSvrMixer()
             recordButton.setTitle("开始录制", for: .normal)
             recordButton.backgroundColor = UIColor.init("3981FC")
             return
@@ -101,9 +101,9 @@ class MixerRecordViewController: VideoWallViewController {
         output.outputs = outputCfgs
         outputDic.setValue(output, forKey: "1")
         
-        let rslt = cloudroomVideoMeeting?.startSvrMixer(cfgDic, contents: contentDic, outputs: outputDic)
+        let rslt = cloudroomVideoMeeting.startSvrMixer(cfgDic, contents: contentDic, outputs: outputDic)
         if rslt != CRVIDEOSDK_NOERR {
-            print("[svrRecord]  开启云端录制失败 \(rslt!.rawValue)")
+            print("[svrRecord]  开启云端录制失败 \(rslt.rawValue)")
         }
         recordButton.setTitle("结束录制", for: .normal)
         recordButton.backgroundColor = UIColor.init("F44E4E")

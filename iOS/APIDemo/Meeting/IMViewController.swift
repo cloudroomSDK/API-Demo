@@ -85,7 +85,7 @@ class IMViewController: CommonMeetingViewController, UITableViewDataSource, UITa
         let msg = try! decoder.decode(Message.self, from: data.data(using: .utf8)!)
         
         let name = CloudroomVideoMeeting.shareInstance().getNickName(myUserId())
-        let model = ChatModel.init(name: name!, time: time, msg: msg, mine: true)
+        let model = ChatModel.init(name: name, time: time, msg: msg, mine: true)
         dataSource.append(model)
         
         // send message
@@ -137,7 +137,7 @@ class IMViewController: CommonMeetingViewController, UITableViewDataSource, UITa
         do {
             let message = try decoder.decode(Message.self, from: jsonDat.data(using: .utf8)!)
             let name = CloudroomVideoMeeting.shareInstance().getNickName(fromUserID)
-            let model = ChatModel.init(name: name!, time: time, msg: message, mine: false)
+            let model = ChatModel.init(name: name, time: time, msg: message, mine: false)
             dataSource.append(model)
             
             reloadNewMessage()

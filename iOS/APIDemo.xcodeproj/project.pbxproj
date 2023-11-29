@@ -10,6 +10,7 @@
 		1604E20D2955412D00822FE0 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 165EDF602786BDB800A34CC9 /* libc++.tbd */; };
 		160B520A278EDB4B003D78DC /* VideoCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160B5209278EDB4B003D78DC /* VideoCallViewController.swift */; };
 		160B520C278EE607003D78DC /* CustomCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160B520B278EE607003D78DC /* CustomCameraView.swift */; };
+		161BE1312B16097A006D7AFE /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161BE1302B16097A006D7AFE /* AppConfig.swift */; };
 		16307FF32787D55B005AC76E /* CloudroomVideoSDK_IOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 165EDF762786BEB900A34CC9 /* CloudroomVideoSDK_IOS.framework */; platformFilter = ios; };
 		16307FF42787D55C005AC76E /* CloudroomVideoSDK_IOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 165EDF762786BEB900A34CC9 /* CloudroomVideoSDK_IOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		16307FFB2787E1DB005AC76E /* CRSDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16307FFA2787E1DB005AC76E /* CRSDKHelper.swift */; };
@@ -150,6 +151,7 @@
 /* Begin PBXFileReference section */
 		160B5209278EDB4B003D78DC /* VideoCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCallViewController.swift; sourceTree = "<group>"; };
 		160B520B278EE607003D78DC /* CustomCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCameraView.swift; sourceTree = "<group>"; };
+		161BE1302B16097A006D7AFE /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		16307FFA2787E1DB005AC76E /* CRSDKHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRSDKHelper.swift; sourceTree = "<group>"; };
 		16307FFD2788283C005AC76E /* EnterMeetingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMeetingViewController.swift; sourceTree = "<group>"; };
 		16307FFF27883D79005AC76E /* CRSDKLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRSDKLogin.swift; sourceTree = "<group>"; };
@@ -527,6 +529,7 @@
 				16307FF62787DE80005AC76E /* PreMeeting */,
 				16307FF72787DE8C005AC76E /* Meeting */,
 				166BB2672786EBE0003B8916 /* Other */,
+				161BE1302B16097A006D7AFE /* AppConfig.swift */,
 				16FC058B27869184008735E5 /* AppDelegate.swift */,
 				16FC059127869184008735E5 /* Main.storyboard */,
 				16FC059427869187008735E5 /* Assets.xcassets */,
@@ -750,6 +753,7 @@
 				1675A47927A27E2B0031351E /* ConstraintItem.swift in Sources */,
 				1675A48027A27E2B0031351E /* ConstraintLayoutSupportDSL.swift in Sources */,
 				1685165827893E94008B7951 /* VideoConfigViewController.swift in Sources */,
+				161BE1312B16097A006D7AFE /* AppConfig.swift in Sources */,
 				1675A46027A27E2B0031351E /* ConstraintDescription.swift in Sources */,
 				1675A47227A27E2B0031351E /* ConstraintConstantTarget.swift in Sources */,
 			);

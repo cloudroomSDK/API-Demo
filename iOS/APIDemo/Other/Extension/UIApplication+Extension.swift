@@ -9,12 +9,14 @@ import Foundation
 import UIKit
 
 extension UIApplication {
-    static func rootViewControllerView() -> UIView {
-        return UIApplication.rootViewController().view
+    static func rootViewControllerView() -> UIView? {
+        return UIApplication.rootViewController()?.view
     }
-    static func rootViewController() -> UIViewController {
+    static func rootViewController() -> UINavigationController? {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let rootViewController = appDelegate.window?.rootViewController as! UINavigationController
+        guard let rootViewController = appDelegate.window?.rootViewController as? UINavigationController else {
+            return nil
+        }
         return rootViewController
     }
 }

@@ -50,10 +50,10 @@ class CRSDKHelper {
     
     public
     
-    func write(APPID: String, APPSecret: String, server: String, nickName: String, datEncType: String) {
+    func write(APPID: String? = "", APPSecret: String? = "", server: String, nickName: String, datEncType: String) {
         self.server = server
-        self.APPID = APPID
-        self.APPSecret = APPSecret
+        if APPID?.isEmpty == false { self.APPID = APPID }
+        if APPSecret?.isEmpty == false { self.APPSecret = APPSecret }
         self.nickname = nickName
         self.datEncType = datEncType
         
@@ -66,8 +66,12 @@ class CRSDKHelper {
     
     func resetInfo() {
         let nickname = "iOS_" + String(arc4random_uniform(10000 - 1000) + 1000)
-        write(APPID: "demo@cloudroom.com", APPSecret: "123456", server: "sdk.cloudroom.com", nickName: nickname, datEncType: "0")
+        
+        write(APPID: nil, APPSecret: nil, server: "sdk.cloudroom.com", nickName: nickname, datEncType: "0")
         rsaPublicKey = nil
         readInfo()
+        
+        APPID = KDefaultAppID
+        APPSecret = KDefaultAppSecret
     }
 }

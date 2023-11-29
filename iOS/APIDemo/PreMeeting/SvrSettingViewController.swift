@@ -7,6 +7,8 @@
 
 import UIKit
 
+let kAppIDDefaultShow = "默认appID"
+
 class SvrSettingViewController: BaseViewController {
     @IBOutlet weak var serviceTextField: UITextField!
     @IBOutlet weak var appIDTextField: UITextField!
@@ -40,8 +42,13 @@ class SvrSettingViewController: BaseViewController {
     }
     
     func reloadTextFields() {
+        let appIDCache = UserDefaults.standard.string(forKey: APPIDKey) ?? ""
+        if appIDCache.isEmpty == true, KDefaultAppID.isEmpty == false, CRSDKHelper.shared.APPID == KDefaultAppID {
+            appIDTextField.text = kAppIDDefaultShow
+        } else {
+            appIDTextField.text = CRSDKHelper.shared.APPID
+        }
         serviceTextField.text = CRSDKHelper.shared.server
-        appIDTextField.text = CRSDKHelper.shared.APPID
         appSecretTextField.text = CRSDKHelper.shared.APPSecret
     }
     
@@ -88,8 +95,15 @@ class SvrSettingViewController: BaseViewController {
             return
         }
         
+        
         CloudroomVideoMgr.shareInstance().logout()
-        CRSDKHelper.shared.write(APPID: appID, APPSecret: appSecret, server: server, nickName: nickName, datEncType: "0")
+        
+        let appIDCache = UserDefaults.standard.string(forKey: APPIDKey)
+        if appIDCache?.isEmpty == true, appID == KDefaultAppID {
+            CRSDKHelper.shared.write(APPID: nil, APPSecret: nil, server: server, nickName: nickName, datEncType: "0")
+        } else {
+            CRSDKHelper.shared.write(APPID: appID, APPSecret: appSecret, server: server, nickName: nickName, datEncType: "0")
+        }
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.setupForVideoCallSDK()

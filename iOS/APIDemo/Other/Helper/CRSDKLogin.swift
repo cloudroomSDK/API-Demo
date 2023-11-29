@@ -20,24 +20,36 @@ class CRSDKLogin: NSObject, CloudroomVideoMgrCallBack {
         CloudroomVideoMgr.shareInstance().registerCallback(self)
     }
     
+    private func showSettingViewController() {
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "SvrSettingViewController") as! SvrSettingViewController
+        UIApplication.rootViewController()?.pushViewController(viewController, animated: true)
+    }
+    
     func loginSDK(callback: @escaping loginCallback) {
         completionHandler = callback
         let helper = CRSDKHelper.shared
         
         guard let nickname = helper.nickname, nickname.count > 0 else {
-            UIApplication.rootViewControllerView().makeToast("昵称为空")
+            UIApplication.rootViewControllerView()?.makeToast("昵称为空")
+            completionHandler?(false)
             return
         }
         guard let server = helper.server, server.count > 0 else {
-            UIApplication.rootViewControllerView().makeToast("服务器地址为空")
+            UIApplication.rootViewControllerView()?.makeToast("服务器地址为空")
+            completionHandler?(false)
             return
         }
         guard let appID = helper.APPID, appID.count > 0 else {
-            UIApplication.rootViewControllerView().makeToast("appID为空")
+            UIApplication.rootViewControllerView()?.makeToast("appID为空")
+            completionHandler?(false)
+            showSettingViewController()
             return
         }
         guard let appSecret = helper.APPSecret?.md5, appSecret.count > 0 else {
-            UIApplication.rootViewControllerView().makeToast("appSecret为空")
+            UIApplication.rootViewControllerView()?.makeToast("appSecret为空")
+            completionHandler?(false)
+            showSettingViewController()
             return
         }
         
@@ -49,7 +61,7 @@ class CRSDKLogin: NSObject, CloudroomVideoMgrCallBack {
     // MARK: - CloudroomVideoMgrCallBack
     
     func loginSuccess(_ usrID: String!, cookie: String!) {
-//        UIApplication.rootViewControllerView().makeToast("登录成功")
+//        UIApplication.rootViewControllerView()?.makeToast("登录成功")
         guard let completionHandler = completionHandler else { return }
         completionHandler(true)
     }
@@ -57,8 +69,8 @@ class CRSDKLogin: NSObject, CloudroomVideoMgrCallBack {
     func loginFail(_ sdkErr: CRVIDEOSDK_ERR_DEF, cookie: String!) {
         let error = "登录失败: \(sdkErr.rawValue)"
         print(error)
-        UIApplication.rootViewControllerView().hideToast()
-        UIApplication.rootViewControllerView().makeToast(error)
+        UIApplication.rootViewControllerView()?.hideToast()
+        UIApplication.rootViewControllerView()?.makeToast(error)
         
         guard let completionHandler = completionHandler else { return }
         completionHandler(false)
@@ -82,7 +94,7 @@ class CRSDKLogin: NSObject, CloudroomVideoMgrCallBack {
         
         alert.addAction(okay)
         
-        UIApplication.rootViewController().present(alert, animated: true, completion: nil)
+        UIApplication.rootViewController()?.present(alert, animated: true, completion: nil)
         
         
     }

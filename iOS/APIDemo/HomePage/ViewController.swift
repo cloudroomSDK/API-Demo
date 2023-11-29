@@ -35,8 +35,6 @@ class ViewController: BaseViewController, UITableViewDataSource, UITableViewDele
         
         makeDataSource()
         setupTableView()
-        
-//        CRSDKLogin.shared.loginSDK()
     }
     
     func makeDataSource() {

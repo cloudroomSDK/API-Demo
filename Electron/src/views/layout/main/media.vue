@@ -1,6 +1,6 @@
 <template>
     <div v-if="shareUserId">
-        <div class="screen" ref="canvas" v-setVideo="{ type: 2 }">
+        <div class="screen" ref="canvas" v-setVideo="{ type: 2, notifyFrameReceived: notifyFrameReceived  }">
             <VideoProgress v-if="shareUserId === appStore.myUserId" :curTime="curTime" :totalTime="totalTime">
                 <span>{{ shareUserId }}的影音</span>
             </VideoProgress>
@@ -46,7 +46,6 @@ export default {
             this.$rtcsdk[bool ? "on" : "off"]("notifyMediaOpened", this.notifyMediaOpened);
             this.$rtcsdk[bool ? "on" : "off"]("notifyMediaStop", this.notifyMediaStop);
             this.$rtcsdk[bool ? "on" : "off"]("notifyMediaPause", this.notifyMediaPause);
-            this.$rtcsdk[bool ? "on" : "off"]("notifyRenderFrameReceived", this.notifyRenderFrameReceived); //通知播放数据
         },
         startPlayMediaFail() {},
         notifyMediaStart(userId) {
@@ -63,13 +62,10 @@ export default {
             this.isPause = bPause;
             console.log(userId, bPause);
         },
-        notifyRenderFrameReceived(id, frame) {
-            // 此处为了更新当前播放进度
-            // 创建DOM的同时videoUI也被赋值了,具体实现在setVideo指令集里
-            if (this.shareUserId && this.$refs.canvas.videoUI.id === id) {
-                this.curTime = frame._timestamp;
-            }
-        },
+        // 帧回调函数
+        notifyFrameReceived(frame){
+            this.curTime = frame._timestamp;
+        }
     },
 };
 </script>

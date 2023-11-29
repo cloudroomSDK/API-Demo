@@ -83,7 +83,7 @@ export default {
                 };
                 this.$rtcsdk.setDefaultVideo(videoId); //设置为摄像头
             } else {
-                ElMessage.error(`添加失败，错误码: ${sdkErr},${errDesc[sdkErr]}`);
+                ElMessage.error(`添加失败，错误码: ${videoId},${errDesc[videoId]}`);
             }
         },
         addIpCam() {

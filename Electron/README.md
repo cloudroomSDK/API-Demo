@@ -1,14 +1,21 @@
 # Electron-Api-Demo
 
- Electron Api Demo是一个开源项目，它基于vue3+vite技术栈，将向您展示如何将Electron-RTCSDK集成到您的项目中的不同场景。
+Electron Api Demo是一个开源项目，它基于vite + vue3技术栈，将向您展示如何将Electron-RTCSDK集成到您的项目中的不同场景。
 
-## 快速开始
+## 🚀 快速开始
 
-### ✨ 环境要求
+### 环境要求
 
 - [Node.js](https://nodejs.org/en/download/) 大于>=14
 
-### 🎉 步骤
+### 创建账号
+
+1. 您需要在云屋[SDK官网](https://sdk.cloudroom.com/)注册账号并创建项目，具体流程参见[准备工作](https://docs.cloudroom.com/sdk/document/fastIntegration/beforeDevelop?platform=Electron)
+1. 项目创建完成，获取到`AppId`和`AppSecret`，选择以下之一方式：
+    - 在`electron/main/auth.ts`文件中修改对应的值
+    - 启动项目后，在设置界面中填入对应的值
+
+### 步骤
 
 ```bash
 git clone git@github.com:cloudroomSDK/API-Demo.git
@@ -48,10 +55,10 @@ npm run dev
 
 ## 🔖 附录
 
-- 如果需要售后技术支持, 您可以在[官网](https://sdk.cloudroom.com/)联系在线客服
-- 您可以参阅[开发文档](https://docs.cloudroom.com/sdk/document/intro/README?platform=Electron)
+- [开发者文档](https://docs.cloudroom.com/sdk/document/intro/README?platform=Electron)
 - [其他平台SDK下载](https://sdk.cloudroom.com/pages/download#sdk)
 - [API Demo](https://github.com/cloudroomSDK/API-Demo)
+- [官网](https://sdk.cloudroom.com) 一 您可以在此联系官方技术支持
 
 ## 📄 License
 

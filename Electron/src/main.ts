@@ -32,12 +32,12 @@ app.directive("setVideo", {
     // 及他自己的所有子节点都挂载完成后调用
     mounted(el, binding, vnode, prevVnode) {
         console.log("mounted", el, binding);
-        const videoUI = rtcsdk.createVideoUI(el);
-        console.log(videoUI);
+        const { type = 0, userId, camId = -1, notifyFrameReceived } = binding.value;
+        const videoUI = rtcsdk.createVideoUI(el, {
+            notifyFrameReceived: notifyFrameReceived
+        });
         el.videoUI = videoUI;
         try {
-            const { type = 0, userId, camId = -1 } = binding.value;
-
             let videoCfg: VideoCfg = { type: type };
             if (type === 0 && userId) {
                 videoCfg = {

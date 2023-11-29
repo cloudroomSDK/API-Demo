@@ -1,6 +1,6 @@
 {
-  "name": "Api-Demo",
-  "version": "1.0.4",
+  "name": "api-demo",
+  "version": "1.0.5",
   "main": "dist-electron/main/index.js",
   "description": "Electron SDK API 演示Demo",
   "author": "Siman",
@@ -41,6 +41,6 @@
     "vue-tsc": "^1.2.0"
   },
   "dependencies": {
-    "electron-rtcsdk": "^1.0.0"
+    "electron-rtcsdk": "^1.0.1"
   }
 }

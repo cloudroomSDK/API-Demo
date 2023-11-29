@@ -18,7 +18,7 @@
             </div>
             <p class="loginset tc">
                 <a href="javascript:void(0);" @click="dialogVisible = true">登录设置</a>
-                <el-dialog class="dialog" v-model="dialogVisible" title="设置" width="360" append-to-body>
+                <el-dialog class="dialog" v-model="dialogVisible" title="设置" width="376" append-to-body>
                     <Setting @close="dialogVisible = false"></Setting>
                 </el-dialog>
             </p>

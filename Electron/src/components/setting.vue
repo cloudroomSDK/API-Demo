@@ -116,7 +116,7 @@ export default {
 
 <style lang="scss" scoped>
 .setting {
-    padding: 20px;
+    padding: 8px;
 
     .text-input {
         font-size: 14px;

@@ -2,7 +2,7 @@
 一个对每个功能单独进行展示的示例。
 
 ## 支持的平台
-本示例应用包含 Android, iOS, MacOS,Windows 以及Web平台。
+本示例应用包含 Android, iOS, MacOS, Windows以及Web平台。
 
 项目位置|平台|语言|SDK
 ---|---|---|---
@@ -12,6 +12,7 @@
 [/Windows](./Windows)|Windows|C++|[云屋RTC Windows SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
 [/Linux](./Windows)|Linux|C++|[云屋RTC Linux SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
 [/Web](./Web)|Web|JS|[云屋RTC Web SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Web)
+[/Electron](./Electron)|PC|JS|[云屋RTC Electron SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Electron)
 [/Flutter](./Flutter)|Mobile|Dart|[云屋RTC Flutter SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Flutter)
 [/uni-app](./uni-app)|Mobile|JS|[云屋RTC uni-app SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=uniapp)
 

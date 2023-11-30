@@ -42,8 +42,7 @@ class SvrSettingViewController: BaseViewController {
     }
     
     func reloadTextFields() {
-        let appIDCache = UserDefaults.standard.string(forKey: APPIDKey) ?? ""
-        if appIDCache.isEmpty == true, KDefaultAppID.isEmpty == false, CRSDKHelper.shared.APPID == KDefaultAppID {
+        if KDefaultAppID.isEmpty == false, CRSDKHelper.shared.APPID == KDefaultAppID {
             appIDTextField.text = kAppIDDefaultShow
         } else {
             appIDTextField.text = CRSDKHelper.shared.APPID
@@ -98,8 +97,7 @@ class SvrSettingViewController: BaseViewController {
         
         CloudroomVideoMgr.shareInstance().logout()
         
-        let appIDCache = UserDefaults.standard.string(forKey: APPIDKey)
-        if appIDCache?.isEmpty == true, appID == KDefaultAppID {
+        if appID == KDefaultAppID || appID == kAppIDDefaultShow {
             CRSDKHelper.shared.write(APPID: nil, APPSecret: nil, server: server, nickName: nickName, datEncType: "0")
         } else {
             CRSDKHelper.shared.write(APPID: appID, APPSecret: appSecret, server: server, nickName: nickName, datEncType: "0")

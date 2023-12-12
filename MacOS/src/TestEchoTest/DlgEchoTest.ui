@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgEchoTest</class>
+ <widget class="QDialog" name="DlgEchoTest">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>197</width>
+    <height>50</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>声音环回测试</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	background:rgb(57,129,252);
+	color: rgb(255,255,255);
+	border: 1px solid rgb(57,129,252);
+	border-radius: 2px;
+	min-height: 28px;
+	min-width: 76px;
+}
+QPushButton:hover, QPushButton:pressed {
+	background: rgb(5,117,197);
+}</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="leftMargin">
+    <number>10</number>
+   </property>
+   <property name="topMargin">
+    <number>10</number>
+   </property>
+   <property name="rightMargin">
+    <number>10</number>
+   </property>
+   <property name="bottomMargin">
+    <number>10</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnTest">
+     <property name="text">
+      <string>开始</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

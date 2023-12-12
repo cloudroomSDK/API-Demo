@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgVideoSet</class>
+ <widget class="QDialog" name="DlgVideoSet">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>351</width>
+    <height>199</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>视频设置</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#DlgVideoSet {
+	background: rgb(255,255,255);
+}
+QComboBox {
+	background: transparent;
+	border: 1px solid rgb(221,221,221);
+	border-radius: 4px;
+	min-height: 30px;
+	max-height: 30px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+QComboBox:hover {
+	border-color:rgb(57,129,252);
+}
+QComboBox::drop-down {
+	padding-top: 5px;
+	image: url(:/Resources/dropDown.png);
+}
+QComboBox QAbstractItemView{
+	margin-top:1;
+	outline:0;	
+	border:1px solid rgb(225,225,225);
+	background-color:rgb(255,255,255);
+	selection-background-color:rgb(80,145,255);
+}
+QComboBox QAbstractItemView::item{
+	min-height:30px;
+	max-height:30px;
+}
+QComboBox QAbstractItemView::item:hover{
+    background-color:rgb(240,240,240);
+	color:rgb(45,45,45);
+}
+QComboBox QAbstractItemView::item:selected{
+    background-color:rgb(240,240,240);
+	color:rgb(45,45,45);
+}
+QSlider {
+	min-height: 20px;
+	max-height: 20px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+QSlider::add-page:horizontal {       
+	background-color:rgb(223,223,223);  
+}  
+QSlider::sub-page:horizontal {  
+	background-color: rgb(57,129,252);
+}  
+QSlider::groove:horizontal {  
+	background:transparent;  
+	height:2px;  
+}  
+QSlider::handle:horizontal {
+	height: 12px;
+	width: 12px;
+	margin-top: -5px;
+	margin-bottom: -5px;
+	border-radius: 6px;
+	background: rgb(57,129,252);
+}  </string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <property name="verticalSpacing">
+    <number>10</number>
+   </property>
+   <property name="leftMargin">
+    <number>10</number>
+   </property>
+   <property name="topMargin">
+    <number>10</number>
+   </property>
+   <property name="rightMargin">
+    <number>10</number>
+   </property>
+   <property name="bottomMargin">
+    <number>10</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>选择摄像头：</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="cbBx_camSel"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>分辨率：</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="cbBx_resolution"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>视频帧率：</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="cbBx_fps"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>码率：</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QSlider" name="sld_bps">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lbl_bps"/>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QRadioButton" name="rb_qualityMode">
+       <property name="text">
+        <string>画质优先</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rb_smoothMode">
+       <property name="text">
+        <string>流畅优先</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

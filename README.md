@@ -8,9 +8,9 @@
 ---|---|---|---
 [/Android](./Android)|Android|Java|[云屋RTC Android SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Android)
 [/iOS](./iOS)|iOS|Objective-C|[云屋RTC iOS SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=iOS)
-[/MacOS](./macOS)|MacOS|Objective-C|[云屋RTC MacOS SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=macOS)
+[/MacOS](./macOS)|MacOS|C++|[云屋RTC MacOS SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
 [/Windows](./Windows)|Windows|C++|[云屋RTC Windows SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
-[/Linux](./Windows)|Linux|C++|[云屋RTC Linux SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
+[/Linux](./Linux)|Linux|C++|[云屋RTC Linux SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
 [/Web](./Web)|Web|JS|[云屋RTC Web SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Web)
 [/Electron](./Electron)|PC|JS|[云屋RTC Electron SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Electron)
 [/Flutter](./Flutter)|Mobile|Dart|[云屋RTC Flutter SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Flutter)

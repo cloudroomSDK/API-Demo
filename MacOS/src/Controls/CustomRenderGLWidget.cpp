@@ -184,22 +184,22 @@ void CustomRenderGLWidget::paintGL()
 	p.setRenderHint(QPainter::SmoothPixmapTransform);
 	p.beginNativePainting();
 	CRVideoFrame frm = getFrame();
-	if (frm.getDatSize() > 0)
+	QSize frmSize(frm.getWidth(), frm.getHeight());
+	if (!frm.getFrameSize().isEmpty())
 	{
-		QSize frmSize(frm.getWidth(), frm.getHeight());
-		QRect drawRect = KeepAspectRatioDrawer::getContentRect(this, frmSize, CRVSDK_RENDERMD_FIT);
-
-		//绘制YUV420P
-		if (frm.getFormat() == CRVSDK_VFMT_YUV420P)
+		//确保为YUV420P格式（格式、尺寸相同时内部无开消）
+		if (g_sdkMain->videoFrameCover(frm, CRVSDK_VFMT_YUV420P, frmSize.width(), frmSize.height()))
 		{
+			QRect drawRect = KeepAspectRatioDrawer::getContentRect(this, frmSize, CRVSDK_RENDERMD_FIT);
 			fillLastColumnDate(frm);
 
-            uint8_t *yuvDat[3];
+			uint8_t *yuvDat[3];
 			int yuvLineSize[3];
 			frm.getRawDatPtr(yuvDat, yuvLineSize, 3);
-            drawYuv420p(yuvDat, yuvLineSize, frmSize, drawRect);
+			drawYuv420p(yuvDat, yuvLineSize, frmSize, drawRect);
 		}
 	}
+
 	p.endNativePainting();
 
 	//m_drawFps.AddCount();

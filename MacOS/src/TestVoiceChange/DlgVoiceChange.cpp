@@ -6,7 +6,12 @@ VoiceChangeItem::VoiceChangeItem(QWidget *parent /*= 0*/)
 	: QWidget(parent, Qt::Dialog | Qt::WindowCloseButtonHint)
 {
 	ui.setupUi(this);
-	
+    for(QComboBox *pCbBx : this->findChildren<QComboBox*>())
+    {
+        QListView *pLV = new QListView;
+        pCbBx->setView(pLV);
+    }
+
 	connect(ui.cbVoiceChoose, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_voiceChooseChanged(int)));
 }
 

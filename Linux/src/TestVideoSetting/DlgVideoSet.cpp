@@ -16,10 +16,13 @@ DlgVideoSet::DlgVideoSet(QWidget *parent)
 	ui.cbBx_resolution->insertItem(0, QString("360P"), QSize(640, 360));
 	ui.cbBx_resolution->insertItem(1, QString("480P"), QSize(848, 480));
 	ui.cbBx_resolution->insertItem(2, QString("720P"), QSize(1280, 720));
+	ui.cbBx_resolution->insertItem(3, QString("1080P"), QSize(1920, 1080));
+	ui.cbBx_resolution->insertItem(4, QString("4K"), QSize(3840, 2160));
 
 	ui.cbBx_fps->insertItem(0, QString("8"), 8);
 	ui.cbBx_fps->insertItem(1, QString("15"), 15);
-	ui.cbBx_fps->insertItem(2, QString("24"), 24);
+	ui.cbBx_fps->insertItem(2, QString("30"), 30);
+	ui.cbBx_fps->insertItem(3, QString("60"), 60);
 
 	m_defKBps = 350;
 	ui.sld_bps->setRange(5, 20);
@@ -37,6 +40,7 @@ DlgVideoSet::DlgVideoSet(QWidget *parent)
 
 	initVideoParams();
 	g_sdkMain->getSDKMeeting().AddCallBack(this);
+
 }
 
 DlgVideoSet::~DlgVideoSet()
@@ -74,7 +78,15 @@ void DlgVideoSet::slot_resolutionChanged(int idx)
 	//同步修改bps
 	ui.sld_bps->blockSignals(true);
 	int defKBps = 350;
-	if(m_vCfg._size.width() >= 720)
+	if (m_vCfg._size.height() >= 2160)
+	{
+		defKBps = 6000;
+	}
+	else if (m_vCfg._size.height() >= 1080)
+	{
+		defKBps = 2000;
+	}
+	else if (m_vCfg._size.height() >= 720)
 	{
 		defKBps = 1000;
 	}
@@ -142,9 +154,13 @@ void DlgVideoSet::initVideoParams()
 	m_vCfg = JsonToStruct<VideoCfg>(crStrToByteArray(jsonStr));
 
 	int findFps = 8;
-	if(m_vCfg._fps >= 24)
+	if (m_vCfg._fps >= 60)
 	{
-		findFps = 24;
+		findFps = 60;
+	}
+	else if(m_vCfg._fps >= 30)
+	{
+		findFps = 30;
 	}
 	else if(m_vCfg._fps >= 15)
 	{
@@ -154,7 +170,17 @@ void DlgVideoSet::initVideoParams()
 
 	QSize findSz(640, 360);
 	int defKBps = 350;
-	if(m_vCfg._size.width() >= 720)
+	if (m_vCfg._size.height() >= 2160)
+	{
+		findSz = QSize(3840, 2160);
+		defKBps = 6000;
+	}
+	else if (m_vCfg._size.height() >= 1080)
+	{
+		findSz = QSize(1920, 1080);
+		defKBps = 2000;
+	}
+	else if (m_vCfg._size.height() >= 720)
 	{
 		findSz = QSize(1280, 720);
 		defKBps = 1000;
@@ -187,11 +213,11 @@ void DlgVideoSet::initVideoParams()
 		ui.lbl_bps->setText(QString("%1kbps").arg(setBps));
 	}
 
-	if(m_vCfg._min_qp == 22 && m_vCfg._max_qp == 22)
+	if(m_vCfg._min_qp == m_vCfg._max_qp)
 	{
 		ui.rb_qualityMode->setChecked(true);
 	}
-	else if(m_vCfg._min_qp == 22 && m_vCfg._max_qp == 40)
+	else
 	{
 		ui.rb_smoothMode->setChecked(true);
 	}
@@ -232,3 +258,7 @@ void DlgVideoSet::initCamera()
 	ui.cbBx_camSel->blockSignals(false);
 }
 
+void DlgVideoSet::slot_HwChanged()
+{
+
+}

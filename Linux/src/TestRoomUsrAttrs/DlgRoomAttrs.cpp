@@ -120,7 +120,7 @@ void DlgRoomAttrs::slot_btnAddClicked()
 
 		QVariantMap varMap;
 		varMap[m_operKey] = m_operVal;
-		QByteArray jsonStr = QJsonDocument::fromVariant(varMap).toJson();
+		QByteArray jsonStr = CoverJsonToString(varMap);
 		g_sdkMain->getSDKMeeting().addOrUpdateMeetingAttrs(jsonStr.constData(), NULL, m_cookie.constData());
 	}
 }
@@ -135,7 +135,7 @@ void DlgRoomAttrs::slot_btnRemoveClicked()
 	m_operKey = itemKey->text();
 	QVariantList varList;
 	varList.push_back(m_operKey);
-	QByteArray jsonStr = QJsonDocument::fromVariant(varList).toJson();
+	QByteArray jsonStr = CoverJsonToString(varList);
 
 	g_sdkMain->getSDKMeeting().delMeetingAttrs(jsonStr.constData(), NULL, m_cookie.constData());
 }
@@ -179,7 +179,7 @@ void DlgRoomAttrs::slot_cellDoubleClicked(int row, int col)
 
 		QVariantMap varMap;
 		varMap[m_operKey] = m_operVal;
-		QByteArray jsonStr = QJsonDocument::fromVariant(varMap).toJson();
+		QByteArray jsonStr = CoverJsonToString(varMap);
 		g_sdkMain->getSDKMeeting().addOrUpdateMeetingAttrs(jsonStr.constData(), NULL, m_cookie.constData());
 	}
 }

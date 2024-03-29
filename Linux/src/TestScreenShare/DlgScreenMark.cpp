@@ -34,7 +34,7 @@ void DlgScreenMark::SetScreenPixmap(const CRVideoFrame &frm)
         return;
 
     CRVideoFrame tmpFrm(frm);
-    if (!g_sdkMain->videoFrameCover(tmpFrm, CRVSDK_VFMT_ARGB32, tmpFrm.getWidth(), tmpFrm.getHeight()))
+	if (!g_sdkMain->videoFrameCover(tmpFrm, CRVSDK_VFMT_0RGB32, tmpFrm.getWidth(), tmpFrm.getHeight()))
     {
         return;
     }
@@ -93,6 +93,6 @@ void DlgScreenMark::slot_clearMarkClicked()
 // 	{
 // 		delMark.append(info->_id);
 // 	}
-// 	QByteArray jsonData = QJsonDocument::fromVariant(QVariant(delMark)).toJson(QJsonDocument::Compact);
+// 	QByteArray jsonData = CoverJsonToString(QVariant(delMark));
 // 	g_sdkMain->getSDKMeeting().delScreenMarkData(jsonData.constData());
 }

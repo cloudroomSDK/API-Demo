@@ -12,6 +12,7 @@ public:
 
 	//强度级别0-10
 	void setLevel(int level); 
+	int  getLevel() { return m_level; }
 
 protected:
 	virtual void paintEvent(QPaintEvent *event);

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>306</width>
-    <height>366</height>
+    <height>388</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -238,7 +238,7 @@ max-height: 10px;
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="text">
-         <string>登录设置</string>
+         <string>设置</string>
         </property>
        </widget>
       </item>

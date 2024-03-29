@@ -18,6 +18,7 @@ ScreenShareUI::ScreenShareUI(QWidget *parent) : CustomRenderWidget(parent, CRVSD
 	connect(uiToolbar.startMarkBtn, &QToolButton::clicked, this, &ScreenShareUI::slot_startMarkClicked);
 	connect(uiToolbar.stopMarkBtn, &QToolButton::clicked, this, &ScreenShareUI::slot_stopMarkClicked);
 	connect(uiToolbar.openMarkDlgBtn, &QToolButton::clicked, this, &ScreenShareUI::slot_openMarkDlgClicked);
+	connect(this, &ScreenShareUI::s_recvFrame, this, &ScreenShareUI::slot_recvFrame);
 
 	//关注屏幕共享消息
 	g_sdkMain->getSDKMeeting().AddCallBack(this);
@@ -84,12 +85,10 @@ void ScreenShareUI::notifyScreenShareStarted(const char* userID)
 	m_bForSharer = MainDialog::getMyUserID() == userID;
 	if (m_bForSharer)
 	{
-		enabledRender(false);
 		ui.lbDesc->show();
 	}
 	else
 	{
-		enabledRender(true);
 		ui.lbDesc->hide();
 	}
 	updateToolbar();
@@ -108,15 +107,7 @@ void ScreenShareUI::notifyScreenShareStopped(const char* oprUserID)
 void ScreenShareUI::notifyScreenMarkStarted()
 {
 	m_dlgMark = new DlgScreenMark(m_bForSharer);
-	if (getFrame().getDatSize() <= 0)
-	{
-		//延迟1秒显示，需要等屏幕数据准备好
-		QTimer::singleShot(1000, this, SLOT(showMarkDlg()));
-	}
-	else
-	{
-		showMarkDlg();
-	}
+	showMarkDlg();
 	updateToolbar();
 }
 
@@ -173,8 +164,25 @@ void ScreenShareUI::slot_openMarkDlgClicked()
 	}
 }
 
+void ScreenShareUI::slot_recvFrame(qint64 ts)
+{
+	if (m_dlgMark != NULL && !m_dlgMark->isVisible())
+	{
+		showMarkDlg();
+	}
+}
+
 void ScreenShareUI::showMarkDlg()
 {
+	if (m_dlgMark == NULL)
+	{
+		return;
+	}
+	//需要等屏幕数据准备好
+	if (getFrame().getDatSize() <= 0)
+	{
+		return;
+	}
 	CRVideoFrame frm = getFrame();
 	QSize showSize(frm.getWidth(), frm.getHeight());
 	showSize.scale(800, 500, Qt::KeepAspectRatio);
@@ -189,4 +197,18 @@ void ScreenShareUI::resizeEvent(QResizeEvent *event)
 
 	m_toolbar->setFixedSize(this->width(), 40);
 	m_toolbar->move(0, this->height() - m_toolbar->height()); 
+}
+
+void ScreenShareUI::paintEvent(QPaintEvent *event)
+{
+	if (m_bForSharer)
+	{
+		QPainter painter(this);
+		QRect widgetRt = this->rect();
+		painter.fillRect(widgetRt, QColor(0, 0, 0));
+	}
+	else
+	{
+		CustomRenderWidget::paintEvent(event);
+	}
 }

@@ -92,6 +92,17 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	ui->btnHigherFunc->setIcon(downIcon);
 	ui->higherFuncWidget->setVisible(false);
 
+	//创建多个屏幕摄像头
+	int nScreen = QApplication::desktop()->screenCount();
+	for (int i = 0; i < nScreen && i < 5; i++)
+	{
+		QVariantMap screenCamMap;
+		screenCamMap["monitorID"] = i;
+		QByteArray strScreen = QJsonDocument::fromVariant(screenCamMap).toJson();
+		QString camName = QString("自定义屏幕摄像头%1").arg(i + 1);
+		g_sdkMain->getSDKMeeting().createScreenCamDev(camName.toUtf8().constData(), strScreen.constData());
+	}
+
 	//开麦、开摄像头
 	g_sdkMain->getSDKMeeting().openMic(MainDialog::getMyUserID().constData());
 	g_sdkMain->getSDKMeeting().openVideo(MainDialog::getMyUserID().constData());
@@ -288,7 +299,6 @@ void MainDialog::slot_btnStartScreenClicked()
 		return;
 	}
 
-	//g_sdkMain->getSDKMeeting().setScreenShareCfg(CRScreenShareCfg());
 	g_sdkMain->getSDKMeeting().startScreenShare();
 }
 

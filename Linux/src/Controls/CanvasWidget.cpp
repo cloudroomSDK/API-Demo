@@ -6,8 +6,9 @@ VideoCanvasWidget::VideoCanvasWidget(QWidget *parent)
 	: QWidget(parent)
 	, CRCanvas(CRVSDK_VIEWTP_VIDEO, (void*)winId())
 {	
-	this->setStyleSheet("QWidget{background: black;}");
 	g_sdkMain->getSDKMeeting().addCanvas(this);
+	//设置该属性，将绘制全部交给内部渲染
+	this->setAttribute(Qt::WA_PaintOnScreen);
 }
 
 VideoCanvasWidget::~VideoCanvasWidget()
@@ -15,11 +16,8 @@ VideoCanvasWidget::~VideoCanvasWidget()
 	g_sdkMain->getSDKMeeting().rmCanvas(this);
 }
 
-void VideoCanvasWidget::paintEvent(QPaintEvent *event)
+//与WA_PaintOnScreen配合使用
+QPaintEngine* VideoCanvasWidget::paintEngine() const
 {
-	//支持设置qss
-	QStyleOption opt;
-	opt.init(this);
-	QPainter p(this);
-	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+	return 0;
 }

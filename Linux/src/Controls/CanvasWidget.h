@@ -10,7 +10,7 @@ public:
 	~VideoCanvasWidget();
 
 protected:
-	void paintEvent(QPaintEvent *event);
+	QPaintEngine* paintEngine() const;
 };
 
 #endif // CANVASWIDGET_H

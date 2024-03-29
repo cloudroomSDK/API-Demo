@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>327</width>
-    <height>50</height>
+    <height>56</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,6 @@
 	min-height: 30px;
 	padding-left: 8px;
 	padding-right: 8px;
-	selection-background-color:rgb(80,145,255);
 }
 QComboBox:hover {
 	border-color:rgb(57,129,252);

@@ -21,6 +21,7 @@ public slots:
 	void slot_fpsChanged(int idx);
 	void slot_bpsChanged(int val);
 	void slot_videoTransModeChanged(int id);
+	void slot_HwChanged();
 
 protected:
 	void initVideoParams();

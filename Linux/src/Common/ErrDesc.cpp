@@ -16,7 +16,7 @@ QString getErrDesc(CRVSDK_ERR_DEF err)
 		{ CRVSDKERR_MISMATCHCLIENTVER, "不支持的sdk版本" },
 		{ CRVSDKERR_PARAM_ERR, "参数错误" },
 		{ CRVSDKERR_ERR_DATA, "无效数据" },
-		{ CRVSDKERR_ANCTPSWD_ERR, "帐号密码不正确" },
+		{ CRVSDKERR_ANCTPSWD_ERR, "AppID或AppSecret不正确" },
 		{ CRVSDKERR_SERVER_EXCEPTION, "服务异常" },
 		{ CRVSDKERR_LOGINSTATE_ERROR, "登录状态错误" },
 		{ CRVSDKERR_KICKOUT_BY_RELOGIN, "帐号在别处被使用" },

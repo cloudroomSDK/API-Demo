@@ -101,7 +101,7 @@ void DlgServerRecord::slot_btnStartRecordClicked()
 	videoFileCfgMap["layoutConfig"] = g_mainDialog->getRecordContents(recordSize);//布局内容
 	mixerCfgMap["videoFileCfg"] = videoFileCfgMap;
 
-	QByteArray mixerCfg = QJsonDocument::fromVariant(mixerCfgMap).toJson();
+	QByteArray mixerCfg = CoverJsonToString(mixerCfgMap);
 	CRBase::CRString rsltMixerID = g_sdkMain->getSDKMeeting().createCloudMixer(mixerCfg.constData());
 	
 	m_recordSize = recordSize;
@@ -125,7 +125,7 @@ void DlgServerRecord::slot_mainViewChanged()
 	varContentMap["layoutConfig"] = g_mainDialog->getRecordContents(m_recordSize);
 	QVariantMap varVideoMap;
 	varVideoMap["videoFileCfg"] = varContentMap;
-	QByteArray cfg = QJsonDocument::fromVariant(varVideoMap).toJson();
+	QByteArray cfg = CoverJsonToString(varVideoMap);
 	CRVSDK_ERR_DEF err = g_sdkMain->getSDKMeeting().updateCloudMixerContent(m_mixerID.toUtf8().constData(), cfg.constData());
 	if (err != CRVSDKERR_NOERR)
 	{

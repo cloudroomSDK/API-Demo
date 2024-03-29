@@ -17,7 +17,7 @@
    <string notr="true">#CustomVideoCaptureRender {
 	background: rgb(255,255,255);
 }
-QPushButton {
+#btnVideoCap{
 	background:rgb(57,129,252);
 	color: rgb(255,255,255);
 	border: 1px solid rgb(57,129,252);
@@ -25,7 +25,7 @@ QPushButton {
 	min-height: 28px;
 	min-width: 76px;
 }
-QPushButton:hover, QPushButton:pressed {
+#btnVideoCap:hover,#btnVideoCap:pressed {
 	background: rgb(5,117,197);
 }</string>
   </property>
@@ -58,13 +58,6 @@ QPushButton:hover, QPushButton:pressed {
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>视频采集</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="btnVideoCap">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -89,7 +82,7 @@ QPushButton:hover, QPushButton:pressed {
    <item>
     <widget class="QTabWidget" name="tabWidget_2">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabWidget_2Page1">
       <attribute name="title">
@@ -113,11 +106,17 @@ QPushButton:hover, QPushButton:pressed {
        </property>
        <item>
         <widget class="QWidget" name="widget_1" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>40</height>
+          </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
@@ -127,16 +126,53 @@ QPushButton:hover, QPushButton:pressed {
             </property>
            </widget>
           </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="customRenderLayout"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>自定义OpenGL渲染</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="widget_3" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>40</height>
+          </size>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QPushButton" name="btnVideoRender">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>开始视频自定义渲染</string>
+             <string>视频渲染（OpenGL）</string>
             </property>
            </widget>
           </item>
@@ -144,7 +180,7 @@ QPushButton:hover, QPushButton:pressed {
         </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="customRenderLayout"/>
+        <layout class="QVBoxLayout" name="customRenderLayoutGL"/>
        </item>
       </layout>
      </widget>
@@ -165,13 +201,22 @@ QPushButton:hover, QPushButton:pressed {
        <property name="rightMargin">
         <number>0</number>
        </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QWidget" name="widget_2" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>40</height>
+          </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>

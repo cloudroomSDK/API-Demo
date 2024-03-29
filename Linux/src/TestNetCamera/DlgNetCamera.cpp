@@ -67,7 +67,7 @@ void DlgNetCamera::addCam()
 {
 	QVariantMap params;
 	params["maxRetry"] = 1;
-	QByteArray jsonParams = QJsonDocument::fromVariant(params).toJson();
+	QByteArray jsonParams = CoverJsonToString(params);
 
 	int rslt = g_sdkMain->getSDKMeeting().addIPCam(qStrToStdStr(ui.editUrl->text()).c_str(), jsonParams.constData());
 	if (rslt < 0)

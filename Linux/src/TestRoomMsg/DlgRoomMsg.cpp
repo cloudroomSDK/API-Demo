@@ -74,7 +74,7 @@ void DlgRoomMsg::slot_btnSendClicked()
 	QVariantMap varMap;
 	varMap["CmdType"] = "IM";
 	varMap["IMMsg"] = inputText;
-	QByteArray roomMsg = QJsonDocument::fromVariant(varMap).toJson();
+	QByteArray roomMsg = CoverJsonToString(varMap);
 	g_sdkMain->getSDKMeeting().sendMeetingCustomMsg(roomMsg.constData(), m_cookie.constData());
 }
 

@@ -17,14 +17,17 @@ protected:
 
 public slots:
 	void slot_camSelChanged(int idx);
+	void slot_camSel2Changed(int idx);
 	void slot_resolutionChanged(int idx);
 	void slot_fpsChanged(int idx);
 	void slot_bpsChanged(int val);
 	void slot_videoTransModeChanged(int id);
+	void slot_HwChanged();
 
 protected:
 	void initVideoParams();
 	void initCamera();
+	void initCamera(QComboBox *box, int defCam);
 
 private:
 	Ui::DlgVideoSet ui;

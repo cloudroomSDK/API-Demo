@@ -12,12 +12,9 @@
 #include "./TestAudioSetting/DlgAudioSet.h"
 #include "./TestVideoSetting/DlgVideoSet.h"
 #include "./TestRoomMsg/DlgRoomMsg.h"
-#include "./TestRoomUsrAttrs/DlgUserSelect.h"
-#include "./TestRoomUsrAttrs/DlgRoomAttrs.h"
-#include "./TestRoomUsrAttrs/DlgUserAttrs.h"
-#include "./TestNetCamera/DlgNetCamera.h"
 #include "./TestVoiceChange/DlgVoiceChange.h"
 #include "./TestEchoTest/DlgEchoTest.h"
+#include "./TestSubscribeAudio/DlgSubscribeAudio.h"
 
 
 MainDialog *g_mainDialog = NULL;
@@ -34,16 +31,12 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	ui->setupUi(this);
 	setWindowTitle(tr("房间号：%1").arg(meetId));
 
-	m_dlgLocRecord = NULL;
 	m_dlgSvrRecord = NULL;
 	m_customAudioCapture = NULL;
 	m_customVideoCaptureRender = NULL;
 	m_mediaPlayUI = NULL;
 	m_screeShareUI = NULL;
 	m_videoWallPage = NULL;
-	m_dlgRoomAttrs = NULL;
-	m_dlgUserSelect = NULL;
-	m_dlgNetCamera = NULL;
 
 	//入会就开始收消息
 	m_dlgRoomMsg = new DlgRoomMsg(this);
@@ -66,6 +59,7 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	connect(ui->btnEchoTest, &QPushButton::clicked, this, &MainDialog::slot_btnEchoTestClicked);
 	connect(ui->btnStartScreenShare, &QPushButton::clicked, this, &MainDialog::slot_btnStartScreenClicked);
 	connect(ui->btnStopScreenShare, &QPushButton::clicked, this, &MainDialog::slot_btnStopScreenClicked);
+	connect(ui->btnSubAudio, &QPushButton::clicked, this, &MainDialog::slot_btnSubAudioClicked);
 
 	QLayout *pLayout = ui->mainFuncWidget->layout();
 	pLayout->setSpacing(VIDEO_WALL_SPACE);
@@ -91,6 +85,17 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	ui->btnBaseFunc->setIcon(upIcon);
 	ui->btnHigherFunc->setIcon(downIcon);
 	ui->higherFuncWidget->setVisible(false);
+
+	//创建多个屏幕摄像头
+	int nScreen = QApplication::desktop()->screenCount();
+	for (int i = 0; i < nScreen && i < 5; i++)
+	{
+		QVariantMap screenCamMap;
+		screenCamMap["monitorID"] = i;
+		QByteArray strScreen = QJsonDocument::fromVariant(screenCamMap).toJson();
+		QString camName = QString("自定义屏幕摄像头%1").arg(i + 1);
+		g_sdkMain->getSDKMeeting().createScreenCamDev(camName.toUtf8().constData(), strScreen.constData());
+	}
 
 	//开麦、开摄像头
 	g_sdkMain->getSDKMeeting().openMic(MainDialog::getMyUserID().constData());
@@ -152,8 +157,9 @@ QVariant MainDialog::getRecordContents(const QSize &recSize)
 		int contentXPos = 0;
 		for (int col = 0; col < 3 && vuis.size()>0; col++)
 		{
+			const KVideoUI *videoUI = vuis.front();
 			QVariantMap itemParams;
-			itemParams["camid"] = QString("%1.-1").arg(vuis.front()->getUserId().constData());
+			itemParams["camid"] = QString("%1.%2").arg(videoUI->getUserId().constData()).arg(videoUI->getCameraId());
 			vuis.pop_front();
 
 			QVariantMap itemVideo;
@@ -224,12 +230,14 @@ void MainDialog::slot_btnVideoSetClicked()
 
 void MainDialog::slot_btnLocRecordClicked()
 {
-	if (m_dlgLocRecord == NULL)
+	if (m_dlgLocRecord.isNull())
 	{
 		m_dlgLocRecord = new DlgLocalRecord(this);
+		m_dlgLocRecord->setAttribute(Qt::WA_DeleteOnClose);
 	}
 	m_dlgLocRecord->show();
 }
+
 void MainDialog::slot_btnSvrRecordClicked()
 {
 	if (m_dlgSvrRecord == NULL)
@@ -288,7 +296,6 @@ void MainDialog::slot_btnStartScreenClicked()
 		return;
 	}
 
-	//g_sdkMain->getSDKMeeting().setScreenShareCfg(CRScreenShareCfg());
 	g_sdkMain->getSDKMeeting().startScreenShare();
 }
 
@@ -337,27 +344,30 @@ void MainDialog::slot_btnRoomMsgClicked()
 }
 void MainDialog::slot_btnRoomSetClicked()
 {
-	if(NULL == m_dlgRoomAttrs)
+	if (m_dlgRoomAttrs.isNull())
 	{
 		m_dlgRoomAttrs = new DlgRoomAttrs(this);
+		m_dlgRoomAttrs->setAttribute(Qt::WA_DeleteOnClose);
 	}
 	m_dlgRoomAttrs->show();
 }
 
 void MainDialog::slot_btnMemberSetClicked()
 {
-	if(NULL == m_dlgUserSelect)
+	if (m_dlgUserSelect.isNull())
 	{
 		m_dlgUserSelect = new DlgUserSelect(this);
+		m_dlgUserSelect->setAttribute(Qt::WA_DeleteOnClose);
 	}
 	m_dlgUserSelect->show();
 }
 
 void MainDialog::slot_btnNetCameraClicked()
 {
-	if (NULL == m_dlgNetCamera)
+	if (m_dlgNetCamera.isNull())
 	{
 		m_dlgNetCamera = new DlgNetCamera(this);
+		m_dlgNetCamera->setAttribute(Qt::WA_DeleteOnClose);
 	}
 	m_dlgNetCamera->show();
 }
@@ -374,4 +384,11 @@ void MainDialog::slot_btnEchoTestClicked()
 	DlgEchoTest *dlgEchoTest = new DlgEchoTest(this);
 	dlgEchoTest->setAttribute(Qt::WA_DeleteOnClose);
 	dlgEchoTest->show();
+}
+
+void MainDialog::slot_btnSubAudioClicked()
+{
+	DlgSubscribeAudio *dlgSubscribeAudio = new DlgSubscribeAudio(this);
+	dlgSubscribeAudio->setAttribute(Qt::WA_DeleteOnClose);
+	dlgSubscribeAudio->show();
 }

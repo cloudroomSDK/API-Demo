@@ -2,12 +2,20 @@
 #define KVIDEOUI_H
 
 #include "CustomRenderWidget.h"
+#include "CustomRenderGLWidget.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class KVideoUI; }
 QT_END_NAMESPACE
 
-class KVideoUI : public CustomRenderWidget
+#if 1
+#	define CustomRenderBase CustomRenderWidget
+#else
+#	define CustomRenderBase CustomRenderGLWidget
+#endif
+
+class KVideoUI : public CustomRenderBase
 {
 	Q_OBJECT
 
@@ -18,14 +26,14 @@ public:
 	//恢复初始值
 	void clean();
 
+	void setVideoInfo(const char* userID);
+	void setVideoInfo(const CRVSDK::CRUserVideoID &cam);
+
 	void updateNickname(const QString &nickname);
 	void updateNetState(int level);
 	void updateMicStatus(CRVSDK_ASTATUS aStatus);
 	void updateMicEnergy(int level);
 	void updateCamStatus(CRVSDK_VSTATUS vStatus);
-
-	void setVideoInfo(const char* userID);
-	void setVideoInfo(const CRVSDK::CRUserVideoID &cam);
 
 	const CRVSDK::CRUserVideoID &getUsrCamID() const { return m_vId; }
 	const CRBase::CRString &getUserId() const {	return m_vId._userID; }
@@ -34,15 +42,14 @@ public:
 	bool isRenderState() const;
 
 protected:
-    void paintEvent(QPaintEvent *event);
-	void hideEvent(QHideEvent* event);
-	void showEvent(QShowEvent* event);
+	void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private slots:
 	void slot_btnMicClicked();
 	void slot_btnCamClicked();
 	void slot_btnMirrorClicked();
 	void slot_btnRotateClicked();
+	void slot_upNetInfo();
 
 private:
 	void initAllPics();
@@ -50,11 +57,17 @@ private:
 	void updateRenderState();
 
 private:
-	Ui::KVideoUI	*ui;
+	Ui::KVideoUI	*ui{ nullptr };
 	CRUserVideoID	m_vId;
+	CRVSDK_ASTATUS	m_aST{ CRVSDK_AST_UNKNOWN };
+	CRVSDK_VSTATUS	m_vST{ CRVSDK_VST_UNKNOWN };
+	int				m_micEnergyLv{ 0 };
 
 	bool			m_mineVideo;
 	int				m_videoRotate;
+	QTimer			m_upNetInfoTimer;
+
+	QPointer<KVideoUI> m_fullVideoUI;
 };
 
 

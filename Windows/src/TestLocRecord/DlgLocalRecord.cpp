@@ -84,10 +84,10 @@ void DlgLocalRecord::slot_btnStartRecordClicked()
 	mixerCfgMap["bitRate"] = recParams.bitRate;
 	mixerCfgMap["defaultQP"] = recParams.defaultQP;
 	mixerCfgMap["gop"] = recParams.gop;
-	QByteArray mixerCfg = QJsonDocument::fromVariant(mixerCfgMap).toJson();
+	QByteArray mixerCfg = CoverJsonToString(mixerCfgMap);
 
 	//录制内容
-	QByteArray mixerContents = QJsonDocument::fromVariant(g_mainDialog->getRecordContents(recParams.sz)).toJson();
+	QByteArray mixerContents = CoverJsonToString(g_mainDialog->getRecordContents(recParams.sz));
 
 	//创建混图器
 	CRVSDK_ERR_DEF err = g_sdkMain->getSDKMeeting().createLocMixer(LOCREC_MIXER_ID, mixerCfg.constData(), mixerContents.constData());
@@ -105,7 +105,7 @@ void DlgLocalRecord::slot_btnStartRecordClicked()
 	mixerOutputObj["type"] = CRVSDK_MIXER_OUTPUT_FILE;//录制文件
 	mixerOutputObj["filename"] = m_curRecordFile;//文件名称
 	mixerOutputList.append(mixerOutputObj);
-	QByteArray mixerOutput = QJsonDocument::fromVariant(mixerOutputList).toJson();
+	QByteArray mixerOutput = CoverJsonToString(mixerOutputList);
 	err = g_sdkMain->getSDKMeeting().addLocMixerOutput(LOCREC_MIXER_ID, mixerOutput.constData());
 	if (err != CRVSDKERR_NOERR)
 	{
@@ -133,7 +133,7 @@ void DlgLocalRecord::slot_mainViewChanged()
 		return;
 	}
 
-	QByteArray mixerContents = QJsonDocument::fromVariant(g_mainDialog->getRecordContents(m_recordSize)).toJson();
+	QByteArray mixerContents = CoverJsonToString(g_mainDialog->getRecordContents(m_recordSize));
 	CRVSDK_ERR_DEF err = g_sdkMain->getSDKMeeting().updateLocMixerContent(LOCREC_MIXER_ID, mixerContents.constData());
 	if (err != CRVSDKERR_NOERR)
 	{

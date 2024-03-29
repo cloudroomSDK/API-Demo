@@ -1,12 +1,16 @@
 ﻿#ifndef CUSTOMRENDERWIDGET_H
 #define CUSTOMRENDERWIDGET_H
 
+#include "CRFPSStatistics.h"
+
 class CustomRenderWidget : public QWidget, public CRCustomRenderHandler
 {
     Q_OBJECT
 public:
 	CustomRenderWidget(QWidget *parent, CRVSDK_STREAM_VIEWTYPE viewType);
 	~CustomRenderWidget();
+
+	void setVideoID(const CRUserVideoID &id, CRVSDK_VSTEAMLV_TYPE lv = CRVSDK_VSTP_LV0);
 
 	CRVideoFrame getFrame();
 	int64_t getFrameTimestamp();
@@ -19,26 +23,30 @@ public:
 	bool getLocMirror() { return m_bLocMirror; }
 
 	//是否启用render
-	void enabledRender(bool bEnale);
+	void setRenderEnabled(bool bEnable);
 
 signals:
 	void s_recvFrame(qint64 ts);
 
 protected:
 	void onRenderFrameDat(const CRVideoFrame &frm) override;
-
-protected:
 	void paintEvent(QPaintEvent *event) override;
-
-signals:
-	void s_update();
+	void hideEvent(QHideEvent* event) override;
+	void showEvent(QShowEvent* event) override;
+	void setDefaultBackground(const QColor &color);
 
 private:
-	bool				m_bLocMirror;
-	bool				m_enabledRender;
+	void updateRenderHandler();
+
+private:
+	bool				m_bRenderEnable{ true };
+	bool				m_bLocMirror{ false };
 	CRVideoFrame		m_frame;
 	QMutex				m_frameLock;
+	QColor				m_defBkColor;
 
+	//CRFPSStatistics	m_recvFps;
+	//CRFPSStatistics	m_drawFps;
 };
 
 #endif // CUSTOMRENDERWIDGET_H

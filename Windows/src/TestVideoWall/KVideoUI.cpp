@@ -4,7 +4,7 @@
 #include "maindialog.h"
 #include "KeepAspectRatioDrawer.h"
 
-KVideoUI::KVideoUI(QWidget* pParent) : CustomRenderWidget(pParent, CRVSDK_VIEWTP_VIDEO)
+KVideoUI::KVideoUI(QWidget* pParent) : CustomRenderBase(pParent, CRVSDK_VIEWTP_VIDEO)
 {
 	ui = new Ui::KVideoUI;
 	ui->setupUi(this);
@@ -17,15 +17,18 @@ KVideoUI::KVideoUI(QWidget* pParent) : CustomRenderWidget(pParent, CRVSDK_VIEWTP
 	connect(ui->VUI_btnCam, SIGNAL(clicked()), this, SLOT(slot_btnCamClicked()));
 	connect(ui->VUI_btnMirror, SIGNAL(clicked()), this, SLOT(slot_btnMirrorClicked()));
 	connect(ui->VUI_btnRotate, SIGNAL(clicked()), this, SLOT(slot_btnRotateClicked()));
+	connect(&m_upNetInfoTimer, &QTimer::timeout, this, &KVideoUI::slot_upNetInfo);
 
 	initAllPics();
 	updateBtnState(CRString(), CRVSDK_AST_NULL, CRVSDK_VST_NULL);
+
+	setRenderEnabled(isRenderState());
+	setDefaultBackground(QColor(240, 240, 240));
 }
 
 void KVideoUI::clean()
 {
  	this->setVideoInfo(CRUserVideoID());
-	this->clearFrame();
 }
 
 KVideoUI::~KVideoUI()
@@ -39,15 +42,33 @@ KVideoUI::~KVideoUI()
 void KVideoUI::updateNickname(const QString &nickname)
 {
 	ui->VUI_nickname->setText(nickname);
+	if (!m_fullVideoUI.isNull())
+	{
+		m_fullVideoUI->updateNickname(nickname);
+	}
 }
 
 void KVideoUI::updateNetState(int level)
 {
-	ui->VUI_netState->setLevel(level);
+	slot_upNetInfo();
+	if (!m_fullVideoUI.isNull())
+	{
+		m_fullVideoUI->updateNetState(level);
+	}
 }
+
+void KVideoUI::slot_upNetInfo()
+{
+	CRNetStateInfo nInfo = g_sdkMain->getSDKMeeting().getNetState2();
+	ui->VUI_netState->setLevel(nInfo._lv);
+	QString msg = QString("delay:%1ms, sendLost:%2, recvLost:%3").arg(nInfo._delay).arg(qMax(nInfo._aSndLost, nInfo._vSndLost)).arg(qMax(nInfo._aRcvLost, nInfo._vRcvLost));
+	ui->VUI_netState->setToolTip(msg);
+}
+
 
 void KVideoUI::updateMicStatus(CRVSDK_ASTATUS aStatus)
 {
+	m_aST = aStatus;
 	ui->VUI_btnMic->setVisible(aStatus > CRVSDK_AST_NULL);
 	QString iconStr(":/Resources/micLv_0.png");
 	if(aStatus != CRVSDK_AST_OPEN)
@@ -55,10 +76,16 @@ void KVideoUI::updateMicStatus(CRVSDK_ASTATUS aStatus)
 		iconStr = QString(":/Resources/micClosed.png");
 	}
 	ui->VUI_btnMic->setIcon(QIcon(iconStr));
+
+	if (!m_fullVideoUI.isNull())
+	{
+		m_fullVideoUI->updateMicStatus(aStatus);
+	}
 }
 
 void KVideoUI::updateMicEnergy(int level)
 {
+	m_micEnergyLv = level;
 	int micLv = 0;
 	if(level >= 8)
 		micLv = 3;
@@ -72,10 +99,16 @@ void KVideoUI::updateMicEnergy(int level)
 	icon.addFile(iconStr, QSize(), QIcon::Normal);
 	icon.addFile(iconStr, QSize(), QIcon::Disabled);
 	ui->VUI_btnMic->setIcon(icon);
+
+	if (!m_fullVideoUI.isNull())
+	{
+		m_fullVideoUI->updateMicEnergy(level);
+	}
 }
 
 void KVideoUI::updateCamStatus(CRVSDK_VSTATUS vStatus)
 {
+	m_vST = vStatus;
     ui->VUI_btnCam->setVisible(vStatus > CRVSDK_VST_NULL);
 	QString iconStr(":/Resources/camOpened.png");
 	if(vStatus != CRVSDK_VST_OPEN)
@@ -83,30 +116,20 @@ void KVideoUI::updateCamStatus(CRVSDK_VSTATUS vStatus)
 		iconStr = QString(":/Resources/camClosed.png");
 	}
 	ui->VUI_btnCam->setIcon(QIcon(iconStr));
-	updateRenderState();
+	setRenderEnabled(isRenderState());
+
+	if (!m_fullVideoUI.isNull())
+	{
+		m_fullVideoUI->updateCamStatus(vStatus);
+	}
 }
 
 
 bool KVideoUI::isRenderState() const
 {
 	CRVSDK_VSTATUS vstatus = g_sdkMain->getSDKMeeting().getVideoStatus(m_vId._userID.constData());
-	bool bRender = (vstatus == CRVSDK_VST_OPEN && this->isVisible());
+	bool bRender = (vstatus == CRVSDK_VST_OPEN);
 	return bRender;
-}
-
-void KVideoUI::updateRenderState()
-{
-	if (isRenderState())
-	{
-		g_sdkMain->getSDKMeeting().addCustomRender(this);
-	}
-	else
-	{
-		g_sdkMain->getSDKMeeting().rmCustomRender(this);
-		clearFrame();
-	}
-
-	this->update();
 }
 
 void KVideoUI::initAllPics()
@@ -154,14 +177,14 @@ void KVideoUI::setVideoInfo(const CRVSDK::CRUserVideoID &cam)
 		return;
 	}
 
-	clearFrame();
-
 	//应用新设置
 	setLocMirror(false);
 	m_vId = cam;
+	setDefaultBackground(m_vId._userID.isEmpty()? QColor(240, 240, 240) : Qt::black);
+
 	m_mineVideo = (MainDialog::getMyUserID() == m_vId._userID);
 	this->setVideoID(m_vId);
-	updateRenderState();
+	setRenderEnabled(isRenderState());
 
 	CRMeetingMember mem;
 	if(!m_vId._userID.isEmpty())
@@ -169,6 +192,15 @@ void KVideoUI::setVideoInfo(const CRVSDK::CRUserVideoID &cam)
 		g_sdkMain->getSDKMeeting().getMemberInfo(m_vId._userID.constData(), mem);
 	}
 	updateBtnState(mem._nickName, mem._audioStatus, mem._videoStatus);
+
+	if (m_mineVideo)
+	{
+		m_upNetInfoTimer.start(500);
+	}
+	else
+	{
+		m_upNetInfoTimer.stop();
+	}
 }
 
 void KVideoUI::slot_btnMicClicked()
@@ -207,6 +239,7 @@ void KVideoUI::slot_btnCamClicked()
 	{
 		g_sdkMain->getSDKMeeting().openVideo(m_vId._userID.constData());
 	}
+	setRenderEnabled(isRenderState());
 }
 
 void KVideoUI::slot_btnMirrorClicked()
@@ -241,32 +274,41 @@ void KVideoUI::slot_btnRotateClicked()
 		degree = 0;
 	}
 	vMap["degree"] = degree;
-	QByteArray newEff = QJsonDocument::fromVariant(vMap).toJson();
+	QByteArray newEff = CoverJsonToString(vMap);
 	g_sdkMain->getSDKMeeting().setVideoEffects(newEff.constData());
 }
 
-void KVideoUI::paintEvent(QPaintEvent *event)
+void KVideoUI::mouseDoubleClickEvent(QMouseEvent *event)
 {
-	bool showEmpty = m_vId._userID.isEmpty();
-	if(showEmpty)
+	QWidget::mouseDoubleClickEvent(event);
+
+	QDialog *pFullDlg = this->property("FullDlg").value<QDialog*>();
+	if (pFullDlg == nullptr)
 	{
-		QPainter p(this);
-		//填充全白
-		p.fillRect(rect(), QColor(240, 240, 240));
-		return;
+		pFullDlg = new QDialog(this);
+		QHBoxLayout* horizontalLayout = new QHBoxLayout(pFullDlg);
+		horizontalLayout->setMargin(0);
+		KVideoUI *pVUI = new KVideoUI(pFullDlg);
+		horizontalLayout->addWidget(pVUI);
+
+
+		pVUI->setProperty("FullDlg", QVariant::fromValue(pFullDlg));
+		pVUI->setVideoInfo(m_vId);
+		pVUI->updateNickname(ui->VUI_nickname->text());
+		pVUI->updateNetState(ui->VUI_netState->getLevel());
+		pVUI->updateMicStatus(m_aST);
+		pVUI->updateMicEnergy(m_micEnergyLv);
+		pVUI->updateCamStatus(m_vST);
+		pVUI->show();
+
+		pFullDlg->setAttribute(Qt::WA_DeleteOnClose);
+		pFullDlg->showFullScreen();
+
+		m_fullVideoUI = pVUI;
 	}
-
-	CustomRenderWidget::paintEvent(event);
-}
-
-void KVideoUI::hideEvent(QHideEvent* event)
-{
-    QWidget::hideEvent(event);
-	this->updateRenderState();
-}
-
-void KVideoUI::showEvent (QShowEvent* event)
-{
-    QWidget::showEvent(event);
-	this->updateRenderState();
+	else
+	{
+		pFullDlg->close();
+		pFullDlg->deleteLater();
+	}
 }

@@ -6,6 +6,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 TEMPLATE = app
 TARGET = APIDemo
+
+# Winodws
 msvc {
 contains(QT_ARCH, i386): ARCHITECTURE = x86
 else: ARCHITECTURE = $$QT_ARCH
@@ -13,9 +15,9 @@ QMAKE_LFLAGS_RELEASE += /MAP
 QMAKE_CFLAGS_RELEASE += /Zi
 QMAKE_LFLAGS_RELEASE += /debug /opt:ref
 INCLUDEPATH += $$PWD/CRVideoSDK/include
-
 LIBS += -L$$PWD/CRVideoSDK/lib/$$ARCHITECTURE/ -lCRBase -lCRVideoSDKCpp
 }
+# Linux
 linux {
 ARCHITECTURE=$$QMAKE_HOST.arch
 contains(QMAKE_HOST.arch, aarch64) || linux-aarch64-gnu-g++{
@@ -25,6 +27,12 @@ INCLUDEPATH += $$PWD/CRVideoSDK/include
 LIBS += -L$$PWD/CRVideoSDK/lib/$$ARCHITECTURE -lCRBase -lCRVideoSDKCpp
 QMAKE_LFLAGS += -Wl,-rpath,./:$$PWD/CRVideoSDK/lib/$$ARCHITECTURE
 DEFINES += LINUX
+}
+# MacOS
+macx {
+    INCLUDEPATH += $$PWD/CRVideoSDK/lib/libCRVideoSDKCpp.xcframework/macos-x86_64/Headers
+    LIBS += -L$$PWD/CRVideoSDK/lib/libCRVideoSDKCpp.xcframework/macos-x86_64  -lCRVideoSDKCpp
+    QMAKE_INFO_PLIST = Info.plist
 }
 DESTDIR = $$PWD/bin/$$ARCHITECTURE
 
@@ -47,16 +55,19 @@ INCLUDEPATH += \
     $$PWD/src/TestEchoTest \
     $$PWD/src/TestNetCamera \
     $$PWD/src/TestVoiceChange \
-    $$PWD/src/TestTestScreenShare
+    $$PWD/src/TestTestScreenShare \
+    $$PWD/src/TestSubscribeAudio
 
 SOURCES += \
     src/stdafx.cpp \
     src/main.cpp \
     src/Common/Common.cpp \
     src/Common/ErrDesc.cpp \
-	src/Common/JsonHelper.cpp \
+    src/Common/JsonHelper.cpp \
     src/Common/KeepAspectRatioDrawer.cpp \
+    src/Common/CRFPSStatistics.cpp \
     src/Controls/CustomRenderWidget.cpp \
+    src/Controls/CustomRenderGLWidget.cpp \
     src/Controls/CanvasWidget.cpp \
     src/Controls/NetSignalWidget.cpp \
     src/Controls/SliderWithDescPoint.cpp \
@@ -84,15 +95,19 @@ SOURCES += \
     src/TestVoiceChange/DlgVoiceChange.cpp \
     src/TestScreenShare/ScreenShareUI.cpp \
     src/TestScreenShare/ScreenMarkView.cpp \
-    src/TestScreenShare/DlgScreenMark.cpp
+    src/TestScreenShare/DlgScreenMark.cpp \
+    src/TestSubscribeAudio/DlgSubscribeAudio.cpp \
 
 HEADERS += \
     src/stdafx.h \
+    src/AccountInfo.h \
     src/Common/Common.h \
     src/Common/ErrDesc.h \
-	src/Common/JsonHelper.h \
+    src/Common/JsonHelper.h \
     src/Common/KeepAspectRatioDrawer.h \
+    src/Common/CRFPSStatistics.h \
     src/Controls/CustomRenderWidget.h \
+    src/Controls/CustomRenderGLWidget.h \
     src/Controls/CanvasWidget.h \
     src/Controls/NetSignalWidget.h \
     src/Controls/SliderWithDescPoint.h \
@@ -120,7 +135,8 @@ HEADERS += \
     src/TestVoiceChange/DlgVoiceChange.h \
     src/TestScreenShare/ScreenShareUI.h \
     src/TestScreenShare/ScreenMarkView.h \
-    src/TestScreenShare/DlgScreenMark.h 
+    src/TestScreenShare/DlgScreenMark.h \
+    src/TestSubscribeAudio/DlgSubscribeAudio.h
 
 FORMS += \
     src/DlgLogin.ui \
@@ -148,7 +164,8 @@ FORMS += \
     src/TestVoiceChange/DlgVoiceChange.ui \
     src/TestVoiceChange/VoiceChangeItem.ui \
     src/TestScreenShare/ScreenShareUI.ui \
-    src/TestScreenShare/ScreenSharerToolBar.ui
+    src/TestScreenShare/ScreenSharerToolBar.ui \
+    src/TestSubscribeAudio/DlgSubscribeAudio.ui
 
 RESOURCES += \
     src/APIDemo.qrc

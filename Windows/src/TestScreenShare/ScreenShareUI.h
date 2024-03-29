@@ -35,9 +35,11 @@ protected:
 	void notifyScreenMarkStopped() override;
 
 protected:
-	virtual void resizeEvent(QResizeEvent *event);
+	void resizeEvent(QResizeEvent *event) override;
+	void paintEvent(QPaintEvent *event) override;
 
 protected slots:
+	void slot_recvFrame(qint64 ts);
 	void showMarkDlg();
 	void slot_startMarkClicked();
 	void slot_stopMarkClicked();

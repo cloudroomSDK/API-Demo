@@ -67,18 +67,19 @@ KVideoUI* VideoWallPage::createVideoUI()
 	return pVUi;
 }
 
-KVideoUI* VideoWallPage::findVideoUIByUserID(const char* userID)
+QList<KVideoUI*> VideoWallPage::findVideoUIByUserID(const char* userID)
 {
+	QList<KVideoUI*> rslt;
 	for(int i = 0; i < m_videos.size(); i++)
 	{
 		KVideoUI *pVUI = m_videos.at(i);
 		if (pVUI->getUserId() == userID)
 		{
-			return pVUI;
+			rslt.append(pVUI);
 		}
 	}
 
-	return NULL;
+	return rslt;
 }
 
 KVideoUI* VideoWallPage::findUnusedUI()
@@ -146,8 +147,7 @@ CRUserVideoID VideoWallPage::findUserNotInWall()
     for(uint32_t i = 0; i < allMems.count(); i++)
 	{
 		const CRMeetingMember &mem = allMems.item(i);
-		KVideoUI *pTmp = findVideoUIByUserID(mem._userId.constData());
-		if(NULL == pTmp)
+		if (findVideoUIByUserID(mem._userId.constData()).size() <= 0)
 		{
 			uid._userID = mem._userId;
 			break;
@@ -155,6 +155,41 @@ CRUserVideoID VideoWallPage::findUserNotInWall()
 	}
 
 	return uid;
+}
+
+QList<CRUserVideoID> VideoWallPage::addUserToVideoList(const CRBase::CRString &userId, bool bInsertFront)
+{
+	QList<CRUserVideoID> addedVideoIds;
+	//添加副摄像头
+	CRBase::CRArray<int> multiVideos = g_sdkMain->getSDKMeeting().getMutiVideos(userId.constData());
+	if (multiVideos.count() > 0)
+	{
+		CRUserVideoID usrId2;
+		usrId2._userID = userId;
+		usrId2._videoID = multiVideos.item(0);
+		if (bInsertFront)
+		{
+			addedVideoIds.push_front(usrId2);
+		}
+		else
+		{
+			addedVideoIds.push_back(usrId2);
+		}
+	}
+	//添加主摄像头
+	CRUserVideoID usrId;
+	usrId._userID = userId;
+	usrId._videoID = g_sdkMain->getSDKMeeting().getDefaultVideo(userId.constData());
+	if (bInsertFront)
+	{
+		addedVideoIds.push_front(usrId);
+	}
+	else
+	{
+		addedVideoIds.push_back(usrId);
+	}
+
+	return addedVideoIds;
 }
 
 void VideoWallPage::MakeVideoUis()
@@ -167,12 +202,11 @@ void VideoWallPage::MakeVideoUis()
 	CRBase::CRArray<CRMeetingMember> allMems = g_sdkMain->getSDKMeeting().getAllMembers();
 	CRBase::CRString myUserId = MainDialog::getMyUserID();
 
+	
 	//自己放到最前
-	QList<CRUserVideoID> usrIds;
+ 	QList<CRUserVideoID> usrIds;
 	{
-		CRUserVideoID usrId;
-		usrId._userID = myUserId;
-		usrIds.push_front(usrId);
+		usrIds += addUserToVideoList(myUserId, true);
 	}
 
     for(uint32_t i = 0; i < allMems.count(); i++)
@@ -184,9 +218,7 @@ void VideoWallPage::MakeVideoUis()
 		if(usrIds.size() >= maxVideoCount)
 			break;
 
-		CRUserVideoID usrId;
-		usrId._userID = mem._userId;
-		usrIds.push_back(usrId);
+		usrIds += addUserToVideoList(mem._userId, false);
 	}
 
 	//不足，填空
@@ -308,67 +340,87 @@ void VideoWallPage::resizeEvent(QResizeEvent *event)
 
 void VideoWallPage::notifyNetStateChanged(int level)
 {
-	KVideoUI *pVUI = findVideoUIByUserID(MainDialog::getMyUserID().constData());
-	if(NULL == pVUI)
-		return;
-
-	pVUI->updateNetState(level);
+	QList<KVideoUI*> pVUIs = findVideoUIByUserID(MainDialog::getMyUserID().constData());
+	for (auto &pVUI : pVUIs)
+	{
+		pVUI->updateNetState(level);
+	}
 }
 
 void VideoWallPage::notifyUserEnterMeeting(const char* userID)
 {
-	KVideoUI *pVUI = findVideoUIByUserID(userID);
-	if(NULL != pVUI)
+	if (findVideoUIByUserID(userID).size() > 0)
 		return;
 
-	KVideoUI *pUnused = findUnusedUI();
-	if(NULL != pUnused)
+	//主摄像头
+	int defVideoId = g_sdkMain->getSDKMeeting().getDefaultVideo(userID);
+	KVideoUI *pUnusedMainVideo = findUnusedUI();
+	if (NULL != pUnusedMainVideo)
 	{
-		pUnused->setVideoInfo(userID);
-		emit s_contentChanged();
+		CRUserVideoID usrVideoId;
+		usrVideoId._userID = userID;
+		usrVideoId._videoID = defVideoId;
+		pUnusedMainVideo->setVideoInfo(usrVideoId);
 	}
-}
 
-void VideoWallPage::notifyUserLeftMeeting(const char* userID)
-{
-	KVideoUI *pVUI = findVideoUIByUserID(userID);
-	if(NULL == pVUI)
-		return;
-
-	if(isWallPageFull())
+	//副摄像头
+	CRBase::CRArray<int> multiVideos = g_sdkMain->getSDKMeeting().getMutiVideos(userID);
+	KVideoUI *pUnusedSecVideo = findUnusedUI();
+	if (NULL != pUnusedSecVideo && multiVideos.count() > 0)
 	{
-		CRUserVideoID uid = findUserNotInWall();
-		if(!uid._userID.isEmpty())
-		{
-			pVUI->setVideoInfo(uid);
-		}
-		else
-		{
-			replaceByLastUsedUI(pVUI);
-		}
-	}
-	else
-	{
-		replaceByLastUsedUI(pVUI);
+		CRUserVideoID usrVideoId;
+		usrVideoId._userID = userID;
+		usrVideoId._videoID = multiVideos.item(0);
+		pUnusedSecVideo->setVideoInfo(usrVideoId);
 	}
 
 	emit s_contentChanged();
 }
 
+void VideoWallPage::notifyUserLeftMeeting(const char* userID)
+{
+	QList<KVideoUI*> pVUIs = findVideoUIByUserID(userID);
+	if (pVUIs.size() <= 0)
+		return;
+
+	for (auto &pVUI : pVUIs)
+	{
+		if (isWallPageFull())
+		{
+			CRUserVideoID uid = findUserNotInWall();
+			if (!uid._userID.isEmpty())
+			{
+				pVUI->setVideoInfo(uid);
+			}
+			else
+			{
+				replaceByLastUsedUI(pVUI);
+			}
+		}
+		else
+		{
+			replaceByLastUsedUI(pVUI);
+		}
+
+	}
+	
+	emit s_contentChanged();
+}
+
 void VideoWallPage::notifyNickNameChanged(const char* userID, const char* oldName, const char* newName, const char* oprUserID)
 {
-	KVideoUI *pVUI = findVideoUIByUserID(userID);
-	if(NULL != pVUI)
+	QList<KVideoUI*> pVUIs = findVideoUIByUserID(userID);
+	for (auto &pVUI : pVUIs)
 	{
 		pVUI->updateNickname(QString::fromLocal8Bit(newName));
-		emit s_contentChanged();
 	}
+	emit s_contentChanged();
 }
 
 void VideoWallPage::notifyMicStatusChanged(const char* userID, CRVSDK_ASTATUS oldStatus, CRVSDK_ASTATUS newStatus, const char* oprUserID)
 {
-	KVideoUI *pVUI = findVideoUIByUserID(userID);
-	if(NULL != pVUI)
+	QList<KVideoUI*> pVUIs = findVideoUIByUserID(userID);
+	for (auto &pVUI : pVUIs)
 	{
 		pVUI->updateMicStatus(newStatus);
 	}
@@ -376,8 +428,8 @@ void VideoWallPage::notifyMicStatusChanged(const char* userID, CRVSDK_ASTATUS ol
 
 void VideoWallPage::notifyMicEnergy(const char* userID, int oldLevel, int newLevel)
 {
-	KVideoUI *pVUI = findVideoUIByUserID(userID);
-	if(NULL != pVUI)
+	QList<KVideoUI*> pVUIs = findVideoUIByUserID(userID);
+	for (auto &pVUI : pVUIs)
 	{
 		pVUI->updateMicEnergy(newLevel);
 	}
@@ -385,11 +437,15 @@ void VideoWallPage::notifyMicEnergy(const char* userID, int oldLevel, int newLev
 
 void VideoWallPage::notifyVideoStatusChanged(const char* userID, CRVSDK_VSTATUS oldStatus, CRVSDK_VSTATUS newStatus, const char* oprUserID)
 {
-	KVideoUI *pVUI = findVideoUIByUserID(userID);
-	if(NULL != pVUI)
+	QList<KVideoUI*> pVUIs = findVideoUIByUserID(userID);
+	for (auto &pVUI : pVUIs)
 	{
 		pVUI->updateCamStatus((CRVSDK_VSTATUS)newStatus);
-		emit s_contentChanged();
 	}
+	emit s_contentChanged();
 }
 
+void VideoWallPage::notifyVideoDevChanged(const char* userID)
+{
+	ResetVideoUis();
+}

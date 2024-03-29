@@ -51,12 +51,15 @@ int main(int argc, char *argv[])
 	QString strAppPath = qfinfo.absolutePath();
 	QDir::setCurrent(strAppPath);
 
-	QApplication::addLibraryPath(strAppPath + "/plugins");
-	QApplication a(argc, argv);
+    QApplication::addLibraryPath(strAppPath + "/plugins");
+    QApplication::setAttribute(Qt::AA_UseOpenGLES);
+    QApplication a(argc, argv);
 
 	g_cfgFile = strAppPath + "/APIDemo.ini";
+	QString initParamsBase64 = GetInifileString("UserCfg", "initParamsBase64", g_cfgFile);
+	QByteArray sdkInitParams = QByteArray::fromBase64(initParamsBase64.toUtf8());
 	CRMainThreadDispatch_Qt *pDispatch = new CRMainThreadDispatch_Qt(&a);
-	g_sdkMain = CRVideoSDKMain::create(strAppPath.toUtf8().constData(), pDispatch);
+	g_sdkMain = CRVideoSDKMain::create(strAppPath.toUtf8().constData(), pDispatch, sdkInitParams.constData());
 	if (g_sdkMain == NULL)
 	{
 		QMessageBox::information(NULL, QObject::tr("提示"), QObject::tr("创建sdk对象失败!"));

@@ -7,26 +7,14 @@ CustomRenderWidget::CustomRenderWidget(QWidget *parent, CRVSDK_STREAM_VIEWTYPE v
 	this->setAttribute(Qt::WA_OpaquePaintEvent);
 	this->setAttribute(Qt::WA_NoSystemBackground);
 
-	g_sdkMain->getSDKMeeting().addCustomRender(this);
-	connect(this, SIGNAL(s_update()), this, SLOT(update()));
-
+	connect(this, SIGNAL(s_recvFrame(qint64)), this, SLOT(update()));
 	m_bLocMirror = false;
-	enabledRender(true);
+	m_defBkColor = Qt::black;
 }
 
 CustomRenderWidget::~CustomRenderWidget()
 {
 	g_sdkMain->getSDKMeeting().rmCustomRender(this);
-}
-
-void CustomRenderWidget::enabledRender(bool bEnale)
-{
-	m_enabledRender = bEnale;
-	if (!m_enabledRender)
-	{
-		clearFrame();
-	}
-	update();
 }
 
 CRVideoFrame CustomRenderWidget::getFrame()
@@ -35,10 +23,25 @@ CRVideoFrame CustomRenderWidget::getFrame()
 	return m_frame;
 }
 
+void CustomRenderWidget::setVideoID(const CRUserVideoID &id, CRVSDK_VSTEAMLV_TYPE lv)
+{
+	if (id == getVideoID() && lv == getVideoStreamLv())
+		return;
+
+	CRCustomRenderHandler::setVideoID(id, lv);
+	clearFrame();
+	if (!id._userID.isEmpty())
+	{
+		QMutexLocker locker(&m_frameLock);
+		m_frame = g_sdkMain->getSDKMeeting().GetVideoImg(id, lv);
+	}
+}
+
+
 int64_t CustomRenderWidget::getFrameTimestamp()
 {
 	QMutexLocker locker(&m_frameLock);
-	return m_frame.getTimestamp();
+	return m_frame.getPts();
 }
 
 void CustomRenderWidget::clearFrame()
@@ -56,21 +59,73 @@ void CustomRenderWidget::setLocMirror(bool bMirror)
 	update();
 }
 
+void CustomRenderWidget::setRenderEnabled(bool bEnable)
+{
+	m_bRenderEnable = bEnable;
+	updateRenderHandler();
+	if (!bEnable)
+	{
+		clearFrame();
+		update();
+	}
+}
+
+void CustomRenderWidget::updateRenderHandler()
+{
+	if (m_bRenderEnable && this->isVisible())
+	{
+		g_sdkMain->getSDKMeeting().addCustomRender(this);
+	}
+	else
+	{
+		g_sdkMain->getSDKMeeting().rmCustomRender(this);
+	}
+}
+
+
 void CustomRenderWidget::onRenderFrameDat(const CRVideoFrame &frm)
 {
+	//m_recvFps.AddCount();
+	//qDebug("recv fps:%d", int(m_recvFps.GetFPS()));
+
 	{
 		QMutexLocker locker(&m_frameLock);
 		m_frame = frm;
-		emit s_recvFrame(m_frame.getTimestamp());
 	}
-	if (m_enabledRender)
-	{
-		emit s_update();
-	}
+	emit s_recvFrame(frm.getPts());
+}
+
+void CustomRenderWidget::setDefaultBackground(const QColor &color)
+{
+	m_defBkColor = color; 
+	update();
 }
 
 void CustomRenderWidget::paintEvent(QPaintEvent *event)
 {
-	CRVideoFrame frm = m_enabledRender ? getFrame() : CRVideoFrame();
-	KeepAspectRatioDrawer::DrawImage(this, frm, CRVSDK_RENDERMD_FIT, m_bLocMirror);
+	//m_drawFps.AddCount();
+	//qDebug("draw fps:%d", int(m_drawFps.GetFPS()));
+	CRVideoFrame frm = getFrame();
+	if (frm.getFrameSize().isEmpty())
+	{
+		QPainter p(this);
+		p.fillRect(rect(), m_defBkColor);
+	}
+	else
+	{
+		KeepAspectRatioDrawer::DrawImage(this, frm, CRVSDK_RENDERMD_FIT, m_bLocMirror);
+	}
+}
+
+
+void CustomRenderWidget::hideEvent(QHideEvent* event)
+{
+	QWidget::hideEvent(event);
+	updateRenderHandler();
+}
+
+void CustomRenderWidget::showEvent(QShowEvent* event)
+{
+	QWidget::showEvent(event);
+	updateRenderHandler();
 }

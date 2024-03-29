@@ -3,12 +3,59 @@
 
 #include "ui_CustomVideoCaptureRender.h"
 #include "CustomRenderWidget.h"
+#include "CustomRenderGLWidget.h"
 
 class CustomVideoView : public CustomRenderWidget
 {
 public:
 	CustomVideoView(QWidget *parent) : CustomRenderWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
 };
+
+class CustomVideoView_GL : public CustomRenderGLWidget
+{
+public:
+	CustomVideoView_GL(QWidget *parent) : CustomRenderGLWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
+};
+
+class CustomVideoInputThread : public QThread
+{
+	Q_OBJECT
+public:
+	CustomVideoInputThread()
+	{
+		this->moveToThread(this);
+		_timer.moveToThread(this);
+		_timer.setTimerType(Qt::PreciseTimer);
+		connect(&_timer, &QTimer::timeout, this, &CustomVideoInputThread::slot_doInput);
+	}
+	~CustomVideoInputThread() = default;
+
+	void start(int videoID)
+	{
+		_id = videoID;
+		QThread::start();
+	}
+	void stop()
+	{
+		QThread::quit();
+	}
+
+protected:
+	virtual void run()
+	{
+		_timer.start(16); //fps 60
+		QThread::run();
+		_timer.stop();
+	}
+
+protected slots :
+	void slot_doInput();
+
+private:
+	QTimer	_timer;
+	int		_id{ 0 };
+};
+
 
 class CustomVideoCaptureRender : public QDialog, public CRVideoSDKMeetingCallBack
 {
@@ -19,11 +66,13 @@ public:
 
 protected slots:
 	void slot_videoCap();
-	void slot_videoRender();
 
 protected:
-	void inputCustomPic();
-	virtual void notifyVideoStatusChanged(const char* userID, int oldStatus, int newStatus, const char* oprUserID);
+	void notifyVideoStatusChanged(const char* userID, CRVSDK_VSTATUS oldStatus, CRVSDK_VSTATUS newStatus, const char* oprUserID) override;
+	void showEvent(QShowEvent *evt) override;
+	void hideEvent(QHideEvent *evt) override;
+
+	void updateVideoID();
 
 private:
 	Ui::CustomVideoCaptureRender ui;
@@ -32,11 +81,12 @@ private:
 	bool m_bVideoCap;
 	int m_capVideoDevID;
 	int m_oldDefVideoID;
-	CustomVideoView* m_capRenderView;
+	CustomVideoInputThread m_customInputThrd;
 
 	//渲染部分
-	bool m_bVideoRender;
 	CustomVideoView* m_customRenderView;
+	CustomVideoView_GL* m_customRenderView_GL;
+
 };
 
 #endif // CUSTOMVIDEOCAPTURERENDER_H

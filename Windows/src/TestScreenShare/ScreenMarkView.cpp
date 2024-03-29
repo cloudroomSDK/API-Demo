@@ -263,7 +263,7 @@ void ScreenMarkView::mouseReleaseEvent(QMouseEvent *event)
 			MarkData mkDat;
 			m_drawMark._id = makeUUID();
 			Local2MarkData(m_drawMark, mkDat);
-			QByteArray jsonData = QJsonDocument::fromVariant(mkDat.toJson()).toJson(QJsonDocument::Compact);
+			QByteArray jsonData = CoverJsonToString(mkDat.toJson());
 			g_sdkMain->getSDKMeeting().sendScreenMarkData(jsonData.constData());
 		
 			MarkMouseInfo *info = new MarkMouseInfo;

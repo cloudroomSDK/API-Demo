@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>166</width>
+    <width>442</width>
     <height>93</height>
    </rect>
   </property>
@@ -39,7 +39,10 @@
 	padding-left: 8px;
 	padding-right: 8px;
 }
-</string>
+#VUIFunc QPushButton{
+	padding:0px;
+	border: 0px;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">

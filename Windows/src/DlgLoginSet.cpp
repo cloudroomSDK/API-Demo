@@ -1,7 +1,8 @@
 ﻿#include "stdafx.h"
 #include "DlgLoginSet.h"
+#include "AccountInfo.h"
 
-DlgLoginSet::SettingInfo DlgLoginSet::m_info;
+DlgLoginSet::SettingInfo DlgLoginSet::s_info;
 
 DlgLoginSet::DlgLoginSet(QWidget *parent)
 	: QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint)
@@ -15,7 +16,7 @@ DlgLoginSet::DlgLoginSet(QWidget *parent)
 	slot_rbTokenCheckChanged();
 
     ui.rbHttps2->hide();
-	this->setFixedSize(400, 400);
+	this->setFixedSize(450, 320);
 }
 
 DlgLoginSet::~DlgLoginSet()
@@ -24,7 +25,18 @@ DlgLoginSet::~DlgLoginSet()
 
 void DlgLoginSet::initSettingInfo()
 {
-	readCfgFile(m_info);
+	readCfgFile(s_info);
+}
+
+DlgLoginSet::SettingInfo DlgLoginSet::getSettingInfo()
+{
+	SettingInfo tmp(s_info);
+	if (tmp.loginAppID.isEmpty())
+	{
+		tmp.loginAppID = TEST_AppID.c_str();
+		tmp.loginAppSecret = TEST_AppScret.c_str();
+	}
+	return tmp;
 }
 
 void DlgLoginSet::readCfgFile(SettingInfo &info)
@@ -39,23 +51,23 @@ void DlgLoginSet::readCfgFile(SettingInfo &info)
 
 void DlgLoginSet::writeCfgFile()
 {
-	SetInifileString("UserCfg", "server", m_info.server, g_cfgFile);
-	SetInifileString("UserCfg", "httpType", QString::number(m_info.httpType), g_cfgFile);
-	SetInifileString("UserCfg", "authType", QString::number(m_info.authType), g_cfgFile);
-	SetInifileString("UserCfg", "crAcnt", m_info.loginAppID, g_cfgFile);
-	SetInifileString("UserCfg", "crPswd", m_info.loginAppSecret, g_cfgFile);
-	SetInifileString("UserCfg", "token", m_info.loginToken, g_cfgFile);
+	SetInifileString("UserCfg", "server", s_info.server, g_cfgFile);
+	SetInifileString("UserCfg", "httpType", QString::number(s_info.httpType), g_cfgFile);
+	SetInifileString("UserCfg", "authType", QString::number(s_info.authType), g_cfgFile);
+	SetInifileString("UserCfg", "crAcnt", s_info.loginAppID, g_cfgFile);
+	SetInifileString("UserCfg", "crPswd", s_info.loginAppSecret, g_cfgFile);
+	SetInifileString("UserCfg", "token", s_info.loginToken, g_cfgFile);
 }
 
 
 void DlgLoginSet::resetUI()
 {
-	ui.editServer->setText(m_info.server);
-	if (m_info.httpType == CRVSDK_WEBPTC_HTTPS)
+	ui.editServer->setText(s_info.server);
+	if (s_info.httpType == CRVSDK_WEBPTC_HTTPS)
 	{
 		ui.rbHttps->setChecked(true);
 	}
-	else if (m_info.httpType == CRVSDK_WEBPTC_HTTPS_NOVERRIFY)
+	else if (s_info.httpType == CRVSDK_WEBPTC_HTTPS_NOVERRIFY)
 	{
 		ui.rbHttps2->setChecked(true);
 	}
@@ -63,27 +75,41 @@ void DlgLoginSet::resetUI()
 	{
 		ui.rbHttp->setChecked(true);
 	}
-	ui.rbToken->setChecked(m_info.authType == CRVSDK_AUTHTP_TOKEN);
-	ui.editAppID->setText(m_info.loginAppID);
-	ui.editAppSecret->setText(m_info.loginAppSecret);
-	ui.editToken->setPlainText(m_info.loginToken);
+	ui.rbToken->setChecked(s_info.authType == CRVSDK_AUTHTP_TOKEN);
+
+	if (ui.rbPassword->isChecked() && s_info.loginAppID.isEmpty() && TEST_AppID.length()>0)
+	{
+		ui.editAppID->setText(tr("默认APPID"));
+		ui.editAppSecret->setText(tr("*"));
+	}
+	else
+	{
+		ui.editAppID->setText(s_info.loginAppID);
+		ui.editAppSecret->setText(s_info.loginAppSecret);
+		ui.editToken->setPlainText(s_info.loginToken);
+	}
 }
 
 void DlgLoginSet::slot_btnResetClicked()
 {
-	m_info.reset();
+	s_info.reset();
 	resetUI();
 	writeCfgFile();
 }
 
 void DlgLoginSet::slot_btnSaveClicked()
 {
-	m_info.server = ui.editServer->text();
-	m_info.httpType = ui.rbHttps->isChecked() ? CRVSDK_WEBPTC_HTTPS : (ui.rbHttps2->isChecked() ? CRVSDK_WEBPTC_HTTPS_NOVERRIFY : CRVSDK_WEBPTC_HTTP);
-	m_info.authType = ui.rbToken->isChecked() ? CRVSDK_AUTHTP_TOKEN : CRVSDK_AUTHTP_SECRET;
-	m_info.loginAppID = ui.editAppID->text();
-	m_info.loginAppSecret = ui.editAppSecret->text();
-	m_info.loginToken = ui.editToken->toPlainText();
+	s_info.server = ui.editServer->text();
+	s_info.httpType = ui.rbHttps->isChecked() ? CRVSDK_WEBPTC_HTTPS : (ui.rbHttps2->isChecked() ? CRVSDK_WEBPTC_HTTPS_NOVERRIFY : CRVSDK_WEBPTC_HTTP);
+	s_info.authType = ui.rbToken->isChecked() ? CRVSDK_AUTHTP_TOKEN : CRVSDK_AUTHTP_SECRET;
+	s_info.loginAppID = ui.editAppID->text();
+	s_info.loginAppSecret = ui.editAppSecret->text();
+	s_info.loginToken = ui.editToken->toPlainText();
+	if (s_info.loginAppID == tr("默认APPID"))
+	{
+		s_info.loginAppID.clear();
+		s_info.loginAppSecret.clear();
+	}
 	writeCfgFile();
 	close();
 }

@@ -81,14 +81,8 @@ void KeepAspectRatioDrawer::DrawImage(QWidget *p, const CRVideoFrame &frm, CRVSD
 		if (!dstRt.isEmpty())
 		{
 			//格式转换、缩小处理（这里只会缩小、不会放大）
-			if (g_sdkMain->videoFrameCover(tmp, CRVSDK_VFMT_ARGB32, dstRt.width(), dstRt.height()))
+			if (g_sdkMain->videoFrameCover(tmp, CRVSDK_VFMT_0RGB32, dstRt.width(), dstRt.height()))
 			{
-				//镜像处理
-				if (bMirror)
-				{
-					g_sdkMain->mirrorVideoFrame(tmp);
-				}
-
 				//得到frm中原始指针
 				uint8_t* rgb[1];
 				int      linesize[1];
@@ -98,6 +92,12 @@ void KeepAspectRatioDrawer::DrawImage(QWidget *p, const CRVideoFrame &frm, CRVSD
 				img = QImage(rgb[0], tmp.getWidth(), tmp.getHeight(), linesize[0], QImage::Format_RGB32);
 			}
 		}
+	}
+
+	//绘制
+	if (bMirror)
+	{
+		img = img.mirrored(true, false);
 	}
 
 	//绘制

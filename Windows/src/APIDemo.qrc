@@ -23,5 +23,7 @@
         <file>Resources/net_min.png</file>
         <file>Resources/custom_audio_16k16bit1ch.pcm</file>
         <file>Resources/custom_video_1280x720.jpg</file>
+        <file>Resources/fragment.fsh</file>
+        <file>Resources/vertex.vsh</file>
     </qresource>
 </RCC>

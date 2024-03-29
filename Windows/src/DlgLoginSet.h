@@ -25,13 +25,13 @@ public:
 			server = "sdk.cloudroom.com";
 			httpType = CRVSDK_WEBPTC_HTTP;
 			authType = CRVSDK_AUTHTP_SECRET;
-			loginAppID = "demo@cloudroom.com";
-			loginAppSecret = "123456";
+			loginAppID.clear();
+			loginAppSecret.clear();
 			loginToken = "";
 		}
 	};
 	static void initSettingInfo();
-	static const SettingInfo &getSettingInfo() { return m_info; }
+	static SettingInfo getSettingInfo();
 
 public:
 	DlgLoginSet(QWidget *parent = 0);
@@ -46,7 +46,7 @@ protected:
 	void slot_rbTokenCheckChanged();
 
 private:
-	static SettingInfo m_info;
+	static SettingInfo s_info;
 	Ui::DlgLoginSet ui;
 };
 

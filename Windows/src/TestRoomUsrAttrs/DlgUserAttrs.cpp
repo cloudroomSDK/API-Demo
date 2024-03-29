@@ -41,7 +41,7 @@ DlgUserAttrs::DlgUserAttrs(const CRString &userId, QWidget *parent)
 	
 	QVariantList varList;
 	varList.push_back(crStrToQStr(m_userId));
-	QByteArray jsonStr = QJsonDocument::fromVariant(varList).toJson();
+	QByteArray jsonStr = CoverJsonToString(varList);
 	g_sdkMain->getSDKMeeting().getUserAttrs(jsonStr.constData(), NULL, m_cookie.constData());
 
 }
@@ -127,7 +127,7 @@ void DlgUserAttrs::slot_btnAddClicked()
 
 		QVariantMap varMap;
 		varMap[m_operKey] = m_operVal;
-		QByteArray jsonStr = QJsonDocument::fromVariant(varMap).toJson();
+		QByteArray jsonStr = CoverJsonToString(varMap);
 		g_sdkMain->getSDKMeeting().addOrUpdateUserAttrs(m_userId.constData(), jsonStr.constData(), NULL, m_cookie.constData());
 	}
 }
@@ -142,7 +142,7 @@ void DlgUserAttrs::slot_btnRemoveClicked()
 	m_operKey = itemKey->text();
 	QVariantList varList;
 	varList.push_back(m_operKey);
-	QByteArray jsonStr = QJsonDocument::fromVariant(varList).toJson();
+	QByteArray jsonStr = CoverJsonToString(varList);
 
 	g_sdkMain->getSDKMeeting().delUserAttrs(m_userId.constData(), jsonStr.constData(), NULL, m_cookie.constData());
 }
@@ -186,7 +186,7 @@ void DlgUserAttrs::slot_cellDoubleClicked(int row, int col)
 
 		QVariantMap varMap;
 		varMap[m_operKey] = m_operVal;
-		QByteArray jsonStr = QJsonDocument::fromVariant(varMap).toJson();
+		QByteArray jsonStr = CoverJsonToString(varMap);
 		g_sdkMain->getSDKMeeting().addOrUpdateUserAttrs(m_userId.constData(), jsonStr.constData(), NULL, m_cookie.constData());
 	}
 }

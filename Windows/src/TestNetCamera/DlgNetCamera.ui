@@ -74,7 +74,18 @@ QSlider::handle:horizontal {
 	margin-bottom: -5px;
 	border-radius: 6px;
 	background: rgb(57,129,252);
-}  </string>
+}  
+QPushButton {
+	background:rgb(57,129,252);
+	color: rgb(255,255,255);
+	border: 1px solid rgb(57,129,252);
+	border-radius: 2px;
+	min-height: 28px;
+	min-width: 76px;
+}
+QPushButton:hover, QPushButton:pressed {
+	background: rgb(5,117,197);
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

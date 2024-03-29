@@ -11,7 +11,7 @@
 
 |平台|SDK包|
 |---|---|
-| Windows | [下载SDK](https://www.cloudroom.com/api/getDownloadUrlApi?Client=windows_unity_sdk) |
+| Windows | [下载SDK](https://www.cloudroom.com/api/getDownloadUrlApi?Client=unity_sdk) |
 
 * 将sdk包中的所有目录copy到demo中的CRVideoSDK目录下
 * 用Unity Hub新建一个工程

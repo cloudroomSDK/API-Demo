@@ -10,29 +10,20 @@ public class LoginPage : MonoBehaviour
 {
     static MeetingPage mApp = null;
 
+    public GameObject mEvtSys;
+
     private Text mTips;
-    private GameObject mSettingPanel;
     private GameObject mLoginPanel;
     private GameObject mTipPanel;
-    private GameObject mIFAppID;
-    private List<GameObject> mAppIDPanel = new List<GameObject>();
-    private List<GameObject> mTokenPanel = new List<GameObject>();
     private List<Button> mMainBtns = new List<Button>();
 
-    static LoginPage mInstance = null;
+    private string mSceneName = "";
+    public string mMeetSubScene = "";
+    private sdkLoginDat mLoginData = new sdkLoginDat();
+
     void Awake()
     {
-        if (null == mInstance)
-        {
-            mInstance = this;
-            DontDestroyOnLoad(this);
-            Application.runInBackground = true;
-        }
-        else
-        {
-            Destroy(this.gameObject);
-            mInstance.gameObject.SetActive(true);
-        }
+        Application.runInBackground = true;
     }
 
     // Start is called before the first frame update
@@ -40,50 +31,117 @@ public class LoginPage : MonoBehaviour
     {
         if (null == mApp)
         {
-            mApp = new MeetingPage(mInstance);
+            mApp = new MeetingPage(this);
             mApp.init();
         }
+
+        mEvtSys = GameObject.Find("EventSystem");
 
         string strUserId = "UnityTest_" + UnityEngine.Random.Range(1000, 10000).ToString();
         GameObject ifGo = GameObject.Find("ifNickname");
         ifGo.GetComponent<InputField>().text = strUserId;
 
-        INIParser parser = new INIParser();
-        parser.Open(mApp.AppIniFile);
-        string lastMeetId = parser.ReadValue("UserCfg", "lastRoomId", "");
+        string lastMeetId = CommonTools.ReadIniStr(MeetingPage.mIniFile, "UserCfg", "lastRoomId");
         if (lastMeetId.Length > 0)
         {
             GameObject goMeetId = GameObject.Find("ifMeetingID");
             goMeetId.GetComponent<InputField>().text = lastMeetId;
         }
-        parser.Close();
 
-        GameObject tipGo = GameObject.Find("txtTips");
-        mTips = tipGo.GetComponent<Text>();
-
-        mSettingPanel = GameObject.Find("SettingPanel");
+        mTips = GameObject.Find("txtTips").GetComponent<Text>();
         mLoginPanel = GameObject.Find("LoginPanel");
         mTipPanel = GameObject.Find("TipPanel");
-
-        mTokenPanel.Add(GameObject.Find("txtToken"));
-        mTokenPanel.Add(GameObject.Find("ifToken"));
-        mAppIDPanel.Add(GameObject.Find("txtAppID"));
-        mIFAppID = GameObject.Find("ifAppID");
-        mAppIDPanel.Add(mIFAppID);
-        mAppIDPanel.Add(GameObject.Find("txtPassword"));
-        mAppIDPanel.Add(GameObject.Find("ifPassword"));
 
         mMainBtns.Add(GameObject.Find("CreateBtn").GetComponent<Button>());
         mMainBtns.Add(GameObject.Find("JoinBtn").GetComponent<Button>());
         mMainBtns.Add(GameObject.Find("SettingBtn").GetComponent<Button>());
 
-        mSettingPanel.SetActive(false);
         mTipPanel.SetActive(false);
+
+        ResetLoginData();
+        ReadLoginData();
     }
 
-    public void SetLoginPanelVisible(bool bVisible)
+    public void UpdateLoginData(sdkLoginDat loginDat)
     {
-        mLoginPanel.SetActive(bVisible);
+        mLoginData = loginDat;
+        WriteLoginData();
+    }
+
+    private void ReadLoginData()
+    {
+        INIParser parser = new INIParser();
+        parser.Open(MeetingPage.mIniFile);
+        mLoginData._serverAddr = parser.ReadValue("UserCfg", "server", mLoginData._serverAddr);
+        mLoginData._webProtocol = (CRVSDK_WEBPROTOCOL)parser.ReadValue("UserCfg", "httpType", (int)mLoginData._webProtocol);
+        mLoginData._sdkAuthType = (CRVSDK_AUTHTYPE)parser.ReadValue("UserCfg", "authType", (int)mLoginData._sdkAuthType);
+        mLoginData._appID = parser.ReadValue("UserCfg", "crAcnt", mLoginData._appID);
+        mLoginData._md5_appSecret = parser.ReadValue("UserCfg", "crPswd", mLoginData._md5_appSecret);
+        mLoginData._token = parser.ReadValue("UserCfg", "token", mLoginData._token);
+        parser.Close();
+    }
+
+    public void WriteLoginData()
+    {
+        INIParser parser = new INIParser();
+        parser.Open(MeetingPage.mIniFile);
+        parser.WriteValue("UserCfg", "server", mLoginData._serverAddr);
+        parser.WriteValue("UserCfg", "httpType", (int)mLoginData._webProtocol);
+        parser.WriteValue("UserCfg", "authType", (int)mLoginData._sdkAuthType);
+        parser.WriteValue("UserCfg", "crAcnt", mLoginData._appID);
+        parser.WriteValue("UserCfg", "crPswd", mLoginData._md5_appSecret);
+        parser.WriteValue("UserCfg", "token", mLoginData._token);
+        parser.Close();
+    }
+
+    public void ResetLoginData()
+    {
+        mLoginData._serverAddr = "sdk.cloudroom.com";
+        mLoginData._webProtocol = CRVSDK_WEBPROTOCOL.CRVSDK_WEBPTC_HTTP;
+        mLoginData._sdkAuthType = CRVSDK_AUTHTYPE.CRVSDK_AUTHTP_SECRET;
+        mLoginData._appID = "";
+        mLoginData._md5_appSecret = "";
+        mLoginData._token = "";
+    }
+
+    public sdkLoginDat GetLoginData()
+    {
+        return mLoginData;
+    }
+
+    public void OnJoinScene(string sceneName)
+    {
+        mEvtSys.gameObject.SetActive(false);
+        mLoginPanel.SetActive(false);
+        mSceneName = sceneName;
+    }
+
+    public void OnBackLoginClicked()
+    {
+        StartCoroutine(UnloadMeetSubSceneAysnc());
+        StartCoroutine(UnloadSceneAysnc());
+    }
+
+    public IEnumerator UnloadMeetSubSceneAysnc()
+    {
+        if (mMeetSubScene.Length > 0)
+        {
+            AsyncOperation async = SceneManager.UnloadSceneAsync(mMeetSubScene);
+            yield return async;
+            mMeetSubScene = "";
+        }
+    }
+
+    public IEnumerator UnloadSceneAysnc()
+    {
+        if (mSceneName.Length > 0)
+        {
+            AsyncOperation async = SceneManager.UnloadSceneAsync(mSceneName);
+            yield return async;
+            mEvtSys.gameObject.SetActive(true);
+            mLoginPanel.SetActive(true);
+            mSceneName = "";
+        }
     }
 
     public void SetButtonsEnable(bool bEnable)
@@ -126,100 +184,15 @@ public class LoginPage : MonoBehaviour
 
     public void OnSettingBtnClicked()
     {
-        mSettingPanel.SetActive(true);
-        mLoginPanel.SetActive(false);
-        SetupSettingPanel();
+        mEvtSys.gameObject.SetActive(false);
+        SceneManager.sceneLoaded += OnLoadSceneFinished;
+        SceneManager.LoadScene("LoginSettingScene", LoadSceneMode.Additive);
     }
 
-    private void SetupSettingPanel()
+    void OnLoadSceneFinished(Scene scene, LoadSceneMode mode)
     {
-        sdkLoginDat loginDat = mApp.GetLoginData();
-        InputField ifServer = GameObject.Find("ifServer").GetComponent<InputField>();
-        ifServer.text = loginDat._serverAddr;
-        string strAppId = loginDat._appID;
-        if (strAppId.Length == 0)
-        {
-            strAppId = "Default_APPID";
-        }
-        InputField ifAppId = mIFAppID.GetComponent<InputField>();
-        ifAppId.text = strAppId;
-        Dropdown ddProtocol = GameObject.Find("ddProtocol").GetComponent<Dropdown>();
-        ddProtocol.value = (int)loginDat._webProtocol;
-        Dropdown ddAuthType = GameObject.Find("ddAuthType").GetComponent<Dropdown>();
-        ddAuthType.value = (int)loginDat._sdkAuthType;
-
-        OnAuthTypeChanged((int)loginDat._sdkAuthType);
-        ddAuthType.onValueChanged.AddListener(OnAuthTypeChanged);
-    }
-
-    private void OnAuthTypeChanged(int index)
-    {
-        if (index == 0)
-        {
-            foreach (var go in mTokenPanel)
-            {
-                go.SetActive(true);
-            }
-            foreach (var go in mAppIDPanel)
-            {
-                go.SetActive(false);
-            }
-        }
-        else
-        {
-            foreach (var go in mTokenPanel)
-            {
-                go.SetActive(false);
-            }
-            foreach (var go in mAppIDPanel)
-            {
-                go.SetActive(true);
-            }
-        }
-    }
-
-    public void OnCancelSetBtnClicked()
-    {
-        mSettingPanel.SetActive(false);
-        mLoginPanel.SetActive(true);
-    }
-
-    public void OnResetSetBtnClicked()
-    {
-        mApp.ResetLoginData();
-        mApp.WriteLoginData();
-        SetupSettingPanel();
-    }
-
-    public void OnSaveSetBtnClicked()
-    {
-        sdkLoginDat loginDat = new sdkLoginDat();
-        InputField ifServer = GameObject.Find("ifServer").GetComponent<InputField>();
-        loginDat._serverAddr = ifServer.text;
-        Dropdown ddProtocol = GameObject.Find("ddProtocol").GetComponent<Dropdown>();
-        loginDat._webProtocol = (CRVSDK_WEBPROTOCOL)ddProtocol.value;
-        Dropdown ddAuthType = GameObject.Find("ddAuthType").GetComponent<Dropdown>();
-        loginDat._sdkAuthType = (CRVSDK_AUTHTYPE)ddAuthType.value;
-        if (loginDat._sdkAuthType == CRVSDK_AUTHTYPE.CRVSDK_AUTHTP_SECRET)
-        {
-            InputField ifAppId = mIFAppID.GetComponent<InputField>();
-            string strAppId = ifAppId.text;
-            if (strAppId.Length > 0 && strAppId != "Default_APPID")
-            {
-                loginDat._appID = strAppId;
-            }
-            InputField ifPassword = GameObject.Find("ifPassword").GetComponent<InputField>();
-            string strPswd = ifPassword.text;
-            loginDat._md5_appSecret = CommonTools.MakeMd5(strPswd);
-        }
-        else
-        {
-            InputField ifToken = GameObject.Find("ifToken").GetComponent<InputField>();
-            loginDat._token = ifToken.text;
-        }
-        mApp.UpdateLoginData(loginDat);
-        mSettingPanel.SetActive(false);
-        mLoginPanel.SetActive(true);
+        OnJoinScene(scene.name);
+        SceneManager.sceneLoaded -= OnLoadSceneFinished;
     }
 
     public void OnTipOkBtnClicked()

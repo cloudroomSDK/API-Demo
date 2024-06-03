@@ -15,6 +15,7 @@
 [/Electron](./Electron)|PC|JS|[云屋RTC Electron SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Electron)
 [/Flutter](./Flutter)|Mobile|Dart|[云屋RTC Flutter SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Flutter)
 [/uni-app](./uni-app)|Mobile|JS|[云屋RTC uni-app SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=uniapp)
+[/MiniApp](./MiniApp)|Mobile|JS|[云屋RTC 微信小程序 SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=miniprogram)
 
 ## 联系我们
 - 更多示例见 [官方SDK示例](https://github.com/cloudroomSDK)

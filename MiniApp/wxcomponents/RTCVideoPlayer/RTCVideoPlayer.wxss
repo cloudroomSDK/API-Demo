@@ -1,0 +1,15 @@
+.RTCVideoPlayer {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.RTCVideoPlayer>.live-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: left;
+    font-size: 24rpx;
+    height: 100%;
+    width: 100%;
+}

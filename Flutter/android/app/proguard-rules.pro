@@ -6,5 +6,6 @@
 -keep class io.flutter.**  { *; }
 -keep class io.flutter.plugins.**  { *; }
 -keep class com.cloudroom.**  { *; }
+-keep class com.rtc.**  { *; }
 -keep class org.crmedia.**  { *; }
--keep class com.example.cloudroomvideosdk.** { *; }
+-keep class com.example.rtcsdk.** { *; }

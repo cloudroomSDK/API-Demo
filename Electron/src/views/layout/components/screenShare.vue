@@ -1,5 +1,5 @@
 <template>
-    <el-button v-if="starting || otherUserShare" class="btn" type="danger" @click="stop">停止</el-button>
+    <el-button v-if="appStore.isMyScreenShare || otherUserShare" class="btn" type="danger" @click="stop">停止</el-button>
     <el-button v-else class="btn" plain @click="start">开始</el-button>
 </template>
 
@@ -11,7 +11,6 @@ import { mapStores } from "pinia";
 export default {
     data() {
         return {
-            starting: false, //自己的共享状态
             otherUserShare: false, //他人正在共享
         };
     },
@@ -39,7 +38,7 @@ export default {
             if (this.otherUserShare) {
                 return ElMessage.warning(`他人正在共享屏幕，不能停止`);
             }
-            this.starting = false;
+            this.appStore.isMyScreenShare = false;
             this.appStore.shareType = 0;
             this.$rtcsdk.stopScreenShare(); //停止屏幕共享
         },
@@ -47,22 +46,23 @@ export default {
             if (this.appStore.shareType === 1) {
                 return ElMessage.warning(`请先停止影音共享`);
             }
-            this.starting = true;
-            this.appStore.shareType = 2;
-            this.$rtcsdk.startScreenShare(); //开启屏幕共享
+            this.$emit("openScreenOption");
         },
         startScreenShareRslt(sdkErr) {
-            if (sdkErr != 0) {
-                this.starting = false;
+            if (sdkErr !== 0) {
+                this.appStore.isMyScreenShare = false;
                 this.appStore.shareType = 0;
                 ElMessage.error(`开启屏幕共享失败，错误码: ${sdkErr},${errDesc[sdkErr]}`);
                 return;
             }
         },
         stopScreenShareRslt(sdkErr) {
-            if (sdkErr != 0) {
-                ElMessage.error(`停止屏幕共享失败，错误码: ${sdkErr},${errDesc[sdkErr]}`);
+            if (sdkErr !== 0) {
+                return ElMessage.error(`停止屏幕共享失败，错误码: ${sdkErr},${errDesc[sdkErr]}`);
             }
+
+            this.appStore.isMyScreenShare = false;
+            this.appStore.shareType = 0;
         },
         notifyScreenShareStarted(userId) {
             if (userId !== this.appStore.myUserId) {
@@ -72,7 +72,8 @@ export default {
         },
         notifyScreenShareStopped(oprUserID) {
             this.appStore.shareType = 0;
-            this.starting = false;
+            this.appStore.hasCtrlMode = false;
+            this.appStore.isMyScreenShare = false;
             this.otherUserShare = false;
         },
     },

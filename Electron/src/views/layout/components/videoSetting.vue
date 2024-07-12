@@ -1,7 +1,8 @@
 <template>
     <el-form :model="form" label-width="140px">
         <el-form-item label="选择摄像头：">
-            <el-select class="select" v-model="form.camSel" @change="camChange">
+            <el-select class="select" v-model="form.camSel" @change="camChange" :disabled="!camList.length"
+                placeholder="请插入设备">
                 <el-option v-for="cam in camList" :key="cam._videoID" :label="cam._devName" :value="cam._videoID" />
             </el-select>
         </el-form-item>
@@ -11,10 +12,12 @@
             </el-select>
         </el-form-item>
         <el-form-item label="帧率：" class="slider">
-            <el-slider v-model="form.fps" :max="30" :show-tooltip="false" @change="fpsChange" /><span class="text">{{ form.fps }}fps</span>
+            <el-slider v-model="form.fps" :max="30" :show-tooltip="false" @change="fpsChange" /><span class="text">{{
+                form.fps }}fps</span>
         </el-form-item>
         <el-form-item label="码率：" class="slider">
-            <el-slider v-model="form.rate" :max="form.maxRatio" :min="form.minRatio" :step="form.ratioStep" :show-tooltip="false" @change="ratioChange" />
+            <el-slider v-model="form.rate" :max="form.maxRatio" :min="form.minRatio" :step="form.ratioStep"
+                :show-tooltip="false" @change="ratioChange" />
             <span class="text">{{ form.rate }}kbps</span>
         </el-form-item>
         <el-radio-group style="text-align: center; width: 100%; display: block" v-model="form.maxQb" @change="maxQbChange">
@@ -31,7 +34,7 @@ export default {
     data() {
         return {
             form: {
-                camSel: 0,
+                camSel: null,
                 fps: 20,
                 rate: 350,
                 ratioSel: 0,
@@ -65,7 +68,7 @@ export default {
             this.form.ratioStep = this.rateConfigs[idx].ratioStep;
         }
 
-        this.form.camSel = this.$rtcsdk.getDefaultVideo(this.appStore.myUserId); //获取当前显示的默认摄像头
+        this.form.camSel = this.$rtcsdk.getDefaultVideo(this.appStore.myUserId) || null; //获取当前显示的默认摄像头
         this.camList = this.$rtcsdk.getAllVideoInfo(this.appStore.myUserId); //获取所有摄像头列表
     },
     methods: {

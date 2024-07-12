@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain, Menu, dialog } from "electron";
+import { app, BrowserWindow, shell, ipcMain, Menu, dialog, systemPreferences } from "electron";
 import { release } from "node:os";
 import { join } from "node:path";
 import "./electron-store";
@@ -61,7 +61,7 @@ async function createWindow() {
         // electron-vite-vue#298
         win.loadURL(url);
         // Open devTool if the app is not packaged
-        // win.webContents.openDevTools();
+        win.webContents.openDevTools();
     } else {
         win.loadFile(indexHtml);
     }
@@ -83,7 +83,7 @@ app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
     win = null;
-    if (process.platform !== "darwin") app.quit();
+    app.quit();
 });
 
 app.on("second-instance", () => {
@@ -101,6 +101,11 @@ app.on("activate", () => {
     } else {
         createWindow();
     }
+});
+
+//返回日志路径
+ipcMain.handle("get-logs-path", (event) => {
+    return app.getPath('logs');
 });
 
 //用于影音共享时弹出文件选择逻辑
@@ -132,3 +137,22 @@ ipcMain.on("electron-open-localMixer", (event, filePath) => {
 ipcMain.on("toggleDevTools", (event, filePath) => {
     win.webContents.toggleDevTools();
 });
+
+async function checkDeviceAccessPrivilege() {
+    const cameraAccessPrivilege = systemPreferences.getMediaAccessStatus('camera');
+    if (cameraAccessPrivilege !== 'granted') {
+        await systemPreferences.askForMediaAccess('camera');
+    }
+
+    const micAccessPrivilege = systemPreferences.getMediaAccessStatus('microphone');
+    if (micAccessPrivilege !== 'granted') {
+        await systemPreferences.askForMediaAccess('microphone');
+    }
+    
+    systemPreferences.getMediaAccessStatus('screen');
+}
+
+if (process.platform == 'darwin') {
+    // mac动态权限申请，如果不申请权限可能会奔溃
+    checkDeviceAccessPrivilege()
+}

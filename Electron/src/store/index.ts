@@ -21,8 +21,11 @@ interface State {
     networkCam: NetworkCam | null;
     myUserId: String | null;
     isLogin: Boolean;
-    shareType: Number,  //共享状态：0未共享，1影音共享 2屏幕共享
+    shareType: Number;  //共享状态：0未共享，1影音共享 2屏幕共享
+    isMyScreenShare: Boolean;  //自己开启的屏幕共享
+    hasCtrlMode: Boolean;   //有远程屏幕控制权限
     rateConfigs: rateConfig[];
+    platform: NodeJS.Platform;
 }
 
 export default defineStore("app", {
@@ -34,6 +37,9 @@ export default defineStore("app", {
             myUserId: null,
             networkCam: null,
             shareType: 0,
+            isMyScreenShare: false,
+            hasCtrlMode: false,
+            platform: process.platform,
             rateConfigs: [
                 {
                     name: "360P",

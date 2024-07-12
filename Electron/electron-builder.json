@@ -5,9 +5,12 @@
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "com.rtc.electronApiDemo",
   "asar": true,
+  "icon": "electron/icon.png",
   "directories": {
     "output": "release/${version}"
   },
+  "beforePack": "./myBeforePackHook.js",
+  "afterPack": "./myAfterPackHook",
   "files": [
     "dist-electron",
     "dist"
@@ -19,7 +22,6 @@
     ]
   },
   "win": {
-    "icon": "electron/icon.ico",
     "target": [
       {
         "target": "nsis",
@@ -33,12 +35,12 @@
   },
   "nsis": {
     "oneClick": false,
-    "perMachine": false,
+    "perMachine": true,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false,
-    "installerIcon": "electron/icon.ico",
-    "uninstallerIcon": "electron/icon.ico",
-    "installerHeaderIcon": "electron/icon.ico",
     "runAfterFinish": false
-  }
+  },
+  "linux": {
+    "target": ["AppImage"],
+    }
 }

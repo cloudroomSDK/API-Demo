@@ -127,15 +127,21 @@ public class MeetingPage
 
     private List<sdkUserVideoID> mWatchList = new List<sdkUserVideoID>();
     private static List<VideoUI> mVideoUIs = new List<VideoUI>();
+    private static bool mInMediaPlay = false;
+    private static bool mInScreenShare = false;
 
     private GameObject mEvtSys = null; 
     private GameObject mScrollView = null;
     private Button mBasicFuncBtn = null;
     private GameObject mBasicFuncGrp = null;
-    private Button mMicBtn = null;
-    private Button mCameraBtn = null;
     private Button mAdvFuncBtn = null;
     private GameObject mAdvFuncGrp = null;
+
+    private MediaPlayPage mMediaPlay = null;
+    private ScreenSharePage mScreenShare = null;
+    private GameObject mVideoWallGO = null;
+
+    private GameObject mTextRawImage = null;
 
     public static List<RecordParams> sRecordParams = new List<RecordParams>
     {
@@ -163,7 +169,7 @@ public class MeetingPage
     {
         if (sdkErr != CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
         {
-            BackToNotLogin("Login failed, sdkErr: " + sdkErr.ToString());
+            BackToNotLogin("登录失败，错误：" + sdkErr.ToString());
             return;
         }
         mState = UISTATE.LOGINSUCCESS;
@@ -180,7 +186,7 @@ public class MeetingPage
     }
     private void notifyLineOff(CRVSDK_ERR_DEF sdkErr)
     {
-        BackToLoginScene("notify line off, error: " + sdkErr);
+        BackToLoginScene("掉线，错误：" + sdkErr);
     }
     private void createMeetingSuccess(int meetId, string cookie)
     {
@@ -193,14 +199,14 @@ public class MeetingPage
     private void createMeetingFail(CRVSDK_ERR_DEF sdkErr, string cookie)
     {
         Debug.Log("create meeting fail, error: " + sdkErr);
-        BackToNotLogin("Create meeting failed, sdkErr: " + sdkErr.ToString());
+        BackToNotLogin("创建房间失败，错误：" + sdkErr.ToString());
     }
 
     private void enterMeetingRslt(CRVSDK_ERR_DEF sdkErr)
     {
         if (CRVSDK_ERR_DEF.CRVSDKERR_NOERR != sdkErr)
         {
-            BackToNotLogin("Enter meeting failed, sdkErr: " + sdkErr.ToString());
+            BackToNotLogin("进入房间失败，错误：" + sdkErr.ToString());
             return;
         }
 
@@ -212,11 +218,11 @@ public class MeetingPage
     }
     private void notifyMeetingStopped()
     {
-        BackToLoginScene("Meeting has stopped");
+        BackToLoginScene("会议已结束");
     }
     private void notifyMeetingDropped(CRVSDK_MEETING_DROPPED_REASON reason)
     {
-        BackToLoginScene("Meeting has dropped, reason: " + reason);
+        BackToLoginScene("已从会议掉线，原因：" + reason);
     }
     private void notifyUserEnterMeeting(string userId)
     {
@@ -224,18 +230,16 @@ public class MeetingPage
         List<sdkUserVideoID> uInfos = getUserVideoIDs(userId);
         foreach (var uInfo in uInfos)
         {
-            VideoUI vUI = FindFreeVideoUI();
+            VideoUI vUI = FindVideoUI(uInfo);
+            if (null == vUI)
+            {
+                vUI = FindFreeVideoUI();
+            }
             if (null != vUI)
             {
                 vUI.UserInfo = uInfo;
-                if (mem._videoStatus == CRVSDK_VSTATUS.CRVSDK_VST_OPEN)
-                {
-                    vUI.SetEnableRender(true);
-                    if (!mEvtSys.activeSelf)
-                    {
-                        vUI.gameObject.SetActive(false);
-                    }
-                }
+                vUI.SetEnableRender(mem._videoStatus == CRVSDK_VSTATUS.CRVSDK_VST_OPEN);
+                vUI.SetVisible(mEvtSys.activeSelf);
             }
             if (!mWatchList.Contains(uInfo))
             {
@@ -253,7 +257,8 @@ public class MeetingPage
         {
             if (vUI.UserInfo._userID == userId)
             {
-                vUI.SetEnableRender(false, false);
+                vUI.SetEnableRender(false);
+                vUI.SetVisible(false, false);
                 vUI.ClearUserInfo();
             }
         }
@@ -269,35 +274,27 @@ public class MeetingPage
         OnTimeUpdateLocRecContent();
         OnTimeUpdateSvrRecContent();
     }
-
     private void notifyMicStatusChanged(string userID, CRVSDK_ASTATUS oldStatus, CRVSDK_ASTATUS newStatus, string oprUserID)
     {
-        Debug.Log("notify user: " + userID + " mic status change from " + oldStatus + " to " + newStatus);
         bool micOpen = (newStatus == CRVSDK_ASTATUS.CRVSDK_AST_OPEN);
-        if (userID == mMyUserId)
+        foreach (var vUI in mVideoUIs)
         {
-            mMicBtn.GetComponentInChildren<Text>().text = micOpen ? "Mic On" : "Mic Off";
+            if (vUI.UserInfo._userID != userID)
+                continue;
+            Button btnMic = vUI.transform.Find("OperGrp/MicBtn").gameObject.GetComponent<Button>();
+            btnMic.GetComponentInChildren<Text>().text = micOpen ? "音频 开" : "音频 关";
         }
     }
-
     private void notifyVideoDevChanged(string userID)
     {
-        Debug.Log("notify user: " + userID + " video device changed");
-
         ResetVideoUI();
 
         OnTimeUpdateLocRecContent();
         OnTimeUpdateSvrRecContent();
     }
-
     private void notifyVideoStatusChanged(string userID, CRVSDK_VSTATUS oldStatus, CRVSDK_VSTATUS newStatus, string oprUserID)
     {
-        Debug.Log("notify user: " + userID + " video status change from " + oldStatus + " to " + newStatus);
         bool camOpen = (newStatus == CRVSDK_VSTATUS.CRVSDK_VST_OPEN);
-        if (userID == mMyUserId)
-        {
-            mCameraBtn.GetComponentInChildren<Text>().text = camOpen ? "Cam On" : "Cam Off";
-        }
         sdkUserVideoID uInfo = new sdkUserVideoID(userID);
         foreach (var vUI in mVideoUIs)
         {
@@ -305,16 +302,89 @@ public class MeetingPage
                 continue;
             if (camOpen != vUI.IsEnableRender())
             {
-                vUI.SetEnableRender(camOpen, false);
-                if (camOpen && !mEvtSys.activeSelf)
-                {
-                    vUI.gameObject.SetActive(false);
-                }
+                vUI.SetEnableRender(camOpen);
+                vUI.SetVisible(mEvtSys.activeSelf, false);
             }
+            Button btnCam = vUI.transform.Find("OperGrp/CamBtn").gameObject.GetComponent<Button>();
+            btnCam.GetComponentInChildren<Text>().text = camOpen ? "视频 开" : "视频 关";
         }
 
         OnTimeUpdateLocRecContent();
         OnTimeUpdateSvrRecContent();
+    }
+    private void startScreenShareRslt(CRVSDK_ERR_DEF sdkErr)
+    {
+        if (sdkErr == CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
+        {
+            notifyScreenShareStarted(mMyUserId);
+        }
+    }
+    private void stopScreenShareRslt(CRVSDK_ERR_DEF sdkErr)
+    {
+        if (sdkErr == CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
+        {
+            notifyScreenShareStopped(mMyUserId);
+        }
+    }
+    private void notifyScreenShareStarted(string userID)
+    {
+        if (mEvtSys.activeSelf)
+        {
+            mScreenShare.gameObject.SetActive(true);
+        }
+        mScreenShare.OnScreenShareStarted(userID);
+        mInScreenShare = true;
+        ResetVideoUI();
+
+        OnTimeUpdateLocRecContent();
+        OnTimeUpdateSvrRecContent();
+    }
+    private void notifyScreenShareStopped(string oprUserID)
+    {
+        if (null != mScreenShare)
+        {
+            mScreenShare.gameObject.SetActive(false);
+            mScreenShare.OnScreenShareStopped(oprUserID);
+        }
+        mInScreenShare = false;
+        ResetVideoUI();
+
+        OnTimeUpdateLocRecContent();
+        OnTimeUpdateSvrRecContent();
+    }
+    private void notifyMediaOpened(int totalTime, int w, int h)
+    {
+        mMediaPlay.OnMediaOpened(totalTime, w, h);
+    }
+    private void notifyMediaStart(string userID)
+    {
+        if (mEvtSys.activeSelf)
+        {
+            mMediaPlay.gameObject.SetActive(true);
+        }
+        mMediaPlay.OnMediaStart(userID);
+        mInMediaPlay = true;
+        ResetVideoUI();
+
+        OnTimeUpdateLocRecContent();
+        OnTimeUpdateSvrRecContent();
+    }
+    private void notifyMediaStop(string userID, CRVSDK_MEDIA_STOPREASON reason)
+    {
+        if (null != mMediaPlay)
+        {
+            mMediaPlay.gameObject.SetActive(false);
+            mMediaPlay.OnMediaStop(userID, reason);
+        }
+        mInMediaPlay = false;
+        ResetVideoUI();
+
+        OnTimeUpdateLocRecContent();
+        OnTimeUpdateSvrRecContent();
+    }
+    private void notifyMediaPause(string userID, bool bPause)
+    {
+        mMediaPlay.OnMediaPause(userID, bPause);
     }
     #endregion
 
@@ -335,6 +405,14 @@ public class MeetingPage
         g_sdkMain.getSDKMeeting().notifyMicStatusChanged += notifyMicStatusChanged;
         g_sdkMain.getSDKMeeting().notifyVideoDevChanged += notifyVideoDevChanged;
         g_sdkMain.getSDKMeeting().notifyVideoStatusChanged += notifyVideoStatusChanged;
+        g_sdkMain.getSDKMeeting().onStartScreenShareRslt += startScreenShareRslt;
+        g_sdkMain.getSDKMeeting().onStopScreenShareRslt += stopScreenShareRslt;
+        g_sdkMain.getSDKMeeting().notifyScreenShareStarted += notifyScreenShareStarted;
+        g_sdkMain.getSDKMeeting().notifyScreenShareStopped += notifyScreenShareStopped;
+        g_sdkMain.getSDKMeeting().notifyMediaOpened += notifyMediaOpened;
+        g_sdkMain.getSDKMeeting().notifyMediaStart += notifyMediaStart;
+        g_sdkMain.getSDKMeeting().notifyMediaStop += notifyMediaStop;
+        g_sdkMain.getSDKMeeting().notifyMediaPause += notifyMediaPause;
     }
 
     private LoginPage mLoginPage;
@@ -443,25 +521,28 @@ public class MeetingPage
 
     public VideoUI CreateVideoUI(string objName, int index)
     {
-        GameObject go = new GameObject();
+        GameObject go = UnityEngine.Object.Instantiate(mTextRawImage, mVideoWallGO.transform);
         if (go == null)
             return null;
 
         go.name = objName;
-        go.AddComponent<RawImage>();
-        GameObject canvas = GameObject.Find("MeetingCanvas");
-        if (canvas != null)
-        {
-            go.transform.SetParent(canvas.transform);
-        }
+        Transform btnGrp = go.transform.Find("OperGrp");
+        Button mirrorBtn = btnGrp.Find("MirrorBtn").GetComponent<Button>();
+        mirrorBtn.onClick.AddListener(OnMirrorCamClicked);
+        Button rotateBtn = btnGrp.Find("RotateBtn").GetComponent<Button>();
+        rotateBtn.onClick.AddListener(OnRotateCamClicked);
+        Button camBtn = btnGrp.Find("CamBtn").GetComponent<Button>();
+        camBtn.onClick.AddListener(OnCamBtnClicked);
+        Button micBtn = btnGrp.Find("MicBtn").GetComponent<Button>();
+        micBtn.onClick.AddListener(OnMicBtnClicked);
 
-        int videoWidth = 360;
-        int videoHeight = 198;
-        Rect canvasRt = canvas.GetComponent<Canvas>().pixelRect;
-        float xPos = 120 - canvasRt.width / 2f + videoWidth / 2f + index % 3 * 360;
-        float yPos = canvasRt.height / 2f - videoHeight / 2f - index / 3 * 198;
+        Rect canvasRt = mVideoWallGO.GetComponent<RectTransform>().rect;
+        float xPos = 0 - canvasRt.width / 2f + index % 3 * 370;
+        float yPos = canvasRt.height / 2f - index / 3 * 240;
         go.transform.localPosition = new Vector3(xPos, yPos, 0);
-        go.transform.localScale = new Vector3(3.2f, 1.8f, 1f);
+        RawImage rawImage = go.GetComponentInChildren<RawImage>();
+        rawImage.transform.localScale = new Vector3(3.68f, 2.07f, 1f);
+//         rawImage.transform.localScale = new Vector3(3.52f, 1.98f, 1f);
 
         VideoUI vUI = go.AddComponent<VideoUI>();
         vUI.SetSDKMain(g_sdkMain);
@@ -483,7 +564,7 @@ public class MeetingPage
     {
         mWatchList.Clear();
 
-        int maxVideoCount = 9;
+        int maxVideoCount = (mInScreenShare || mInMediaPlay) ? 3 : 9;
         // add myself first
         List<sdkUserVideoID> userIds = getUserVideoIDs(mMyUserId);
         // add others
@@ -496,6 +577,10 @@ public class MeetingPage
                 continue;
             userIds.AddRange(getUserVideoIDs(obj._userId));
         }
+        while (userIds.Count > maxVideoCount)
+        {
+            userIds.RemoveAt(userIds.Count - 1);
+        }
         mWatchList.AddRange(userIds);
         UpdateWatchVideos();
         // add empty if not enough
@@ -504,24 +589,46 @@ public class MeetingPage
             userIds.Add(new sdkUserVideoID(""));
         }
 
-        for (int i = 0; i < mVideoUIs.Count && i < userIds.Count; i++)
+        int i = 0;
+        for (; i < mVideoUIs.Count && i < userIds.Count; i++)
         {
             VideoUI vUI = mVideoUIs[i];
             vUI.UserInfo = userIds[i];
+            Text txt = vUI.GetComponentInChildren<Text>();
+            bool isMyVideo = (vUI.UserInfo._userID == mMyUserId);
+            Button btnMirror = txt.transform.parent.Find("MirrorBtn").gameObject.GetComponent<Button>();
+            Button btnRotate = txt.transform.parent.Find("RotateBtn").gameObject.GetComponent<Button>();
+            Button btnCam = txt.transform.parent.Find("CamBtn").gameObject.GetComponent<Button>();
+            Button btnMic = txt.transform.parent.Find("MicBtn").gameObject.GetComponent<Button>();
+            btnMirror.gameObject.SetActive(isMyVideo);
+            btnRotate.gameObject.SetActive(isMyVideo);
+            btnCam.interactable = isMyVideo;
+            btnMic.interactable = isMyVideo;
             if (userIds[i]._userID.Length > 0)
             {
                 sdkMeetingMember mem = g_sdkMain.getSDKMeeting().getMemberInfo(userIds[i]._userID);
+                txt.text = mem._nickName;
+                bool micOpened = (mem._audioStatus == CRVSDK_ASTATUS.CRVSDK_AST_OPEN);
+                btnMic.GetComponentInChildren<Text>().text = micOpened ? "音频 开" : "音频 关";
                 bool camOpened = (mem._videoStatus == CRVSDK_VSTATUS.CRVSDK_VST_OPEN);
+                btnCam.GetComponentInChildren<Text>().text = camOpened ? "视频 开" : "视频 关";
                 vUI.SetEnableRender(camOpened);
-                if (camOpened && !mEvtSys.activeSelf)
-                {
-                    vUI.gameObject.SetActive(false);
-                }
+                vUI.SetVisible(mEvtSys.activeSelf, false);
             }
             else
             {
+                txt.text = "";
                 vUI.SetEnableRender(false);
+                vUI.SetVisible(false);
             }
+        }
+
+        for (; i < mVideoUIs.Count; i++)
+        {
+            VideoUI vUI = mVideoUIs[i];
+            vUI.SetEnableRender(false);
+            vUI.ClearUserInfo();
+            vUI.SetVisible(false);
         }
     }
 
@@ -540,17 +647,16 @@ public class MeetingPage
         return idList;
     }
 
-    public VideoUI FindVideoUI(sdkUserVideoID uID)
+    public VideoUI FindVideoUI(sdkUserVideoID vID)
     {
         foreach (var vUI in mVideoUIs)
         {
             sdkUserVideoID tmpID = vUI.UserInfo;
-            if (tmpID._userID == uID._userID && tmpID._videoID == uID._videoID)
+            if (tmpID._userID == vID._userID && tmpID._videoID == vID._videoID)
             {
                 return vUI;
             }
         }
-
         return null;
     }
 
@@ -569,19 +675,35 @@ public class MeetingPage
 
     private void HideAllVideoUI()
     {
+        if (null != mMediaPlay && mMediaPlay.gameObject.activeSelf)
+        {
+            mMediaPlay.gameObject.SetActive(false);
+        }
+        if (null != mScreenShare && mScreenShare.gameObject.activeSelf)
+        {
+            mScreenShare.gameObject.SetActive(false);
+        }
         foreach (var obj in mVideoUIs)
         {
-            obj.gameObject.SetActive(false);
+            obj.SetVisible(false);
         }
     }
 
     private void RestoreVideoUI()
     {
+        if (null != mMediaPlay && mInMediaPlay)
+        {
+            mMediaPlay.gameObject.SetActive(true);
+        }
+        if (null != mScreenShare && mInScreenShare)
+        {
+            mScreenShare.gameObject.SetActive(true);
+        }
         foreach (var obj in mVideoUIs)
         {
-            if (obj.IsEnableRender())
+            if (obj.UserInfo._userID.Length > 0)
             {
-                obj.gameObject.SetActive(true);
+                obj.SetVisible(true);
             }
         }
     }
@@ -592,9 +714,14 @@ public class MeetingPage
         mScrollView = GameObject.Find("Scroll View");
         mBasicFuncGrp = GameObject.Find("BasicFuncGrp");
         mAdvFuncGrp = GameObject.Find("AdvFuncGrp");
+        mMediaPlay = GameObject.Find("MediaPlayGO").GetComponent<MediaPlayPage>();
+        mMediaPlay.gameObject.SetActive(false);
+        mScreenShare = GameObject.Find("ScreenShareGO").GetComponent<ScreenSharePage>();
+        mScreenShare.gameObject.SetActive(false);
+        mVideoWallGO = GameObject.Find("VideoWallGO");
 
         Text txtRoomId = GameObject.Find("txtRoomId").GetComponent<Text>();
-        txtRoomId.text = "Room ID: " + mMeetingId.ToString();
+        txtRoomId.text = "房间ID：\n" + mMeetingId.ToString();
 
         Button btnExitMeet = GameObject.Find("ExitRoomBtn").GetComponent<Button>();
         btnExitMeet.onClick.AddListener(OnExitRoomBtnClicked);
@@ -602,38 +729,18 @@ public class MeetingPage
         mBasicFuncBtn.onClick.AddListener(OnBasicFuncBtnClicked);
         mAdvFuncBtn = GameObject.Find("AdvFuncBtn").GetComponent<Button>();
         mAdvFuncBtn.onClick.AddListener(OnAdvFuncBtnClicked);
-        mMicBtn = GameObject.Find("MicBtn").GetComponent<Button>();
-        mMicBtn.onClick.AddListener(OnMicBtnClicked);
-        mCameraBtn = GameObject.Find("CameraBtn").GetComponent<Button>();
-        mCameraBtn.onClick.AddListener(OnCamBtnClicked);
-        Button btnMirrorCam = GameObject.Find("MirrorCamBtn").GetComponent<Button>();
-        btnMirrorCam.onClick.AddListener(OnMirrorCamClicked);
-        Button btnRotateCam = GameObject.Find("RotateCamBtn").GetComponent<Button>();
-        btnRotateCam.onClick.AddListener(OnRotateCamClicked);
-        Button btnAudioSet = GameObject.Find("AudioSetBtn").GetComponent<Button>();
-        btnAudioSet.onClick.AddListener(OnAudioSetClicked);
-        Button btnVideoSet = GameObject.Find("VideoSetBtn").GetComponent<Button>();
-        btnVideoSet.onClick.AddListener(OnVideoSetClicked);
-        Button btnLocRec = GameObject.Find("LocRecordBtn").GetComponent<Button>();
-        btnLocRec.onClick.AddListener(OnLocRecClicked);
-        Button btnSvrRec = GameObject.Find("SvrRecordBtn").GetComponent<Button>();
-        btnSvrRec.onClick.AddListener(OnSvrRecClicked);
-        Button btnScreenShare = GameObject.Find("ScreenShareBtn").GetComponent<Button>();
-        btnScreenShare.onClick.AddListener(OnScreenShareClicked);
-        Button btnMediaPlay = GameObject.Find("MediaPlayBtn").GetComponent<Button>();
-        btnMediaPlay.onClick.AddListener(OnMediaPlayClicked);
-        Button btnRoomMsg = GameObject.Find("RoomMsgBtn").GetComponent<Button>();
-        btnRoomMsg.onClick.AddListener(OnRoomMsgClicked);
-        Button btnRoomAttri = GameObject.Find("RoomAttrsBtn").GetComponent<Button>();
-        btnRoomAttri.onClick.AddListener(OnRoomAttrsClicked);
-        Button btnUserAttri = GameObject.Find("UserAttrsBtn").GetComponent<Button>();
-        btnUserAttri.onClick.AddListener(OnUserAttrsClicked);
-        Button btnNetCamera = GameObject.Find("NetCameraBtn").GetComponent<Button>();
-        btnNetCamera.onClick.AddListener(OnNetCameraClicked);
-        Button btnVoiceChange = GameObject.Find("VoiceChangeBtn").GetComponent<Button>();
-        btnVoiceChange.onClick.AddListener(OnVoiceChangeClicked);
-        Button btnEchoTest = GameObject.Find("EchoTestBtn").GetComponent<Button>();
-        btnEchoTest.onClick.AddListener(OnEchoTestClicked);
+        string[] sceneBtns = { "AudioSetting", "VideoSetting", "LocRecord", "SvrRecord", "ScreenShareState", "MediaSelect", "RoomMsg", "RoomAttrs", "UserAttrs", "NetCamera", "VoiceChange", "EchoTest"};
+        foreach (var btnName in sceneBtns)
+        {
+            Button sceneBtn = GameObject.Find(btnName).GetComponent<Button>();
+            sceneBtn.onClick.AddListener(OnSceneBtnClicked);
+        }
+
+        mTextRawImage = Resources.Load<GameObject>("Prefab/TextRawImage");
+        if (null == mTextRawImage)
+        {
+            Debug.Log("load TextRawImage failed");
+        }
     }
 
     void OnLoadSceneFinished(Scene scene, LoadSceneMode mode)
@@ -651,7 +758,7 @@ public class MeetingPage
                 ScreenCamera sc = new ScreenCamera();
                 sc.monitorID = i;
                 string strScreen = JsonUtility.ToJson(sc);
-                string camName = "Screen Camera - " + (i + 1);
+                string camName = "自定义屏幕摄像头" + (i + 1);
                 g_sdkMain.getSDKMeeting().createScreenCamDev(camName, strScreen);
             }
 
@@ -689,28 +796,20 @@ public class MeetingPage
     void OnBasicFuncBtnClicked()
     {
         Text btnTxt = mBasicFuncBtn.GetComponentInChildren<Text>();
+        string strPrefix = "  > ";
         if (mBasicFuncGrp.activeSelf)
-        {
-            btnTxt.text = "  ^ Basic";
-        }
-        else
-        {
-            btnTxt.text = "  > Basic";
-        }
+            strPrefix = "  ^ ";
+        btnTxt.text = strPrefix + "基础功能";
         mBasicFuncGrp.SetActive(!mBasicFuncGrp.activeSelf);
     }
 
     void OnAdvFuncBtnClicked()
     {
         Text btnTxt = mAdvFuncBtn.GetComponentInChildren<Text>();
+        string strPrefix = "  > ";
         if (mAdvFuncGrp.activeSelf)
-        {
-            btnTxt.text = "  ^ Advanced";
-        }
-        else
-        {
-            btnTxt.text = "  > Advanced";
-        }
+            strPrefix = "  ^ ";
+        btnTxt.text = strPrefix + "进阶功能";
         mAdvFuncGrp.SetActive(!mAdvFuncGrp.activeSelf);
     }
 
@@ -746,12 +845,19 @@ public class MeetingPage
         if (memInfo._videoStatus != CRVSDK_VSTATUS.CRVSDK_VST_OPEN)
             return;
 
-        foreach (var vUI in mVideoUIs)
+        var button = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+        GameObject parentObj = button.transform.parent.gameObject;
+        if(null != parentObj)
         {
-            if (vUI.UserInfo._userID == mMyUserId)
+            if(!parentObj.name.StartsWith("VideoUI"))
             {
-                vUI.SetLocMirror(!vUI.GetLocMirror());
+                parentObj = parentObj.transform.parent.gameObject;
             }
+        }
+        VideoUI vUI = parentObj.GetComponent<VideoUI>();
+        if (null != vUI)
+        {
+            vUI.SetLocMirror(!vUI.GetLocMirror());
         }
     }
 
@@ -798,19 +904,11 @@ public class MeetingPage
         SceneManager.sceneUnloaded -= OnSceneUnloaded;
     }
 
-    void OnAudioSetClicked()
+    void OnSceneBtnClicked()
     {
-        LoadSubScene("AudioSettingScene");
-    }
-
-    void OnVideoSetClicked()
-    {
-        LoadSubScene("VideoSettingScene");
-    }
-
-    void OnLocRecClicked()
-    {
-        LoadSubScene("LocRecordScene");
+        var button = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+        string sceneName = button.gameObject.name + "Scene";
+        LoadSubScene(sceneName);
     }
 
     private void OnTimeUpdateLocRecContent()
@@ -825,15 +923,10 @@ public class MeetingPage
         CRVSDK_ERR_DEF err = g_sdkMain.getSDKMeeting().updateLocMixerContent(LocRecordPage.TEST_LocRec_ID, jsonList);
         if (err != CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
         {
-            string strInfo = "Update local record content fail, err: " + err;
+            string strInfo = "更新本地录制内容失败，错误：" + err;
 //             mLocRecInfo.text = strInfo;
             return;
         }
-    }
-
-    void OnSvrRecClicked()
-    {
-        LoadSubScene("SvrRecordScene");
     }
 
     private void OnTimeUpdateSvrRecContent()
@@ -850,7 +943,7 @@ public class MeetingPage
         CRVSDK_ERR_DEF err = g_sdkMain.getSDKMeeting().updateCloudMixerContent(SvrRecordPage.mSvrMixerID, cfg);
         if (err != CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
         {
-            string strInfo = "Update cloud record content failed, err: " + err;
+            string strInfo = "更新云端录制内容失败，错误：" + err;
 //             mSvrRecInfo.text = strInfo;
             return;
         }
@@ -867,8 +960,41 @@ public class MeetingPage
         int videoUIW = (int)(videoUIH * 16 / 9.0 + 0.5);
         videoUIW = videoUIW / 2 * 2;
 
+        //屏幕共享中
+        if (mInScreenShare)
+        {
+            int screenH = recHeight - videoUIH - VIDEO_WALL_SPACE;
+            RecordContent itemScreen = new RecordContent();
+            itemScreen.type = (int)CRVSDK_MIXER_CONTENT_TYPE.CRVSDK_MIXCONT_SCREEN_SHARED;
+            itemScreen.left = 0;
+            itemScreen.top = contentYPos;
+            itemScreen.width = recWidth;
+            itemScreen.height = screenH;
+            itemScreen.keepAspectRatio = 1;
+            contents.Add(itemScreen);
+
+            contentYPos += screenH + VIDEO_WALL_SPACE;
+        }
+
+        //影音共享中
+        if (mInMediaPlay)
+        {
+            int mediaH = recHeight - videoUIH - VIDEO_WALL_SPACE;
+            RecordContent itemMedia = new RecordContent();
+            itemMedia.type = (int)CRVSDK_MIXER_CONTENT_TYPE.CRVSDK_MIXCONT_MEDIA;
+            itemMedia.left = 0;
+            itemMedia.top = contentYPos;
+            itemMedia.width = recWidth;
+            itemMedia.height = mediaH;
+            itemMedia.keepAspectRatio = 1;
+            contents.Add(itemMedia);
+
+            contentYPos += mediaH + VIDEO_WALL_SPACE;
+        }
+
+        int rowCount = (mInMediaPlay || mInScreenShare) ? 1 : 3;
         //视频墙
-        for (int row = 0; row < 3; row++)
+        for (int row = 0; row < rowCount; row++)
         {
             int contentXPos = 0;
             for (int col = 0; col < 3; col++)
@@ -894,45 +1020,5 @@ public class MeetingPage
         }
 
         return contents;
-    }
-
-    void OnScreenShareClicked()
-    {
-        LoadSubScene("ScreenShareScene");
-    }
-
-    void OnMediaPlayClicked()
-    {
-        LoadSubScene("MediaPlayScene");
-    }
-
-    void OnRoomMsgClicked()
-    {
-        LoadSubScene("RoomMsgScene");
-    }
-
-    void OnRoomAttrsClicked()
-    {
-        LoadSubScene("RoomAttrsScene");
-    }
-
-    void OnUserAttrsClicked()
-    {
-        LoadSubScene("UserAttrsScene");
-    }
-
-    void OnNetCameraClicked()
-    {
-        LoadSubScene("NetCameraScene");
-    }
-
-    void OnVoiceChangeClicked()
-    {
-        LoadSubScene("VoiceChangeScene");
-    }
-
-    void OnEchoTestClicked()
-    {
-        LoadSubScene("EchoTestScene");
     }
 }

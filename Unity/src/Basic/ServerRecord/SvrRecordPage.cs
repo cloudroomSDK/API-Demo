@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -136,7 +136,7 @@ public class SvrRecordPage : MonoBehaviour
         UpdateSvrRecUI();
         if (sdkErr != CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
         {
-            string strInfo = "Create cloud mixer failed, err: " + sdkErr;
+            string strInfo = "创建云端录制失败，错误：" + sdkErr;
             mSvrRecInfo.text = strInfo;
             return;
         }
@@ -154,7 +154,7 @@ public class SvrRecordPage : MonoBehaviour
             //录制异常
             if (null != exParams && exParams.err != 0)
             {
-                string strInfo = "Record failed, errCode: " + exParams.err + ", errDesc：" + exParams.errDesc;
+                string strInfo = "录制失败，错误：" + exParams.err + "，描述：" + exParams.errDesc;
                 mSvrRecInfo.text = strInfo;
                 return;
             }
@@ -176,7 +176,7 @@ public class SvrRecordPage : MonoBehaviour
             break;
         case CRVSDK_CLOUDMIXER_OUTPUT_STATE.CRVSDK_CLOUDMO_FAIL:
             {
-                string strInfo = "Cloud record failed: " + outputInfo.errDesc;	
+                string strInfo = "云端录制失败，错误：" + outputInfo.errDesc;	
                 mSvrRecInfo.text = strInfo;
             }
             break;
@@ -185,8 +185,8 @@ public class SvrRecordPage : MonoBehaviour
         case CRVSDK_CLOUDMIXER_OUTPUT_STATE.CRVSDK_CLOUDMO_UPLOADED:
             //上传完成
             {
-                int httpType = 0;// CommonTools.ReadIniInt(mIniFile, "UserCfg", "httpType");
-                string server = "";// CommonTools.ReadIniStr(mIniFile, "UserCfg", "server");
+                int httpType = CommonTools.ReadIniInt(MeetingPage.mIniFile, "UserCfg", "httpType");
+                string server = CommonTools.ReadIniStr(MeetingPage.mIniFile, "UserCfg", "server");
                 string protocol = (httpType == (int)CRVSDK_WEBPROTOCOL.CRVSDK_WEBPTC_HTTP) ? "http://" : "https://";
                 string recUrl = protocol + server + "/mgr/sdk/";
                 mSvrRecInfo.text = recUrl;
@@ -194,7 +194,7 @@ public class SvrRecordPage : MonoBehaviour
             break;
         case CRVSDK_CLOUDMIXER_OUTPUT_STATE.CRVSDK_CLOUDMO_UPLOADFAIL:
             {
-                string strInfo = "Upload file failed: " + outputInfo.errDesc;	
+                string strInfo = "上传文件失败，错误：" + outputInfo.errDesc;	
                 mSvrRecInfo.text = strInfo;
             }
             break;
@@ -222,7 +222,7 @@ public class SvrRecordPage : MonoBehaviour
         CloudMixerCfg mixerCfg = new CloudMixerCfg();
         mixerCfg.mode = 0;//合流模式
         DateTime dt = DateTime.Now;
-        string recordFileBaseName = "LoginPage_" + MeetingPage.mMeetingId.ToString() + string.Format("_{0:yyyy-MM-dd_hh-mm-ss}", dt);
+        string recordFileBaseName = string.Format("{0:yyyy-MM-dd_HH-mm-ss}_Unity_{1}", dt, MeetingPage.mMeetingId);
         string suffix = mDDSvrRecFmt.options[mDDSvrRecFmt.value].text;
         string svrFilePath = string.Format("/{0}/{1}.{2}", dt.ToString("yyyy-MM-dd"), recordFileBaseName, suffix);
         VideoFileCfg vfc = new VideoFileCfg();

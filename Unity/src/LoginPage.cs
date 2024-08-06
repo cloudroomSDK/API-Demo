@@ -10,7 +10,7 @@ public class LoginPage : MonoBehaviour
 {
     static MeetingPage mApp = null;
 
-    public GameObject mEvtSys;
+    private GameObject mEvtSys;
 
     private Text mTips;
     private GameObject mLoginPanel;
@@ -164,7 +164,7 @@ public class LoginPage : MonoBehaviour
         string strMeetId = goMeetId.GetComponent<InputField>().text;
         if (strMeetId.Length != 8)
         {
-            ShowTipPanel("Please input correct meeting id");
+            ShowTipPanel("请输入正确的房间ID");
             return;
         }
         GameObject goUserId = GameObject.Find("ifNickname");

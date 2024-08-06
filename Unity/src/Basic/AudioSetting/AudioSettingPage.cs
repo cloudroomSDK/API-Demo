@@ -24,9 +24,11 @@ public class AudioSettingPage : MonoBehaviour
         mMicVol = GameObject.Find("sliderMic").GetComponent<Slider>();
         mMicVol.minValue = 0;
         mMicVol.maxValue = 255;
+        mMicVol.wholeNumbers = true;
         mSpkVol = GameObject.Find("sliderSpk").GetComponent<Slider>();
         mSpkVol.minValue = 0;
         mSpkVol.maxValue = 255;
+        mSpkVol.wholeNumbers = true;
 
         SetupAudioSetPanel();
     }
@@ -43,7 +45,7 @@ public class AudioSettingPage : MonoBehaviour
         AudioDevInfoList micDevs = g_sdkMain.getSDKMeeting().getAudioMics();
         if (null != micDevs && micDevs.Count > 0)
         {
-            micList.Add("System Default");
+            micList.Add("系统默认设备");
             foreach(var obj in micDevs)
             {
                 micList.Add(obj._name + ":" + obj._id);
@@ -56,7 +58,7 @@ public class AudioSettingPage : MonoBehaviour
         AudioDevInfoList spkDevs = g_sdkMain.getSDKMeeting().getAudioSpks();
         if (null != spkDevs && spkDevs.Count > 0)
         {
-            spkList.Add("System Default");
+            spkList.Add("系统默认设备");
             foreach(var obj in spkDevs)
             {
                 spkList.Add(obj._name + ":" + obj._id);
@@ -105,13 +107,13 @@ public class AudioSettingPage : MonoBehaviour
         sdkAudioCfg aCfg = g_sdkMain.getSDKMeeting().getAudioCfg();
         if (mDDMicSet.options.Count > 0)
         {
-            string micStr = mDDMicSet.options[mDDMicSet.value].text;
-            if (micStr == "System Default")
+            if (0 == mDDMicSet.value)
             {
                 aCfg._micGuid = "";
             }
             else
             {
+                string micStr = mDDMicSet.options[mDDMicSet.value].text;
                 string[] splitStr = micStr.Split(":");
                 if (splitStr.Length > 1)
                 {
@@ -125,13 +127,13 @@ public class AudioSettingPage : MonoBehaviour
         }
         if (mDDSpeakerSet.options.Count > 0)
         {
-            string spkStr = mDDSpeakerSet.options[mDDSpeakerSet.value].text;
-            if (spkStr == "System Default")
+            if (0 == mDDSpeakerSet.value)
             {
                 aCfg._spkGuid = "";
             }
             else
             {
+                string spkStr = mDDSpeakerSet.options[mDDSpeakerSet.value].text;
                 string[] splitStr = spkStr.Split(":");
                 if (splitStr.Length > 1)
                 {

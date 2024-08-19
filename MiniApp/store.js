@@ -1,8 +1,8 @@
 const defaultConfig = {
 	server: "sdk.cloudroom.com",
 	useToken: false,
-	appId: "demo@cloudroom.com",
-	appSecret: "123456",
+	appId: "",
+	appSecret: "",
 	token: "",
 };
 

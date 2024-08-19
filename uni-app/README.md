@@ -15,8 +15,8 @@
   * Android 4.4 或以上版本
 
 ### 创建账号
-  1. 您需要在云屋[SDK官网](https://sdk.cloudroom.com/)注册账号并创建项目，具体流程参见[准备工作](https://docs.cloudroom.com/sdk/document/fastIntegration/beforeDevelop?platform=uniapp)
-  1. 项目创建完成，获取到`AppId`和`AppSecret`，选择以下之一方式：
+1. 您需要在云屋[SDK官网](https://sdk.cloudroom.com/)注册账号并创建项目，具体流程参见[准备工作](https://docs.cloudroom.com/sdk/document/fastIntegration/beforeDevelop?platform=uniapp)
+1. 项目创建完成，获取到`AppId`和`AppSecret`，选择以下之一方式：
     - 在`config/index.js`文件中修改对应的值
     - 启动项目后，在设置界面中填入对应的值
 

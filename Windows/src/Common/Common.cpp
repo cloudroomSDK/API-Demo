@@ -209,3 +209,11 @@ bool SetInifileString(const QString &grpName, const QString &keyName, const QStr
 	bool rslt = settings.status() != QSettings::NoError;
 	return rslt;
 }
+
+
+void WidgetStyleUpdate(QWidget *pWnd)
+{
+	pWnd->style()->unpolish(pWnd);
+	pWnd->style()->polish(pWnd);
+}
+

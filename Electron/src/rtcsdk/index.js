@@ -22,6 +22,9 @@ async function start() {
     rtcsdk.init({
         path: logsPath,//SDK工作目录，用于存储配置文件、临时文件、录制文件、影音文件、日志等文件，如果传空值，则默认为sdk的安装目录
         // enableHardwareAcceleration: true,//启动硬件加速
+        jsonParam: JSON.stringify({
+            Timeout: 10000, //网络通信超时时间，单位是毫秒，取值范围：10000-120000, 缺省值:60000(60秒)
+        })
     });
 
     /* 

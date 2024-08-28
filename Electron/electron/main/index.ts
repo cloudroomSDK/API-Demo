@@ -1,7 +1,24 @@
-import { app, BrowserWindow, shell, ipcMain, Menu, dialog, systemPreferences } from "electron";
+import { app, BrowserWindow, shell, ipcMain, Menu, dialog, systemPreferences, crashReporter } from "electron";
 import { release } from "node:os";
 import { join } from "node:path";
 import "./electron-store";
+
+//获取崩溃日志堆栈文件
+const getCrashReport = () => {
+    // 崩溃日志堆栈文件存放路径
+    try {
+        // 获取崩溃日志堆栈文件存放路径 -- electron 9.0.0 版本之后
+        console.log('------crashFilePath------', app.getPath('crashDumps'))
+    } catch (error) {
+        console.error('------获取奔溃文件路径失败------', error)
+    }
+    // 开启 crash 捕获
+    crashReporter.start({
+        uploadToServer: false, // 是否上传服务器
+        ignoreSystemCrashHandler: false // 不忽略系统自带的奔溃处理，为 true 时表示忽略，奔溃时不会生成奔溃堆栈文件
+    })
+}
+getCrashReport();
 
 // The built directory structure
 //
@@ -148,7 +165,7 @@ async function checkDeviceAccessPrivilege() {
     if (micAccessPrivilege !== 'granted') {
         await systemPreferences.askForMediaAccess('microphone');
     }
-    
+
     systemPreferences.getMediaAccessStatus('screen');
 }
 

@@ -1,0 +1,14 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "@pura/harmony-utils": "^1.0.9",
+    "@cloudroom/hormony_rtcsdk": "^1.0.0"
+  },
+  "devDependencies": {},
+  "dynamicDependencies": {}
+}

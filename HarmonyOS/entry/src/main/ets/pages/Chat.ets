@@ -1,6 +1,6 @@
 import { CustomButton } from '../components/CustomButton';
 import { AppUtil, DateUtil, JSONUtil } from '@pura/harmony-utils';
-import sdk_engine, { callBackHandle, CRVideoSDKCallBack } from '../common/CRSDK';
+import sdk_engine, { callBackHandle, CRVideoSDKCallBack } from '../common/RTCSDK';
 import UserConfig from '../common/UserConfig';
 import { JSON } from '@kit.ArkTS';
 import { KeyboardAvoidMode } from '@kit.ArkUI';
@@ -170,6 +170,8 @@ struct Chat {
       this.pageStack = context.pathStack;
       this.roomID = context.pathInfo.param as string;
       callBackHandle(this.CallbackObj); //销毁回调函数
+
+      sdk_engine.setSpeakerOut(true) //使用扬声器
 
       // 当消息列表长度较小时，键盘弹出时，采用压缩页面的方式效果更佳
       AppUtil.setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE)

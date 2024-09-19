@@ -9,7 +9,7 @@ import sdk_engine, {
   CRVSDK_ERR_DEF,
   CRVSDK_WEBPROTOCOL,
   getErrDesc
-} from '../common/CRSDK';
+} from '../common/RTCSDK';
 import loginConfig from '../common/LoginConfig';
 import userConfig from '../common/UserConfig';
 import { MD5, ToastUtil } from '@pura/harmony-utils';
@@ -43,16 +43,16 @@ struct Login {
 
   login() {
     sdk_engine.login({
-      _sdkAuthType: loginConfig.useToken ? CRVSDK_AUTHTYPE.CRVSDK_AUTHTP_TOKEN : CRVSDK_AUTHTYPE.CRVSDK_AUTHTP_SECRET,
-      _appID: loginConfig.AppID,
-      _md5_appSecret: MD5.digestSync(loginConfig.AppSecret),
-      _token: loginConfig.Token,
-      _serverAddr: loginConfig.addr,
-      _userID: userConfig.userID,
-      _nickName: userConfig.nickName,
-      _webProtocol: loginConfig.useHTTPS ? CRVSDK_WEBPROTOCOL.CRVSDK_WEBPTC_HTTPS :
+      sdkAuthType: loginConfig.useToken ? CRVSDK_AUTHTYPE.CRVSDK_AUTHTP_TOKEN : CRVSDK_AUTHTYPE.CRVSDK_AUTHTP_SECRET,
+      appID: loginConfig.AppID,
+      md5_appSecret: MD5.digestSync(loginConfig.AppSecret),
+      token: loginConfig.Token,
+      serverAddr: loginConfig.addr,
+      userID: userConfig.userID,
+      nickName: userConfig.nickName,
+      webProtocol: loginConfig.useHTTPS ? CRVSDK_WEBPROTOCOL.CRVSDK_WEBPTC_HTTPS :
       CRVSDK_WEBPROTOCOL.CRVSDK_WEBPTC_HTTP,
-      _userAuthCode: ''
+      userAuthCode: ''
     });
   }
 
@@ -101,8 +101,7 @@ struct Login {
             text: '屏幕共享',
             w: "100%",
             h: 48,
-            disabled: true,
-            // disabled: !this.isLogin,
+            disabled: !this.isLogin,
             click: () => {
               this.pageStack.pushPathByName('Join', ExampleType.ScreenShare)
             }
@@ -133,8 +132,7 @@ struct Login {
             text: '本地录制',
             w: "100%",
             h: 48,
-            disabled: true,
-            // disabled: !this.isLogin,
+            disabled: !this.isLogin,
             click: () => {
               this.pageStack.pushPathByName('Join', ExampleType.LocalRecord)
             }
@@ -143,8 +141,7 @@ struct Login {
             text: '云端录制',
             w: "100%",
             h: 48,
-            disabled: true,
-            // disabled: !this.isLogin,
+            disabled: !this.isLogin,
             click: () => {
               this.pageStack.pushPathByName('Join', ExampleType.CloudRecord)
             }

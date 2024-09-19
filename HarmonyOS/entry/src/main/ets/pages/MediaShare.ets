@@ -8,7 +8,7 @@ import sdk_engine, {
   CRVSDK_MEDIA_STATE,
   CRVSDK_STREAM_VIEWTYPE,
   VideoComponent
-} from '../common/CRSDK';
+} from '../common/RTCSDK';
 import UserConfig from '../common/UserConfig';
 import { fileIo as fs } from '@kit.CoreFileKit';
 
@@ -193,7 +193,7 @@ struct MediaShare {
       this.pageStack = context.pathStack;
       this.roomID = context.pathInfo.param as string;
       const mediaInfo = sdk_engine.getMediaInfo();
-      if (mediaInfo._state !== CRVSDK_MEDIA_STATE.CRVSDK_MEDIAST_STOPPED) {
+      if (mediaInfo.state !== CRVSDK_MEDIA_STATE.CRVSDK_MEDIAST_STOPPED) {
         this.isPlaying = true
       }
       callBackHandle(this.CallbackObj) //销毁回调函数

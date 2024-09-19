@@ -1,13 +1,13 @@
-import { RandomUtil } from '@pura/harmony-utils';
+import { DialogUtil, RandomUtil } from '@pura/harmony-utils';
 import {
+  CR_LIB_NAME,
   CRUserVideoID,
   CRVideoSDKCallBack,
   CRVideoSDKEx,
   CRVSDK_SCALE_MODE,
   CRVSDK_STREAM_VIEWTYPE,
   CRVSDK_VSTATUS,
-  CRVSDK_VSTEAMLV_TYPE,
-  CR_LIB_NAME
+  CRVSDK_VSTEAMLV_TYPE
 } from '@cloudroom/hormony_rtcsdk';
 import { MemberInfo } from './Default';
 
@@ -68,8 +68,8 @@ export const getErrDesc = (err: number): string => {
     [25, "所有终端未授权"],
     [26, "sip/h323终端未授权"],
     [27, "IPC终端未授权"],
-    [28, "webrtc/小程序未授权"],
-    [29, "HarmonyOS未授权"],
+    [28, "当前使用的终端平台未授权"],
+    [29, "不支持当前使用的终端平台"],
     [200, "网络初始化失败"],
     [201, "没有服务器信息"],
     [202, "服务器没有响应"],
@@ -169,11 +169,11 @@ export struct VideoComponent {
       XComponent({ id: this.viewId, type: XComponentType.SURFACE, libraryname: CR_LIB_NAME })
         .onLoad((xComponentContext) => {
           sdk_engine.addCanvas({
-            _viewId: this.viewId,
-            _type: this.type,
-            _videoId: this.videoId,
-            _videoLv: this.videoLv,
-            _showMode: CRVSDK_SCALE_MODE.CRVSDK_RENDERMD_FIT
+            viewId: this.viewId,
+            type: this.type,
+            videoId: this.videoId,
+            videoLv: this.videoLv,
+            showMode: CRVSDK_SCALE_MODE.CRVSDK_RENDERMD_FIT
           });
         })
         .onDestroy(() => {
@@ -181,7 +181,7 @@ export struct VideoComponent {
         })
 
       if (this.member) {
-        if (this.member._videoStatus !== CRVSDK_VSTATUS.CRVSDK_VST_OPEN) {
+        if (this.member.videoStatus !== CRVSDK_VSTATUS.CRVSDK_VST_OPEN) {
           Text('摄像头未开启')
             .width("100%")
             .height('100%')
@@ -191,7 +191,7 @@ export struct VideoComponent {
             .textAlign(TextAlign.Center)
         }
         if (this.showName) {
-          Text(this.member._nickName)
+          Text(this.member.nickName)
             .fontSize(8)
             .fontColor(Color.White)
             .margin({ top: 2, left: 2, right: 2 })
@@ -205,3 +205,18 @@ export struct VideoComponent {
     }
   }
 }
+
+let CallbackObj: CRVideoSDKCallBack = {
+  notifyLineOff: (sdkErr) => {
+    DialogUtil.showConfirmDialog({
+      title: "掉线通知",
+      message: `错误码: ${sdkErr},${getErrDesc(sdkErr)}`,
+      confirm: {
+        value: "确定",
+        action: () => {
+        }
+      }
+    })
+  }
+}
+callBackHandle(CallbackObj)

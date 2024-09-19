@@ -5,7 +5,7 @@ import sdk_engine, {
   CRVSDK_STREAM_VIEWTYPE,
   CRVSDK_VSTEAMLV_TYPE,
   VideoComponent
-} from '../common/CRSDK';
+} from '../common/RTCSDK';
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
 import userConfig from '../common/UserConfig';
 import { MemberInfo } from '../common/Default';
@@ -36,7 +36,7 @@ struct VideoCall {
   CallbackObj: CRVideoSDKCallBack = {
     notifyUserLeftMeeting: (userID) => {
       console.log(`left ${userID}`)
-      const idx = this.memberList.findIndex(item => item._userId === userID);
+      const idx = this.memberList.findIndex(item => item.userId === userID);
       if (idx > -1) {
         this.memberList.splice(idx, 1)
       }
@@ -48,9 +48,9 @@ struct VideoCall {
       this.memberList.push(new MemberInfo(userInfo))
     },
     notifyVideoStatusChanged: (userID, oldStatus, newStatus, oprUserID) => {
-      const idx = this.memberList.findIndex(item => item._userId === userID)
+      const idx = this.memberList.findIndex(item => item.userId === userID)
       if (idx > -1) {
-        this.memberList[idx]._videoStatus = newStatus
+        this.memberList[idx].videoStatus = newStatus
       }
     },
   }
@@ -61,10 +61,10 @@ struct VideoCall {
     }
 
     let devInfo: CRVideoDevInfo | undefined =
-      this.camList.find((item: CRVideoDevInfo) => item._devName == cam)
+      this.camList.find((item: CRVideoDevInfo) => item.devName == cam)
     if (devInfo) {
-      console.log('devInfo._videoID', devInfo._videoID)
-      sdk_engine.setDefaultVideo(devInfo._videoID);
+      console.log('devInfo._videoID', devInfo.videoID)
+      sdk_engine.setDefaultVideo(devInfo.videoID);
       this.curCamDev = cam;
     }
   }
@@ -73,9 +73,9 @@ struct VideoCall {
     NavDestination() {
       Stack({ alignContent: Alignment.Bottom }) {
         VideoComponent({
-          member: this.memberList.find(item => item._userId === userConfig.userID),
+          member: this.memberList.find(item => item.userId === userConfig.userID),
           type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO,
-          videoId: { _userID: userConfig.userID, _videoID: -1 },
+          videoId: { userID: userConfig.userID, videoID: -1 },
           videoLv: CRVSDK_VSTEAMLV_TYPE.CRVSDK_VSTP_LV0,
           showName: false
         })
@@ -84,12 +84,12 @@ struct VideoCall {
 
         Stack({ alignContent: Alignment.TopEnd }) {
           Grid() {
-            ForEach(this.memberList.filter(item => item._userId !== userConfig.userID), (member: MemberInfo) => {
+            ForEach(this.memberList.filter(item => item.userId !== userConfig.userID), (member: MemberInfo) => {
               GridItem() {
                 VideoComponent({
                   member: member,
                   type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO,
-                  videoId: { _userID: member._userId, _videoID: -1 },
+                  videoId: { userID: member.userId, videoID: -1 },
                   videoLv: CRVSDK_VSTEAMLV_TYPE.CRVSDK_VSTP_LV0,
                 })
                   .width('33.3333%')
@@ -97,7 +97,7 @@ struct VideoCall {
                   .borderRadius(8)
                   .clip(true)
               }
-            }, (item: MemberInfo) => item._userId)
+            }, (item: MemberInfo) => item.userId)
           }
           .layoutDirection(GridDirection.Column)
           .columnsGap(10)

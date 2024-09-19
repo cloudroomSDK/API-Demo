@@ -36,6 +36,16 @@
           "when": "always"
         },
         "reason": "$string:Reason"
+      },
+      {
+        "name": "ohos.permission.WRITE_IMAGEVIDEO",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "always"
+        },
+        "reason": "$string:WRITE_IMAGEVIDEOReason"
       }
     ],
     "abilities": [

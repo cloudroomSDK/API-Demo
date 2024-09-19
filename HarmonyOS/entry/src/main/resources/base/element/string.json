@@ -15,6 +15,10 @@
     {
       "name": "Reason",
       "value": "用于音视频通话"
+    },
+    {
+      "name": "WRITE_IMAGEVIDEOReason",
+      "value": "用于本地录像保存到相册"
     }
   ]
 }

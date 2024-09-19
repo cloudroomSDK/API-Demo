@@ -2,7 +2,7 @@ import { ExampleType } from '../common/Default';
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
 import { InputItem } from '../components/InputItem';
 import { PermissionUtil, PreferencesUtil, ToastUtil } from '@pura/harmony-utils';
-import sdk_engine, { callBackHandle, CRVideoSDKCallBack, CRVSDK_ERR_DEF, getErrDesc } from '../common/CRSDK';
+import sdk_engine, { callBackHandle, CRVideoSDKCallBack, CRVSDK_ERR_DEF, getErrDesc } from '../common/RTCSDK';
 import Loading from '../components/Loading';
 
 @Builder

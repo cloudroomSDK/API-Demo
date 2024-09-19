@@ -1,4 +1,4 @@
-import sdk_engine, { callBackHandle, CRVideoSDKCallBack } from '../common/CRSDK';
+import sdk_engine, { callBackHandle, CRVideoSDKCallBack } from '../common/RTCSDK';
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
 import UserConfig from '../common/UserConfig';
 import { PermissionUtil, ToastUtil } from '@pura/harmony-utils';

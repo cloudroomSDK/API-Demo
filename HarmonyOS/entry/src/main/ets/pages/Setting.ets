@@ -2,7 +2,7 @@ import { CustomButton } from '../components/CustomButton';
 import { InputItem } from '../components/InputItem';
 import { ToggleItem } from '../components/ToggleItem';
 import loginConfig from '../common/LoginConfig';
-import sdk_engine from '../common/CRSDK';
+import sdk_engine from '../common/RTCSDK';
 
 @Builder
 export function SettingBuilder() {

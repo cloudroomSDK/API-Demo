@@ -1,4 +1,4 @@
-import { CRMeetingMember, CRVSDK_ASTATUS, CRVSDK_VSTATUS } from './CRSDK'
+import { CRMeetingMember, CRVSDK_ASTATUS, CRVSDK_VSTATUS } from './RTCSDK'
 
 export enum ExampleType {
   AudioCall = '语音通话',
@@ -14,15 +14,15 @@ export enum ExampleType {
 
 @Observed
 export class MemberInfo implements CRMeetingMember {
-  _userId: string
-  _nickName: string
-  _audioStatus: CRVSDK_ASTATUS
-  _videoStatus: CRVSDK_VSTATUS
+  userId: string
+  nickName: string
+  audioStatus: CRVSDK_ASTATUS
+  videoStatus: CRVSDK_VSTATUS
 
   constructor(d: CRMeetingMember) {
-    this._userId = d._userId
-    this._nickName = d._nickName
-    this._audioStatus = d._audioStatus
-    this._videoStatus = d._videoStatus
+    this.userId = d.userId
+    this.nickName = d.nickName
+    this.audioStatus = d.audioStatus
+    this.videoStatus = d.videoStatus
   }
 }

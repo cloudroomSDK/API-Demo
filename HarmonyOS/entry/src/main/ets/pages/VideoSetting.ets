@@ -4,20 +4,11 @@ import sdk_engine, {
   CRVSDK_STREAM_VIEWTYPE,
   CRVSDK_VSTEAMLV_TYPE,
   VideoComponent
-} from '../common/CRSDK';
+} from '../common/RTCSDK';
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
 import userConfig from '../common/UserConfig';
 import { MemberInfo } from '../common/Default';
-import { JSONUtil, PermissionUtil } from '@pura/harmony-utils';
-import { JSON } from '@kit.ArkTS';
-
-class CRVideoCfg {
-  size: string = '640*360'
-  fps: number = 25
-  maxbps: number = -1
-  min_qp: number = -1
-  max_qp: number = -1
-}
+import { PermissionUtil } from '@pura/harmony-utils';
 
 enum RateType {
   P360,
@@ -47,7 +38,7 @@ struct VideoSetting {
   CallbackObj: CRVideoSDKCallBack = {
     notifyUserLeftMeeting: (userID) => {
       console.log(`left ${userID}`)
-      const idx = this.memberList.findIndex(item => item._userId === userID);
+      const idx = this.memberList.findIndex(item => item.userId === userID);
       if (idx > -1) {
         this.memberList.splice(idx, 1)
       }
@@ -59,9 +50,9 @@ struct VideoSetting {
       this.memberList.push(new MemberInfo(userInfo))
     },
     notifyVideoStatusChanged: (userID, oldStatus, newStatus, oprUserID) => {
-      const idx = this.memberList.findIndex(item => item._userId === userID)
+      const idx = this.memberList.findIndex(item => item.userId === userID)
       if (idx > -1) {
-        this.memberList[idx]._videoStatus = newStatus
+        this.memberList[idx].videoStatus = newStatus
       }
     },
   }
@@ -73,7 +64,7 @@ struct VideoSetting {
     }
   }
   updateRateCodeOption = (rateType: RateType) => {
-    const cfg = JSONUtil.jsonToBean(CRVideoCfg, sdk_engine.getVideoCfg()) as CRVideoCfg
+    const cfg = sdk_engine.getVideoCfg()
     if (rateType === RateType.P360) {
       this.rateCode = 350
       this.maxRateCode = 700
@@ -92,7 +83,7 @@ struct VideoSetting {
       cfg.size = "1920*1080"
     }
     cfg.maxbps = this.rateCode * 1000
-    sdk_engine.setVideoCfg(JSON.stringify(cfg))
+    sdk_engine.setVideoCfg(cfg)
   }
 
   build() {
@@ -100,7 +91,7 @@ struct VideoSetting {
       Stack({ alignContent: Alignment.Bottom }) {
         VideoComponent({
           type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO,
-          videoId: { _userID: userConfig.userID, _videoID: -1 },
+          videoId: { userID: userConfig.userID, videoID: -1 },
           videoLv: CRVSDK_VSTEAMLV_TYPE.CRVSDK_VSTP_LV0,
         })
           .width('100%')
@@ -108,12 +99,12 @@ struct VideoSetting {
 
         Stack({ alignContent: Alignment.TopEnd }) {
           Grid() {
-            ForEach(this.memberList.filter(item => item._userId !== userConfig.userID), (member: MemberInfo) => {
+            ForEach(this.memberList.filter(item => item.userId !== userConfig.userID), (member: MemberInfo) => {
               GridItem() {
                 VideoComponent({
                   member: member,
                   type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO,
-                  videoId: { _userID: member._userId, _videoID: -1 },
+                  videoId: { userID: member.userId, videoID: -1 },
                   videoLv: CRVSDK_VSTEAMLV_TYPE.CRVSDK_VSTP_LV0,
                 })
                   .width('33.3333%')
@@ -121,7 +112,7 @@ struct VideoSetting {
                   .borderRadius(8)
                   .clip(true)
               }
-            }, (item: MemberInfo) => item._userId)
+            }, (item: MemberInfo) => item.userId)
           }
           .layoutDirection(GridDirection.Column)
           .columnsGap(10)
@@ -171,10 +162,10 @@ struct VideoSetting {
               .selectedColor(Color.White)
               .layoutWeight(1)
               .onChange((value: number, mode: SliderChangeMode) => {
-                const cfg = JSONUtil.jsonToBean(CRVideoCfg, sdk_engine.getVideoCfg()) as CRVideoCfg
+                const cfg = sdk_engine.getVideoCfg()
                 this.rateCode = value
                 cfg.maxbps = value * 1000
-                sdk_engine.setVideoCfg(JSON.stringify(cfg))
+                sdk_engine.setVideoCfg(cfg)
               })
             Text(this.rateCodeToStr(this.rateCode))
               .width(70)
@@ -197,10 +188,10 @@ struct VideoSetting {
               .selectedColor(Color.White)
               .layoutWeight(1)
               .onChange((value: number, mode: SliderChangeMode) => {
-                const cfg = JSONUtil.jsonToBean(CRVideoCfg, sdk_engine.getVideoCfg()) as CRVideoCfg
+                const cfg = sdk_engine.getVideoCfg()
                 cfg.fps = value
                 this.fps = value
-                sdk_engine.setVideoCfg(JSON.stringify(cfg))
+                sdk_engine.setVideoCfg(cfg)
               })
             Text(this.fps.toFixed() + 'fps')
               .width(70)

@@ -4,6 +4,7 @@ import { InputItem } from '../components/InputItem';
 import { PermissionUtil, PreferencesUtil, ToastUtil } from '@pura/harmony-utils';
 import sdk_engine, { callBackHandle, CRVideoSDKCallBack, CRVSDK_ERR_DEF, getErrDesc } from '../common/RTCSDK';
 import Loading from '../components/Loading';
+import { startContinuousTask, stopContinuousTask } from '../common/ContinuousTask';
 
 @Builder
 export function JoinBuilder() {
@@ -40,6 +41,9 @@ struct Join {
         ToastUtil.showToast(`进入房间失败，错误码：${sdkErr},${getErrDesc(sdkErr)}`, { duration: 3e3 })
         return;
       }
+
+      startContinuousTask(); //开启长时任务
+
       if (this.title === ExampleType.AudioCall) {
         this.pageStack.pushPathByName('AudioCall', this.roomID)
       } else if (this.title === ExampleType.VideoCall) {
@@ -123,6 +127,9 @@ struct Join {
       this.roomID = PreferencesUtil.getSync('roomID', '') as string;
 
       callBackHandle(this.CallbackObj); //注册回调函数
+    })
+    .onWillShow(() => {
+      stopContinuousTask()
     })
     .onWillDisappear(() => {
       callBackHandle(this.CallbackObj, true); //销毁回调函数

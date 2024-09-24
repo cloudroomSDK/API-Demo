@@ -7,12 +7,13 @@ import sdk_engine, {
   CRVideoSDKEx,
   CRVSDK_AUTHTYPE,
   CRVSDK_ERR_DEF,
+  CRVSDK_VSTATUS,
   CRVSDK_WEBPROTOCOL,
   getErrDesc
 } from '../common/RTCSDK';
 import loginConfig from '../common/LoginConfig';
 import userConfig from '../common/UserConfig';
-import { MD5, ToastUtil } from '@pura/harmony-utils';
+import { DialogUtil, MD5, ToastUtil } from '@pura/harmony-utils';
 
 @Builder
 export function LoginBuilder() {
@@ -29,6 +30,7 @@ struct Login {
   pageStack: NavPathStack = new NavPathStack();
   @State isLogin: boolean = false;
   @State sdkVersion: string = ''
+  videoFlag: boolean = false;
   loginTimer?: number;
   CallbackObj: CRVideoSDKCallBack = {
     loginRslt: (sdkErr) => {
@@ -39,6 +41,23 @@ struct Login {
       }
       this.isLogin = true;
     },
+    notifyLineOff: (sdkErr) => {
+      DialogUtil.showConfirmDialog({
+        title: "掉线通知",
+        message: `错误码: ${sdkErr},${getErrDesc(sdkErr)}`,
+        confirm: {
+          value: "确定",
+          action: () => {
+            const pathNames = this.pageStack.getAllPathName();
+            const isCurLogin = pathNames[pathNames.length-1] === 'Login'
+
+            // 如果当前页面是Login，那就不需要跳转动画
+            this.pageStack.clear(!isCurLogin);
+            this.pageStack.pushPathByName('Login', null, !isCurLogin);
+          }
+        }
+      })
+    }
   }
 
   login() {
@@ -204,6 +223,23 @@ struct Login {
       this.pageStack = context.pathStack;
       callBackHandle(this.CallbackObj);
       this.sdkVersion = CRVideoSDKEx.getSDKVersion();
+
+      //切后台时，关闭自己的摄像头
+      getContext().eventHub.on('onBackground', () => {
+        const myInfo = sdk_engine.getMemberInfo(userConfig.userID)
+        if (myInfo.videoStatus === CRVSDK_VSTATUS.CRVSDK_VST_OPEN) {
+          sdk_engine.closeVideo(userConfig.userID)
+          this.videoFlag = true;
+        }
+      });
+
+      //切前台时，根据之前的状态是否打开摄像头
+      getContext().eventHub.on('onForeground', () => {
+        if (this.videoFlag) {
+          this.videoFlag = false;
+          sdk_engine.openVideo(userConfig.userID)
+        }
+      });
     })
     .onAppear(() => {
       console.log("<Login onAppear>");
@@ -219,6 +255,7 @@ struct Login {
     })
     .onWillAppear(() => {
       console.log("<Login onWillAppear>");
+      getContext().eventHub.off('background');
     })
     .onWillDisappear(() => {
       console.log("<Login onWillDisappear>");

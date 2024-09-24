@@ -38,6 +38,9 @@
         "reason": "$string:Reason"
       },
       {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING"
+      },
+      {
         "name": "ohos.permission.WRITE_IMAGEVIDEO",
         "usedScene": {
           "abilities": [
@@ -58,6 +61,11 @@
         "startWindowIcon": "$media:icon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
+        "backgroundModes": [
+          // 长时任务类型的配置项
+          "voip",
+          "audioRecording"
+        ],
         "skills": [
           {
             "entities": [

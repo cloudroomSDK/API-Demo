@@ -1,6 +1,6 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { KeyboardAvoidMode, window } from '@kit.ArkUI';
+import { window } from '@kit.ArkUI';
 import { AppUtil } from '@pura/harmony-utils';
 
 export default class EntryAbility extends UIAbility {
@@ -33,10 +33,12 @@ export default class EntryAbility extends UIAbility {
   onForeground(): void {
     // Ability has brought to foreground
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onForeground');
+    this.context.eventHub.emit('onForeground');
   }
 
   onBackground(): void {
     // Ability has back to background
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
+    this.context.eventHub.emit('onBackground');
   }
 }

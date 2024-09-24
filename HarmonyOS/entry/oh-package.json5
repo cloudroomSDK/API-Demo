@@ -7,7 +7,7 @@
   "license": "",
   "dependencies": {
     "@pura/harmony-utils": "^1.0.9",
-    "@cloudroom/hormony_rtcsdk": "^1.0.1"
+    "@cloudroom/hormony_rtcsdk": "^1.0.2"
   },
   "devDependencies": {},
   "dynamicDependencies": {}

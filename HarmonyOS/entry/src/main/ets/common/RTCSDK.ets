@@ -1,4 +1,4 @@
-import { DialogUtil, RandomUtil } from '@pura/harmony-utils';
+import { RandomUtil } from '@pura/harmony-utils';
 import {
   CR_LIB_NAME,
   CRUserVideoID,
@@ -205,18 +205,3 @@ export struct VideoComponent {
     }
   }
 }
-
-let CallbackObj: CRVideoSDKCallBack = {
-  notifyLineOff: (sdkErr) => {
-    DialogUtil.showConfirmDialog({
-      title: "掉线通知",
-      message: `错误码: ${sdkErr},${getErrDesc(sdkErr)}`,
-      confirm: {
-        value: "确定",
-        action: () => {
-        }
-      }
-    })
-  }
-}
-callBackHandle(CallbackObj)

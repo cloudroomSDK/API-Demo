@@ -1,14 +1,4 @@
-import { RandomUtil } from '@pura/harmony-utils';
-import {
-  CR_LIB_NAME,
-  CRUserVideoID,
-  CRVideoSDKCallBack,
-  CRVideoSDKEx,
-  CRVSDK_SCALE_MODE,
-  CRVSDK_STREAM_VIEWTYPE,
-  CRVSDK_VSTATUS,
-  CRVSDK_VSTEAMLV_TYPE
-} from '@cloudroom/hormony_rtcsdk';
+import { CRCanvas, CRCanvasView, CRVideoSDKCallBack, CRVideoSDKEx, CRVSDK_VSTATUS } from '@cloudroom/hormony_rtcsdk';
 import { MemberInfo } from './Default';
 
 const cacheDir = getContext().getApplicationContext().cacheDir;
@@ -157,28 +147,22 @@ export const getErrDesc = (err: number): string => {
 
 @Component
 export struct VideoComponent {
-  viewId: string = RandomUtil.generateUUID32(); //视图id
   @Prop member?: MemberInfo; //成员信息
-  @Prop type: CRVSDK_STREAM_VIEWTYPE; //视图类型
-  @Prop videoId?: CRUserVideoID; //用户视频id
-  @Prop videoLv?: CRVSDK_VSTEAMLV_TYPE; //视频流等级
   @Prop showName?: boolean = true; //显示呢称
+  @Prop canvas: CRCanvas;
 
   build() {
     Stack({ alignContent: Alignment.TopEnd }) {
-      XComponent({ id: this.viewId, type: XComponentType.SURFACE, libraryname: CR_LIB_NAME })
-        .onLoad((xComponentContext) => {
-          sdk_engine.addCanvas({
-            viewId: this.viewId,
-            type: this.type,
-            videoId: this.videoId,
-            videoLv: this.videoLv,
-            showMode: CRVSDK_SCALE_MODE.CRVSDK_RENDERMD_FIT
-          });
-        })
-        .onDestroy(() => {
-          sdk_engine.rmCanvas(this.viewId)
-        })
+      CRCanvasView({
+        canvasId: this.canvas.canvasId,
+        canvasType: this.canvas.type,
+        onLoad: () => {
+          sdk_engine.addCanvas(this.canvas);
+        },
+        onDestroy: () => {
+          sdk_engine.rmCanvas(this.canvas.canvasId)
+        }
+      })
 
       if (this.member) {
         if (this.member.videoStatus !== CRVSDK_VSTATUS.CRVSDK_VST_OPEN) {

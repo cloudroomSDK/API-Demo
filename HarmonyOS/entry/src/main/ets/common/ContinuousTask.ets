@@ -39,6 +39,7 @@ export const startContinuousTask = () => {
   });
 }
 
+//停止长时任务
 export const stopContinuousTask = () => {
   if (!flag) {
     return;

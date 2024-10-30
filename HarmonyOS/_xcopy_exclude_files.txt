@@ -1,8 +1,0 @@
-_xcopy_exclude_files.txt
-.hvigor\
-.idea\
-oh_modules\
-.clang-format\
-entry\build\
-entry\oh_modules\
-entry\libs\hormony_rtcsdk.har

@@ -255,7 +255,8 @@ struct Login {
     })
     .onWillAppear(() => {
       console.log("<Login onWillAppear>");
-      getContext().eventHub.off('background');
+      getContext().eventHub.off('onBackground');
+      getContext().eventHub.off('onForeground');
     })
     .onWillDisappear(() => {
       console.log("<Login onWillDisappear>");

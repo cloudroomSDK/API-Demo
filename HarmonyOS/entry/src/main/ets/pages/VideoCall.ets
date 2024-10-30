@@ -2,14 +2,15 @@ import sdk_engine, {
   callBackHandle,
   CRVideoDevInfo,
   CRVideoSDKCallBack,
+  CRVSDK_SCALE_MODE,
   CRVSDK_STREAM_VIEWTYPE,
-  CRVSDK_VSTEAMLV_TYPE,
   VideoComponent
 } from '../common/RTCSDK';
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
 import userConfig from '../common/UserConfig';
 import { MemberInfo } from '../common/Default';
 import { PermissionUtil, ToastUtil } from '@pura/harmony-utils';
+import { util } from '@kit.ArkTS';
 
 enum CamListNum {
   Back = "CAMERA_FACING_BACK",
@@ -74,10 +75,13 @@ struct VideoCall {
       Stack({ alignContent: Alignment.Bottom }) {
         VideoComponent({
           member: this.memberList.find(item => item.userId === userConfig.userID),
-          type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO,
-          videoId: { userID: userConfig.userID, videoID: -1 },
-          videoLv: CRVSDK_VSTEAMLV_TYPE.CRVSDK_VSTP_LV0,
-          showName: false
+          showName: false,
+          canvas: {
+            canvasId: util.generateRandomUUID(), //视图id
+            type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO, //视图类型
+            videoId: { userID: userConfig.userID, videoID: -1 },
+            showMode: CRVSDK_SCALE_MODE.CRVSDK_RENDERMD_FILL
+          }
         })
           .width('100%')
           .height('100%')
@@ -88,9 +92,11 @@ struct VideoCall {
               GridItem() {
                 VideoComponent({
                   member: member,
-                  type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO,
-                  videoId: { userID: member.userId, videoID: -1 },
-                  videoLv: CRVSDK_VSTEAMLV_TYPE.CRVSDK_VSTP_LV0,
+                  canvas: {
+                    canvasId: util.generateRandomUUID(), //视图id
+                    type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO, //视图类型
+                    videoId: { userID: member.userId, videoID: -1 },
+                  }
                 })
                   .width('33.3333%')
                   .aspectRatio(1)

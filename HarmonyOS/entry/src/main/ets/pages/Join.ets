@@ -1,10 +1,11 @@
 import { ExampleType } from '../common/Default';
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
 import { InputItem } from '../components/InputItem';
-import { PermissionUtil, PreferencesUtil, ToastUtil } from '@pura/harmony-utils';
+import { AppUtil, PermissionUtil, PreferencesUtil, ToastUtil } from '@pura/harmony-utils';
 import sdk_engine, { callBackHandle, CRVideoSDKCallBack, CRVSDK_ERR_DEF, getErrDesc } from '../common/RTCSDK';
 import Loading from '../components/Loading';
 import { startContinuousTask, stopContinuousTask } from '../common/ContinuousTask';
+import { window } from '@kit.ArkUI';
 
 @Builder
 export function JoinBuilder() {
@@ -43,6 +44,8 @@ struct Join {
       }
 
       startContinuousTask(); //开启长时任务
+      AppUtil.setWindowKeepScreenOn(true) //保持屏幕常亮
+      AppUtil.setPreferredOrientation(window.Orientation.AUTO_ROTATION) //设置跟随屏幕旋转
 
       if (this.title === ExampleType.AudioCall) {
         this.pageStack.pushPathByName('AudioCall', this.roomID)
@@ -129,6 +132,8 @@ struct Join {
       callBackHandle(this.CallbackObj); //注册回调函数
     })
     .onWillShow(() => {
+      AppUtil.setWindowKeepScreenOn(false) //停止屏幕常亮
+      AppUtil.setPreferredOrientation(window.Orientation.UNSPECIFIED)
       stopContinuousTask()
     })
     .onWillDisappear(() => {

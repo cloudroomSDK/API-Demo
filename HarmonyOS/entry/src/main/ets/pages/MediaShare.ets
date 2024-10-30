@@ -1,7 +1,7 @@
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
-import { JSON } from '@kit.ArkTS';
+import { JSON, util } from '@kit.ArkTS';
 import sdk_engine, {
   callBackHandle,
   CRVideoSDKCallBack,
@@ -119,7 +119,10 @@ struct MediaShare {
           Stack() {
             Column() {
               VideoComponent({
-                type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_MEDIA, //视图类型
+                canvas: {
+                  canvasId: util.generateRandomUUID(), //视图id
+                  type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_MEDIA //视图类型
+                }
               })
             }
             .width("100%")

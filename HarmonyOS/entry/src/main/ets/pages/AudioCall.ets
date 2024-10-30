@@ -36,6 +36,7 @@ struct AudioCall {
   @State closeBtnModifier: CustomButtonModifier = new CustomButtonModifier('danger')
   @State btnModifier: CustomButtonModifier = new CustomButtonModifier('primary')
   @State remoteValue: number = 0
+  @State remoteUserID: string = '远端用户'
   @State localValue: number = 0
   @State isOpenMic: boolean = false //麦克风状态
   @State useLoudspeaker: boolean = true //使用扬声器状态
@@ -44,6 +45,7 @@ struct AudioCall {
       if (UserConfig.userID === userID) {
         this.localValue = newLevel
       } else {
+        this.remoteUserID = userID
         this.remoteValue = newLevel
       }
     },
@@ -57,11 +59,11 @@ struct AudioCall {
             .width('100%')
           Column({ space: 14 }) {
             progressItem({
-              text: '本地用户',
+              text: UserConfig.userID,
               value: this.localValue
             });
             progressItem({
-              text: '远端用户',
+              text: this.remoteUserID,
               value: this.remoteValue
             });
           }

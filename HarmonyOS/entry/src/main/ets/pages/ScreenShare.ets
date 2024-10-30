@@ -3,11 +3,14 @@ import sdk_engine, {
   callBackHandle,
   CRVideoSDKCallBack,
   CRVSDK_ASTATUS,
+  CRVSDK_ERR_DEF,
   CRVSDK_STREAM_VIEWTYPE,
+  getErrDesc,
   VideoComponent
 } from '../common/RTCSDK';
 import userConfig from '../common/UserConfig';
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
+import { util } from '@kit.ArkTS';
 
 @Builder
 export function ScreenShareBuilder() {
@@ -28,10 +31,27 @@ struct ScreenShare {
         this.micStatus = newStatus === CRVSDK_ASTATUS.CRVSDK_AST_OPEN;
       }
     },
-    notifyScreenShareStarted: (userID: string) => {
+    notifyScreenShareStarted: (userID) => {
+      console.log('notifyScreenShareStarted', userID)
       this.startShareUserID = userID
     },
-    notifyScreenShareStopped: (oprUserID: string) => {
+    notifyScreenShareStopped: (oprUserID) => {
+      console.log('notifyScreenShareStopped', oprUserID)
+      this.startShareUserID = null;
+    },
+    // 开启屏幕共享的结果
+    startScreenShareRslt: (sdkErr) => {
+      console.log('startScreenShareRslt', sdkErr)
+      if (sdkErr !== CRVSDK_ERR_DEF.CRVSDKERR_NOERR) {
+        ToastUtil.showToast(`开启失败，错误码：${sdkErr},${getErrDesc(sdkErr)}`, { duration: 3e3 })
+        this.startShareUserID = null;
+        return;
+      }
+      this.startShareUserID = userConfig.userID
+    },
+    //点击系统的结束共享按钮，会进入此回调
+    stopScreenShareRslt: (sdkErr) => {
+      console.log('stopScreenShareRslt', sdkErr)
       this.startShareUserID = null;
     }
   }
@@ -39,9 +59,12 @@ struct ScreenShare {
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Bottom }) {
-        if (this.startShareUserID) {
+        if (this.startShareUserID && this.startShareUserID !== userConfig.userID) {
           VideoComponent({
-            type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_SCREEN
+            canvas: {
+              canvasId: util.generateRandomUUID(), //视图id
+              type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_SCREEN //视图类型
+            }
           }).height('100%')
         } else {
           Stack({ alignContent: Alignment.Center }) {
@@ -61,12 +84,18 @@ struct ScreenShare {
             .padding({ top: 60 })
 
             CustomButton({
-              text: '开始屏幕共享',
+              text: this.startShareUserID === userConfig.userID ? '停止屏幕共享' : '开始屏幕共享',
               w: 200,
               h: 80,
               modifier: this.btnModifier,
               click: () => {
-                ToastUtil.showToast('当前版本仅支持屏幕共享观看')
+                if (this.startShareUserID === userConfig.userID) {
+                  this.startShareUserID = null;
+                  sdk_engine.stopScreenShare();
+                } else {
+                  this.startShareUserID = userConfig.userID;
+                  sdk_engine.startScreenShare();
+                }
               }
             })
           }

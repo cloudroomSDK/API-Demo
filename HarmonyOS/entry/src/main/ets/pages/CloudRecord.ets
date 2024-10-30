@@ -1,22 +1,23 @@
 import { DateUtil, DialogUtil, PermissionUtil, ToastUtil } from '@pura/harmony-utils';
 import sdk_engine, {
-    callBackHandle, CRCloudMixerCfgObj_MixMode,
-    CRMixerContentObj,
-    CRVideoSDKCallBack,
-    CRVSDK_CLOUDMIXER_OUTPUT_STATE,
-    CRVSDK_ERR_DEF,
-    CRVSDK_MIXER_CONTENT_TYPE,
-    CRVSDK_MIXER_STATE,
-    CRVSDK_STREAM_VIEWTYPE,
-    CRVSDK_VSTATUS,
-    CRVSDK_VSTEAMLV_TYPE,
-    getErrDesc,
-    VideoComponent
+  callBackHandle,
+  CRCloudMixerCfgObj_MixMode,
+  CRMixerContentObj,
+  CRVideoSDKCallBack,
+  CRVSDK_CLOUDMIXER_OUTPUT_STATE,
+  CRVSDK_ERR_DEF,
+  CRVSDK_MIXER_CONTENT_TYPE,
+  CRVSDK_MIXER_STATE,
+  CRVSDK_SCALE_MODE,
+  CRVSDK_STREAM_VIEWTYPE,
+  CRVSDK_VSTATUS,
+  getErrDesc,
+  VideoComponent
 } from '../common/RTCSDK';
 import { MemberInfo } from '../common/Default';
 import { CustomButton, CustomButtonModifier } from '../components/CustomButton';
 import userConfig from '../common/UserConfig';
-import { JSON } from '@kit.ArkTS';
+import { JSON, util } from '@kit.ArkTS';
 
 @Builder
 export function CloudRecordBuilder() {
@@ -244,10 +245,13 @@ struct CloudRecord {
         Stack({ alignContent: Alignment.TopEnd }) {
           VideoComponent({
             member: this.memberList.find(item => item.userId === userConfig.userID),
-            type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO,
-            videoId: { userID: userConfig.userID, videoID: -1 },
-            videoLv: CRVSDK_VSTEAMLV_TYPE.CRVSDK_VSTP_LV0,
-            showName: false
+            showName: false,
+            canvas: {
+              canvasId: util.generateRandomUUID(), //视图id
+              type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO, //视图类型
+              videoId: { userID: userConfig.userID, videoID: -1 },
+              showMode: CRVSDK_SCALE_MODE.CRVSDK_RENDERMD_FILL
+            }
           })
             .width('100%')
             .height('100%')
@@ -257,9 +261,11 @@ struct CloudRecord {
               GridItem() {
                 VideoComponent({
                   member: member,
-                  type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO,
-                  videoId: { userID: member.userId, videoID: -1 },
-                  videoLv: CRVSDK_VSTEAMLV_TYPE.CRVSDK_VSTP_LV0,
+                  canvas: {
+                    canvasId: util.generateRandomUUID(), //视图id
+                    type: CRVSDK_STREAM_VIEWTYPE.CRVSDK_VIEWTP_VIDEO, //视图类型
+                    videoId: { userID: member.userId, videoID: -1 },
+                  }
                 })
                   .width('33.3333%')
                   .aspectRatio(1)

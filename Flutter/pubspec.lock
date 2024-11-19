@@ -436,10 +436,10 @@ packages:
     dependency: "direct main"
     description:
       name: rtcsdk
-      sha256: "706591e9fe09d722031637037304c500d33a3dcce4f4c135ddb73edaba8098cd"
+      sha256: a4a3adb90e7e42616704001fbd1c9e850b3f2b84fa86df909be055c2b8f0ddc3
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   rxdart:
     dependency: "direct main"
     description:

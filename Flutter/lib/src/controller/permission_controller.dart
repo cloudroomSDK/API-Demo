@@ -21,22 +21,20 @@ class PermissionController extends GetxController {
         applyPermissions.add(per);
       }
     }
-    return applyPermissions.isEmpty
-        ? true
-        : await applyPermission(applyPermissions, onGrantedFail);
-  }
 
-  Future<bool> applyPermission(List<Permission> permissions,
-      Function(Map<Permission, PermissionStatus> status)? onGrantedFail) async {
-    bool flag = true;
-    Map<Permission, PermissionStatus> statuses = await permissions.request();
-    statuses.forEach((Permission per, PermissionStatus status) {
-      Logger.log(
-          "Permission: ${per.toString()} __ isGranted: ${status.isGranted}");
-      if (!status.isGranted) flag = false;
-    });
-    if (!flag) onGrantedFail?.call(statuses);
-    return flag;
+    if (applyPermissions.isNotEmpty) {
+      bool flag = true;
+      Map<Permission, PermissionStatus> statuses =
+          await applyPermissions.request();
+      statuses.forEach((Permission per, PermissionStatus status) {
+        Logger.log("Permission: $per __ isGranted: ${status.isGranted}");
+        if (!status.isGranted) flag = false;
+      });
+      if (!flag) onGrantedFail?.call(statuses);
+      return flag;
+    }
+
+    return true;
   }
 
   storage(Function() onGranted, [Function()? onGrantedFail]) async {

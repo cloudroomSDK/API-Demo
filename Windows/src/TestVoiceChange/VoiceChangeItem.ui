@@ -75,12 +75,37 @@ QComboBox QAbstractItemView::item:selected{
      </item>
      <item>
       <property name="text">
-       <string>低沉</string>
+       <string>中性女声(适合女用)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>尖锐</string>
+       <string>中性男声(适合男用)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>甜美女声(适合女用)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>低沉男声(适合男用)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>娃娃音(适合女用)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>娃娃音(适合男用)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>自定义值</string>
       </property>
      </item>
     </widget>

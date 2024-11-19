@@ -55,7 +55,7 @@ public class NetCameraPage : MonoBehaviour
         if (!isSucceed)
         {
             OnRemoveNetCameraClicked();
-            mNetCamInfo.text = "Open net camera failed";
+            mNetCamInfo.text = "´ò¿ªÍøÂçÉãÏñÍ·Ê§°Ü";
         }
     }
 
@@ -91,7 +91,7 @@ public class NetCameraPage : MonoBehaviour
         int rslt = g_sdkMain.getSDKMeeting().addIPCam(mCamUrl.text, JsonUtility.ToJson(ncParams));
         if (rslt < 0)
         {
-            mNetCamInfo.text = "Add net camera failed, error: " + (CRVSDK_ERR_DEF)rslt;
+            mNetCamInfo.text = "Ìí¼ÓÍøÂçÉãÏñÍ·Ê§°Ü£¬´íÎó£º" + (CRVSDK_ERR_DEF)rslt;
             return;
         }
         sNetCamID = rslt;

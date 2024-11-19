@@ -1,18 +1,19 @@
 ﻿#include "stdafx.h"
 #include "DlgVoiceChange.h"
 #include "maindialog.h"
+#include "CustomVoiceChgDlg.h"
 
 VoiceChangeItem::VoiceChangeItem(QWidget *parent /*= 0*/)
 	: QWidget(parent, Qt::Dialog | Qt::WindowCloseButtonHint)
 {
 	ui.setupUi(this);
-    for(QComboBox *pCbBx : this->findChildren<QComboBox*>())
-    {
-        QListView *pLV = new QListView;
-        pCbBx->setView(pLV);
-    }
+	for (QComboBox *pCbBx : this->findChildren<QComboBox*>())
+	{
+		QListView *pLV = new QListView;
+		pCbBx->setView(pLV);
+	}
 
-	connect(ui.cbVoiceChoose, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_voiceChooseChanged(int)));
+	connect(ui.cbVoiceChoose, SIGNAL(activated(int)), this, SLOT(slot_voiceChooseChanged(int)));
 }
 
 void VoiceChangeItem::setUserInfo(const CRString &userId, const QString &nickname, int type)
@@ -36,13 +37,30 @@ void VoiceChangeItem::updateVoiceType(int type)
 {
 	//锁定信号，不发出s_voiceChanged消息
 	this->blockSignals(true);
-	ui.cbVoiceChoose->setCurrentIndex(type);
+	if (type >= 100)
+	{
+		ui.cbVoiceChoose->setCurrentIndex(CRVSDK_VOICECHANGE_TYPE_BUTT);
+		ui.cbVoiceChoose->setItemData(CRVSDK_VOICECHANGE_TYPE_BUTT, type);
+	}
+	else
+	{
+		ui.cbVoiceChoose->setCurrentIndex(type);
+	}
 	this->blockSignals(false);
 }
 
 void VoiceChangeItem::slot_voiceChooseChanged(int index)
 {
-	g_sdkMain->getSDKMeeting().setVoiceChange(m_userId.constData(), (CRVSDK_VOICECHANGE_TYPE)index);
+	if (index == CRVSDK_VOICECHANGE_TYPE_BUTT)
+	{
+		int oldCustomValue = ui.cbVoiceChoose->itemData(index).toInt();
+		CustomVoiceChgDlg dlg(m_userId, oldCustomValue, this);
+		dlg.exec();
+	}
+	else
+	{
+		g_sdkMain->getSDKMeeting().setVoiceChange(m_userId.constData(), index);
+	}
 }
 
 DlgVoiceChange::DlgVoiceChange(QWidget *parent)

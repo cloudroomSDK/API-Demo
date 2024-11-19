@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,23 +10,22 @@ public class ScreenSharePage : MonoBehaviour
 {
     private CRVSDKMain g_sdkMain = null;
 
-    private Button mStartScreenShare = null;
-    private Button mStopScreenShare = null;
     private Text mScreenShareInfo = null;
+    private ScreenUI mScreenUI = null;
+    private bool mShareByMe = false;
 
     void Awake()
     {
         g_sdkMain = MeetingPage.g_sdkMain;
-        g_sdkMain.getSDKMeeting().notifyScreenShareStarted = notifyScreenShareStarted;
-        g_sdkMain.getSDKMeeting().notifyScreenShareStopped = notifyScreenShareStopped;
 
-        mStartScreenShare = GameObject.Find("StartScreenShareBtn").GetComponent<Button>();
-        mStartScreenShare.onClick.AddListener(OnStartScreenShareClicked);
-        mStopScreenShare = GameObject.Find("StopScreenShareBtn").GetComponent<Button>();
-        mStopScreenShare.onClick.AddListener(OnStopScreenShareClicked);
-        mScreenShareInfo = GameObject.Find("txtScreenShareInfo").GetComponent<Text>();
+        mScreenShareInfo = GameObject.Find("txtScreenInfo").GetComponent<Text>();
+        GameObject go = GameObject.Find("riScreen");
+        go.transform.localScale = new Vector3(4.16f, 2.34f, 1f);
+        mScreenUI = go.AddComponent<ScreenUI>();
+        mScreenUI.SetSDKMain(g_sdkMain);
+        mScreenUI.SetEnableRender(false);
 
-        UpdateScreenShareUI();
+//         UpdateScreenShareUI();
     }
 
     void Start()
@@ -34,13 +33,20 @@ public class ScreenSharePage : MonoBehaviour
 
     }
 
-    private void notifyScreenShareStarted(string userID)
+    public void OnScreenShareStarted(string userID)
     {
+        mShareByMe = (userID == MeetingPage.mMyUserId);
         UpdateScreenShareUI();
+        if (!mShareByMe)
+        {
+            mScreenUI.SetEnableRender(true);
+        }
     }
-    private void notifyScreenShareStopped(string oprUserID)
+    public void OnScreenShareStopped(string oprUserID)
     {
+        mShareByMe = false;
         UpdateScreenShareUI();
+        mScreenUI.SetEnableRender(false);
     }
 
     void UpdateScreenShareUI()
@@ -49,52 +55,13 @@ public class ScreenSharePage : MonoBehaviour
         if (null == screenShareInfo)
             return;
 
-        bool inScreenShare = (screenShareInfo._state != 0);
-        mStartScreenShare.gameObject.SetActive(!inScreenShare);
-        mStopScreenShare.gameObject.SetActive(inScreenShare);
-        if (inScreenShare)
+        if (screenShareInfo._state != 0)
         {
-            mScreenShareInfo.text = screenShareInfo._sharerUserID + " is sharing";
+            mScreenShareInfo.text = screenShareInfo._sharerUserID + " 正在进行共享";
         }
         else
         {
-            mScreenShareInfo.text = "Screen-Share not start";
+            mScreenShareInfo.text = "屏幕共享未开始";
         }
-    }
-
-    public void OnStartScreenShareClicked()
-    {
-        sdkMediaInfo mediaInfo = g_sdkMain.getSDKMeeting().getMediaInfo();
-        if (null != mediaInfo && mediaInfo._state != CRVSDK_MEDIA_STATE.CRVSDK_MEDIAST_STOPPED)
-        {
-            mScreenShareInfo.text = "Already in media share, can not start screen share";
-            return;
-        }
-        sdkScreenShareInfo screenShareInfo = g_sdkMain.getSDKMeeting().getScreenShareInfo();
-        if (null != screenShareInfo && screenShareInfo._state != 0)
-        {
-            mScreenShareInfo.text = "Already in screen share, can not start another";
-            return;
-        }
-
-        g_sdkMain.getSDKMeeting().startScreenShare();
-        OnExitScreenShareClicked();
-    }
-
-    public void OnStopScreenShareClicked()
-    {
-        g_sdkMain.getSDKMeeting().stopScreenShare();
-        OnExitScreenShareClicked();
-    }
-
-    public void OnExitScreenShareClicked()
-    {
-        StartCoroutine(UnloadScreenShareScene());
-    }
-
-    public IEnumerator UnloadScreenShareScene()
-    {
-        AsyncOperation async = SceneManager.UnloadSceneAsync("ScreenShareScene");
-        yield return async;
     }
 }

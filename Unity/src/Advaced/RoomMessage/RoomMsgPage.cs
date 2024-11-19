@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,7 +56,7 @@ public class RoomMsgPage : MonoBehaviour
         }
         else
         {
-            mRoomMsgTip.text = "Send message failed, error: " + sdkErr;
+            mRoomMsgTip.text = "发送消息失败，错误：" + sdkErr;
         }
     }
 
@@ -80,7 +80,7 @@ public class RoomMsgPage : MonoBehaviour
 
         //添加前位置等信息
         DateTime curDt = DateTime.Now;
-        string strTime = curDt.ToString(" mm:ss");
+        string strTime = curDt.ToString(" HH:mm");
         if (isMine)
         {
             strTime = "Me" + strTime;
@@ -105,7 +105,7 @@ public class RoomMsgPage : MonoBehaviour
         string inputText = mInput.text;
         if (inputText.Length <= 0)
         {
-            mRoomMsgTip.text = "message is empty!";
+            mRoomMsgTip.text = "发送消息不能为空！";
             return;
         }
 

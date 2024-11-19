@@ -103,12 +103,12 @@ public class LocRecordPage : MonoBehaviour
         MixerOutputInfo oInfo = JsonUtility.FromJson<MixerOutputInfo>(outputInfo);
         if (oInfo.state == 2)
         {
-            string strInfo = string.Format("Filename: {0}\nDuration: {1} Seconds\nSize: {2} Bytes", Path.GetFileName(nameOrUrl), oInfo.duration / 1000, oInfo.fileSize);
+            string strInfo = string.Format("文件名：{0}\n时长：{1}秒\n大小：{2}字节", Path.GetFileName(nameOrUrl), oInfo.duration / 1000, oInfo.fileSize);
             mLocRecInfo.text = strInfo;
         }
         else if (oInfo.state == 3)
         {
-            string strInfo = string.Format("Filename: {0}\nException: {1}", Path.GetFileName(nameOrUrl), oInfo.errCode);
+            string strInfo = string.Format("文件名：{0}\n异常：{1}", Path.GetFileName(nameOrUrl), oInfo.errCode);
             mLocRecInfo.text = strInfo;
         }
     }
@@ -141,14 +141,13 @@ public class LocRecordPage : MonoBehaviour
         CRVSDK_ERR_DEF err = g_sdkMain.getSDKMeeting().createLocMixer(TEST_LocRec_ID, mixerCfg, jsonList);
         if (err != CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
         {
-            string strInfo = "start local record fail, err: " + err;
+            string strInfo = "开始本地录制失败，错误：" + err;
             mLocRecInfo.text = strInfo;
             return;
         }
 
         //录制输出
-        DateTime dt = DateTime.Now;
-        string recordFileBaseName = "LoginPage_" + MeetingPage.mMeetingId.ToString() + string.Format("_{0:yyyy-MM-dd_hh-mm-ss}", dt);
+        string recordFileBaseName = string.Format("{0:yyyy-MM-dd_HH-mm-ss}_Unity_{1}", DateTime.Now, MeetingPage.mMeetingId);
         string suffix = mDDLocRecFmt.options[mDDLocRecFmt.value].text;
         mLocRecordFile = Path.Combine(mIFLocRecPath.text, recordFileBaseName) + "." + suffix;
         List<MixerOutputCfg> outCfgs = new List<MixerOutputCfg>();
@@ -162,7 +161,7 @@ public class LocRecordPage : MonoBehaviour
         err = g_sdkMain.getSDKMeeting().addLocMixerOutput(TEST_LocRec_ID, mixerOutput);
         if (err != CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
         {
-            string strInfo = "update local record fail, err: " + err;
+            string strInfo = "更新本地录制失败，错误：" + err;
             mLocRecInfo.text = strInfo;
             g_sdkMain.getSDKMeeting().destroyLocMixer(TEST_LocRec_ID);
             return;

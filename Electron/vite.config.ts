@@ -67,7 +67,7 @@ export default defineConfig(({ command }) => {
       // Use Node.js API in the Renderer-process
       renderer({
         resolve: {
-          "electron-rtcsdk": { type: 'cjs' },
+          "@cloudroom/electron-rtcsdk": { type: 'cjs' },
         },
       })
     ],

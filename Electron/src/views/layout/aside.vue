@@ -5,20 +5,20 @@
                 <template #title>
                     <span>基础功能</span>
                 </template>
-                <el-menu-item index="1-1"
-                    >音频设置
+                <el-menu-item index="1-1">
+                    音频设置
                     <el-button @click="openAudioSetting" class="btn" plain>音频设置</el-button>
                 </el-menu-item>
-                <el-menu-item index="1-2"
-                    >视频设置
+                <el-menu-item index="1-2">
+                    视频设置
                     <el-button @click="openVideoSetting" class="btn" plain>视频设置</el-button>
                 </el-menu-item>
-                <el-menu-item index="1-3"
-                    >本地录制
+                <el-menu-item index="1-3">
+                    本地录制
                     <el-button class="btn" plain @click="openLocalMixer">开始/停止录制</el-button>
                 </el-menu-item>
-                <el-menu-item index="1-4"
-                    >云端录制
+                <el-menu-item index="1-4">
+                    云端录制
                     <el-button class="btn" plain @click="openCloudMixer">开始/停止录制</el-button>
                 </el-menu-item>
             </el-sub-menu>
@@ -26,12 +26,12 @@
                 <template #title>
                     <span>进阶功能</span>
                 </template>
-                <el-menu-item index="2-1"
-                    >屏幕共享
-                    <ScreenShare />
+                <el-menu-item index="2-1">
+                    屏幕共享
+                    <ScreenShare @openScreenOption="openScreenOption" />
                 </el-menu-item>
-                <el-menu-item index="2-2"
-                    >影音播放
+                <el-menu-item index="2-2">
+                    影音播放
                     <MediaShare />
                 </el-menu-item>
                 <!-- <el-menu-item index="2-3">自定义音频采集和渲染 <el-button
@@ -44,25 +44,25 @@
             plain
           >开始</el-button>
         </el-menu-item> -->
-                <el-menu-item index="2-5"
-                    >房间消息
+                <el-menu-item index="2-5">
+                    房间消息
                     <MeetingMsg />
                 </el-menu-item>
-                <el-menu-item index="2-6"
-                    >房间属性
+                <el-menu-item index="2-6">
+                    房间属性
                     <el-button @click="openAttr(null)" class="btn" plain>设置</el-button>
                 </el-menu-item>
                 <el-menu-item index="2-7">成员属性 <el-button @click="openMemberAttr" class="btn" plain>设置</el-button></el-menu-item>
-                <el-menu-item index="2-8"
-                    >虚拟摄像头
+                <el-menu-item index="2-8">
+                    虚拟摄像头
                     <el-button @click="openVirtualCam" class="btn" plain>设置</el-button>
                 </el-menu-item>
-                <el-menu-item index="2-9"
-                    >变声
+                <el-menu-item index="2-9">
+                    变声
                     <el-button class="btn" plain @click="openVoiceChange">设置</el-button>
                 </el-menu-item>
-                <el-menu-item index="2-10"
-                    >声音环回测试
+                <el-menu-item index="2-10">
+                    声音环回测试
                     <el-button class="btn" plain @click="openEchoTest">测试</el-button>
                 </el-menu-item>
             </el-sub-menu>
@@ -81,13 +81,13 @@
     </el-scrollbar>
 
     <el-dialog class="dialog" v-model="dialogVisible" :title="dialogTitle" :width="dialogWidth" append-to-body draggable>
-        <el-scrollbar max-height="400px">
-            <component :is="component" v-if="!permanent && dialogVisible" :extend="dialogExtend" @close="dialogClose" @openMamberAttr="openAttr"> </component>
+        <el-scrollbar max-height="400px" :style="{ padding: dialogTitle === '屏幕共享' ? '0' : '20px' }">
+            <component :is="component" v-if="!permanent && dialogVisible" :extend="dialogExtend" @close="dialogClose" @openMamberAttr="openAttr" />
 
             <!-- 云端录制、本地录制模块为常驻模，为了保持窗口关闭后能持续更新录制内容 -->
-            <CloudMixer v-show="permanent == 'cloudMixer'"></CloudMixer>
-            <LocalMixer v-show="permanent == 'localMixer'"></LocalMixer>
-            <VirtualCam v-show="permanent == 'virtualCam'"></VirtualCam>
+            <CloudMixer v-show="permanent == 'cloudMixer'" />
+            <LocalMixer v-show="permanent == 'localMixer'" />
+            <VirtualCam v-show="permanent == 'virtualCam'" />
         </el-scrollbar>
     </el-dialog>
 </template>
@@ -101,6 +101,7 @@ import Attribute from "./components/attribute";
 import MemberAttrSel from "./components/memberAttrSel";
 import AudioSetting from "./components/audioSetting";
 import VideoSetting from "./components/videoSetting";
+import ScreenOption from "./components/screenOption";
 import LocalMixer from "./components/localMixer";
 import CloudMixer from "./components/cloudMixer";
 import MediaShare from "./components/mediaShare";
@@ -163,6 +164,13 @@ export default {
             this.permanent = "cloudMixer";
             this.dialogWidth = "400px";
             this.dialogTitle = "云端录制";
+        },
+        openScreenOption() {
+            this.component = markRaw(ScreenOption);
+            this.dialogWidth = "710px";
+            this.dialogTitle = "屏幕共享";
+            this.permanent = false;
+            this.dialogVisible = true;
         },
         openAttr(userId) {
             this.dialogVisible = false;

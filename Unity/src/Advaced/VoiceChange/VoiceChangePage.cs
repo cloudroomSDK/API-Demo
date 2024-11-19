@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,7 +35,7 @@ public class VoiceChangePage : MonoBehaviour
         UpdateUserList();
     }
 
-    private void notifySetVoiceChange(string userID, CRVSDK_VOICECHANGE_TYPE type, string oprUserID)
+    private void notifySetVoiceChange(string userID, int type, string oprUserID)
     {
         if (oprUserID == MeetingPage.mMyUserId)
             return;
@@ -73,7 +73,7 @@ public class VoiceChangePage : MonoBehaviour
     {
         string userId = dd.transform.parent.Find("UserId").gameObject.GetComponent<Text>().text;
         Debug.Log("user(" + userId + ") option chaged to: " + dd.value);
-        g_sdkMain.getSDKMeeting().setVoiceChange(userId, (CRVSDK_VOICECHANGE_TYPE)dd.value);
+        g_sdkMain.getSDKMeeting().setVoiceChange(userId, dd.value);
     }
 
     public void OnExitVoiceChangeClicked()

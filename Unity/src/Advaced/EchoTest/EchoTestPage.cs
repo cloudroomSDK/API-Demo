@@ -41,7 +41,7 @@ public class EchoTestPage : MonoBehaviour
         {
             mTimer += Time.deltaTime;
             int secondsLeft = mSecondsToStop - (int)mTimer;
-            mEchoTestInfo.text = string.Format("Voice echo testing, {0} seconds left", secondsLeft);
+            mEchoTestInfo.text = string.Format("声音环回测试中，{0}秒后自动退出", secondsLeft);
             if (secondsLeft <= 0)
             {
                 OnStopEchoTestClicked();

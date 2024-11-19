@@ -6,7 +6,7 @@
                     <el-select v-model="select" class="select" :class="{ disabled: !!appStore.networkCam }" :disabled="!!appStore.networkCam" @change="selectChange">
                         <el-option label="rtmp://" value="rtmp" />
                         <el-option label="rtsp://" value="rtsp" />
-                        <el-option label="桌面" value="screen" />
+                        <el-option v-if="appStore.platform === 'win32'" label="桌面" value="screen" />
                         <el-option label="自定义采集" value="canvas" />
                     </el-select>
                 </template>
@@ -217,7 +217,7 @@ export default {
 
 <style lang="scss" scoped>
 .content {
-    width: 448px;
+    width: 428px;
     margin: 0 auto;
     .crtl {
         display: flex;
@@ -240,7 +240,7 @@ export default {
         }
     }
     .preview {
-        width: 448px;
+        width: 428px;
         height: 252px;
         background-color: #000;
         margin-top: 10px;

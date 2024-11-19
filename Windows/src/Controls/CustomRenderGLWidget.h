@@ -40,7 +40,7 @@ protected:
 	void releaseGL();
 	void clearColor(const QColor &color);
 	void fillLastColumnDate(CRVideoFrame &frm);
-	bool drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], const QSize &frmSize, const QRect &drawRt = QRect(-1, -1, -1, -1));
+	bool drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], const QSize &frmSize, CRVSDK_COLORSPACE colorSpace, CRVSDK_COLORRANGE colorRange, const QRect &drawRt = QRect(-1, -1, -1, -1));
 
 private:
 	void updateRenderHandler();

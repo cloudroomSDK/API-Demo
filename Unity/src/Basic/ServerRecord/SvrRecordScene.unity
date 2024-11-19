@@ -343,10 +343,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1280, y: 720}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -1041,7 +1041,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Start Record
+  m_Text: "\u5F00\u59CB\u5F55\u5236"
 --- !u!222 &336596674
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1348,7 +1348,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SD
+  m_Text: "\u6807\u6E05"
 --- !u!222 &533695825
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1448,11 +1448,11 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: SD
+    - m_Text: "\u6807\u6E05"
       m_Image: {fileID: 0}
-    - m_Text: HD
+    - m_Text: "\u9AD8\u6E05"
       m_Image: {fileID: 0}
-    - m_Text: UD
+    - m_Text: "\u8D85\u6E05"
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1658,7 +1658,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Stop Record
+  m_Text: "\u505C\u6B62\u5F55\u5236"
 --- !u!222 &816168676
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1985,7 +1985,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Exit
+  m_Text: "\u79BB\u5F00"
 --- !u!222 &860630315
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2141,7 +2141,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Format:'
+  m_Text: "\u683C\u5F0F\uFF1A"
 --- !u!222 &1071745887
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2735,7 +2735,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Resolution:'
+  m_Text: "\u6E05\u6670\u5EA6\uFF1A"
 --- !u!222 &1554753485
 CanvasRenderer:
   m_ObjectHideFlags: 0

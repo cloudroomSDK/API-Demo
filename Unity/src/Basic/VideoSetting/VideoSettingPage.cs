@@ -32,6 +32,11 @@ public class VideoSettingPage : MonoBehaviour
     private Dropdown mDDSecondCameraSet = null;
     private Dropdown mDDResolutionSet = null;
     private Dropdown mDDFpsSet = null;
+    private Slider mSldBps = null;
+    private Text mTxtBps = null;
+    private Dropdown mDDModeSet = null;
+
+    private int mDefKBps = 350;
 
     void Awake()
     {
@@ -40,7 +45,15 @@ public class VideoSettingPage : MonoBehaviour
         mDDCameraSet = GameObject.Find("ddCamera").GetComponent<Dropdown>();
         mDDSecondCameraSet = GameObject.Find("ddSecondCam").GetComponent<Dropdown>();
         mDDResolutionSet = GameObject.Find("ddResolution").GetComponent<Dropdown>();
+        mDDResolutionSet.onValueChanged.AddListener(OnResolutionChanged);
         mDDFpsSet = GameObject.Find("ddFps").GetComponent<Dropdown>();
+        mSldBps = GameObject.Find("sldBps").GetComponent<Slider>();
+        mSldBps.minValue = 5;
+        mSldBps.maxValue = 20;
+        mSldBps.wholeNumbers = true;
+        mSldBps.onValueChanged.AddListener(OnBpsChanged);
+        mTxtBps = GameObject.Find("txtBps").GetComponent<Text>();
+        mDDModeSet = GameObject.Find("ddMode").GetComponent<Dropdown>();
 
         SetupVideoSetPanel();
     }
@@ -48,6 +61,27 @@ public class VideoSettingPage : MonoBehaviour
     void Start()
     {
 
+    }
+
+    public void OnResolutionChanged(int value)
+    {
+        int defKBps = 350;
+        switch (value)
+        {
+            case 3: defKBps = 2000; break;
+            case 2: defKBps = 1000; break;
+            case 1: defKBps = 500; break;
+            default: break;
+        }
+        mDefKBps = defKBps;
+        mSldBps.value = 10;
+        mTxtBps.text = string.Format("{0}kbps", mDefKBps);
+    }
+
+    public void OnBpsChanged(float value)
+    {
+        int setVal = (int)value;
+        mTxtBps.text = string.Format("{0}kbps", mDefKBps / 10 * setVal);
     }
 
     void SetupVideoSetPanel()
@@ -98,10 +132,13 @@ public class VideoSettingPage : MonoBehaviour
 
         string strVCfg = g_sdkMain.getSDKMeeting().getVideoCfg();
         VideoCfg vCfg = JsonUtility.FromJson<VideoCfg>(strVCfg);
+
+        // fps
         if (vCfg.fps >= 24) mDDFpsSet.value = 2;
         else if (vCfg.fps >= 15) mDDFpsSet.value = 1;
         else mDDFpsSet.value = 0;
 
+        // resolution
         int findHeight = 360;
         string[] resolutionList = vCfg.size.Split('*');
         if (resolutionList.Length >= 2)
@@ -112,6 +149,23 @@ public class VideoSettingPage : MonoBehaviour
         else if (findHeight >= 720) mDDResolutionSet.value = 2;
         else if (findHeight >= 480) mDDResolutionSet.value = 1;
         else mDDResolutionSet.value = 0;
+
+        // bps
+        if (-1 == vCfg.maxbps)
+        {
+            mSldBps.value = 10;
+        }
+        else
+        {
+            int setBps = vCfg.maxbps / 1000;
+            if (setBps > mDefKBps * 2) setBps = mDefKBps * 2;
+            else if (setBps < mDefKBps / 2) setBps = mDefKBps / 2;
+            mSldBps.value = setBps * 10 / mDefKBps;
+        }
+
+        // video mode
+        if (vCfg.qp_min == vCfg.qp_max) mDDModeSet.value = 0;
+        else mDDModeSet.value = 1;
     }
 
     public void OnExitVideoSetClicked()
@@ -124,6 +178,20 @@ public class VideoSettingPage : MonoBehaviour
         else if (resVal == 1) newCfg.size = "856*480";
         else if (resVal == 2) newCfg.size = "1280*720";
         else if (resVal == 3) newCfg.size = "1920*1080";
+
+        int setbps = mDefKBps * 100 * (int)mSldBps.value;
+        newCfg.maxbps = setbps;
+
+        if (mDDModeSet.value == 0)
+        {
+            newCfg.qp_min = 22;
+            newCfg.qp_max = 22;
+        }
+        else
+        {
+            newCfg.qp_min = 22;
+            newCfg.qp_max = 40;
+        }
         g_sdkMain.getSDKMeeting().setVideoCfg(JsonUtility.ToJson(newCfg));
 
         string camName = mDDCameraSet.options[mDDCameraSet.value].text;

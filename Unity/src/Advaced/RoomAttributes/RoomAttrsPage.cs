@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +27,7 @@ public class RoomAttrsPage : MonoBehaviour
     private GameObject mAddOrEditPanel = null;
     private InputField mIFKey = null;
     private InputField mIFValue = null;
+    private bool mEditMode = false;
 
     private Dictionary<string, RoomUserAttr> mAllAttrs = new Dictionary<string,RoomUserAttr>();
     private string mLastKey = "";
@@ -81,7 +82,7 @@ public class RoomAttrsPage : MonoBehaviour
         if (cookie != mCookie)
             return;
 
-        mRoomAttrsInfo.text = "Get room attribute fail, error: " + sdkErr;
+        mRoomAttrsInfo.text = "获取房间属性失败，错误：" + sdkErr;
     }
 
     private void addOrUpdateMeetingAttrsRslt(CRVSDK_ERR_DEF sdkErr, string cookie)
@@ -176,7 +177,7 @@ public class RoomAttrsPage : MonoBehaviour
             txtModifyUser.text = obj.Value.lastModifyUserID;
             var txtModifyTime = go.transform.Find("ModifyTime").gameObject.GetComponent<Text>();
             DateTime dt = DateTimeOffset.FromUnixTimeSeconds(obj.Value.lastModifyTs).LocalDateTime;
-            txtModifyTime.text = dt.ToString("yyyy/MM/dd hh:mm:ss");
+            txtModifyTime.text = dt.ToString("yyyy/MM/dd HH:mm:ss");
             var editBtn = go.transform.Find("EditBtn").gameObject.GetComponent<Button>();
             editBtn.onClick.AddListener(OnEditAttrClicked);
             var removeBtn = go.transform.Find("RemoveBtn").gameObject.GetComponent<Button>();
@@ -193,11 +194,11 @@ public class RoomAttrsPage : MonoBehaviour
     {
         if (sdkErr == CRVSDK_ERR_DEF.CRVSDKERR_NOERR)
         {
-            mRoomAttrsInfo.text = "Operate success";
+            mRoomAttrsInfo.text = "操作成功";
         }
         else
         {
-            mRoomAttrsInfo.text = "Operate fail, error: " + sdkErr;
+            mRoomAttrsInfo.text = "操作失败，错误：" + sdkErr;
             ClearLastKeyValue();
         }
     }
@@ -243,6 +244,7 @@ public class RoomAttrsPage : MonoBehaviour
         var button = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         var attrKey = button.transform.parent.Find("AttrKey").gameObject.GetComponent<Text>().text;
         var attrValue = button.transform.parent.Find("AttrValue").gameObject.GetComponent<Text>().text;
+        mEditMode = true;
         ShowAddOrEditPanel(attrKey, attrValue);
     }
 
@@ -252,14 +254,14 @@ public class RoomAttrsPage : MonoBehaviour
         mLastValue = mIFValue.text;
         if (mLastKey.Length == 0 || mLastValue.Length == 0)
         {
-            mRoomAttrsInfo.text = "Key and value can't be empty";
+            mRoomAttrsInfo.text = "Key/Value 不能为空";
             mAddOrEditPanel.SetActive(false);
             ClearLastKeyValue();
             return;
         }
-        if (mAllAttrs.ContainsKey(mLastKey))
+        if (!mEditMode && mAllAttrs.ContainsKey(mLastKey))
         {
-            mRoomAttrsInfo.text = "Key already exist";
+            mRoomAttrsInfo.text = "Key 已存在";
             mAddOrEditPanel.SetActive(false);
             ClearLastKeyValue();
             return;
@@ -270,11 +272,13 @@ public class RoomAttrsPage : MonoBehaviour
         g_sdkMain.getSDKMeeting().addOrUpdateMeetingAttrs(jsonStr, "", mCookie);
 
         mAddOrEditPanel.SetActive(false);
+        mEditMode = false;
     }
 
     public void OnCancelAttrClicked()
     {
         mAddOrEditPanel.SetActive(false);
+        mEditMode = false;
     }
 
     public void OnExitRoomAttrClicked()

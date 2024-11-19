@@ -9,5 +9,8 @@
       ],
       "url": "https://json.schemastore.org/electron-builder"
     }
-  ]
+  ],
+  "files.associations": {
+    "electron-builder.json": "jsonc"
+  }
 }

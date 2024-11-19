@@ -6,7 +6,8 @@
             </el-select>
         </el-form-item>
         <el-form-item label="选择扬声器：">
-            <el-select class="select" v-model="speakerSel" :disabled="!speakerList.length" placeholder="请插入设备" @change="speakerChange">
+            <el-select class="select" v-model="speakerSel" :disabled="!speakerList.length" placeholder="请插入设备"
+                @change="speakerChange">
                 <el-option v-for="item in speakerList" :key="item._id" :label="item._name" :value="item._id" />
             </el-select>
         </el-form-item>
@@ -14,7 +15,7 @@
             <el-slider style="margin-right:20px;" v-model="micValue" :max="255" @change="micValChange" />
         </el-form-item>
         <el-form-item label="本地扬声器音量：">
-            <el-slider style="margin-right:20px;"  v-model="speakerValue" :max="255" @change="speakerValChange" />
+            <el-slider style="margin-right:20px;" v-model="speakerValue" :max="255" @change="speakerValChange" />
         </el-form-item>
     </el-form>
 </template>
@@ -56,23 +57,23 @@ export default {
             if (micList.length) {
                 this.micList = [
                     {
-                        _id: "",
+                        _id: "default",
                         _name: "系统默认设备",
                     },
                 ].concat(micList);
 
-                this.micSel = audioCfg._micGuid;
+                this.micSel = audioCfg._micGuid || 'default';
             }
 
             if (speakerList.length) {
                 this.speakerList = [
                     {
-                        _id: "",
+                        _id: "default",
                         _name: "系统默认设备",
                     },
                 ].concat(speakerList);
 
-                this.speakerSel = audioCfg._spkGuid;
+                this.speakerSel = audioCfg._spkGuid || 'default';
             }
         },
         // 通知有音频设备变化
@@ -86,10 +87,12 @@ export default {
             }, 100);
         },
         micChange(val) {
+            val = val === 'default' ? '' : val;
             this.editConfig({ _micGuid: val });
             this.micValue = this.$rtcsdk.getMicVolume(); //重新获取本设备的麦克风音量
         },
         speakerChange(val) {
+            val = val === 'default' ? '' : val;
             this.editConfig({ _spkGuid: val });
         },
         editConfig(obj) {

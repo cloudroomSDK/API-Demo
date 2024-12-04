@@ -9,6 +9,7 @@
 #include "./TestCustomVideoCaptureRender/CustomVideoCaptureRender.h"
 #include "./TestMediaPlay/MediaPlayUI.h"
 #include "./TestScreenShare/ScreenShareUI.h"
+#include "./TestScreenShare/ShareSourceSelectDlg.h"
 #include "./TestAudioSetting/DlgAudioSet.h"
 #include "./TestVideoSetting/DlgVideoSet.h"
 #include "./TestRoomMsg/DlgRoomMsg.h"
@@ -296,7 +297,9 @@ void MainDialog::slot_btnStartScreenClicked()
 		return;
 	}
 
-	g_sdkMain->getSDKMeeting().startScreenShare();
+	ShareSourceSelectDlg *dlg = new ShareSourceSelectDlg(this);
+	dlg->setAttribute(Qt::WA_DeleteOnClose);
+	dlg->exec();
 }
 
 void MainDialog::slot_btnStopScreenClicked()

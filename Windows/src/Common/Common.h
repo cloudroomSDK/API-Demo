@@ -48,4 +48,6 @@ QString GetInifileString(const QString &grpName, const QString &keyName, const Q
 int GetIniFileInt(const QString &grpName, const QString &keyName, const QString& fileName, int defaultValue = 0);
 bool SetInifileString(const QString &grpName, const QString &keyName, const QString &val, const QString& fileName);
 
+void WidgetStyleUpdate(QWidget *pWnd);
+
 #endif //__COMMON_H__

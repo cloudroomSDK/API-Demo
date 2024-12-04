@@ -1,0 +1,22 @@
+<view class="RTCVideoPlayer">
+  <live-player 
+    class='live-player'
+    data-userid='{{userID}}' 
+    id='{{id}}'
+    src='{{src}}'
+    mode='{{mode}}'
+    autoplay='{{autoplay}}'
+    muted='{{muted}}'
+    orientation='{{orientation}}'
+    object-fit='{{objectFit}}'
+    auto-pause-if-navigate='{{autoPauseIfNavigate}}'
+    auto-pause-if-open-native='{{autoPauseIfOpenNative}}'
+    sound-mode='{{soundMode}}'
+    bindstatechange='statechange'
+    bindnetstatus='netstatus'
+    debug='{{debug}}'
+    >
+    <slot></slot>
+    <!-- <video-custom id='videoCustom' bind:fullScreen="fullScreen" bind:exitFullScreen="exitFullScreen" userInfo='{{_userInfo}}' extend='{{extend}}'></video-custom> -->
+  </live-player>
+</view>

@@ -1,0 +1,59 @@
+{
+  "routerMap": [
+    {
+      "name": "Login",
+      "pageSourceFile": "src/main/ets/pages/Login.ets",
+      "buildFunction": "LoginBuilder"
+    },
+    {
+      "name": "Setting",
+      "pageSourceFile": "src/main/ets/pages/Setting.ets",
+      "buildFunction": "SettingBuilder"
+    },
+    {
+      "name": "Join",
+      "pageSourceFile": "src/main/ets/pages/Join.ets",
+      "buildFunction": "JoinBuilder"
+    },
+    {
+      "name": "AudioCall",
+      "pageSourceFile": "src/main/ets/pages/AudioCall.ets",
+      "buildFunction": "AudioCallBuilder"
+    },
+    {
+      "name": "Chat",
+      "pageSourceFile": "src/main/ets/pages/Chat.ets",
+      "buildFunction": "ChatBuilder"
+    },
+    {
+      "name": "CloudRecord",
+      "pageSourceFile": "src/main/ets/pages/CloudRecord.ets",
+      "buildFunction": "CloudRecordBuilder"
+    },
+    {
+      "name": "LocalRecord",
+      "pageSourceFile": "src/main/ets/pages/LocalRecord.ets",
+      "buildFunction": "LocalRecordBuilder"
+    },
+    {
+      "name": "MediaShare",
+      "pageSourceFile": "src/main/ets/pages/MediaShare.ets",
+      "buildFunction": "MediaShareBuilder"
+    },
+    {
+      "name": "ScreenShare",
+      "pageSourceFile": "src/main/ets/pages/ScreenShare.ets",
+      "buildFunction": "ScreenShareBuilder"
+    },
+    {
+      "name": "VideoCall",
+      "pageSourceFile": "src/main/ets/pages/VideoCall.ets",
+      "buildFunction": "VideoCallBuilder"
+    },
+    {
+      "name": "VideoSetting",
+      "pageSourceFile": "src/main/ets/pages/VideoSetting.ets",
+      "buildFunction": "VideoSettingBuilder"
+    }
+  ]
+}

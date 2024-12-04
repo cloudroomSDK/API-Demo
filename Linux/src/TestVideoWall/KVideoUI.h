@@ -9,7 +9,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class KVideoUI; }
 QT_END_NAMESPACE
 
-#if 0
+#if 1
 #	define CustomRenderBase CustomRenderWidget
 #else
 #	define CustomRenderBase CustomRenderGLWidget
@@ -42,7 +42,6 @@ public:
 	bool isRenderState() const;
 
 protected:
-	void paintEvent(QPaintEvent *event) override;
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private slots:
@@ -50,6 +49,7 @@ private slots:
 	void slot_btnCamClicked();
 	void slot_btnMirrorClicked();
 	void slot_btnRotateClicked();
+	void slot_upNetInfo();
 
 private:
 	void initAllPics();
@@ -65,6 +65,7 @@ private:
 
 	bool			m_mineVideo;
 	int				m_videoRotate;
+	QTimer			m_upNetInfoTimer;
 
 	QPointer<KVideoUI> m_fullVideoUI;
 };

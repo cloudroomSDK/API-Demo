@@ -75,6 +75,7 @@ void MediaPlayUI::notifyMediaStop(const char* userID, CRVSDK_MEDIA_STOPREASON re
 {
 	ui.mediaToolBar->setMediaState(CRVSDK_MEDIAST_STOPPED);
 	ui.mediaToolBar->setEnabled(true);
+	clearFrame();
 	emit s_mediaPlaying(false);
 }
 

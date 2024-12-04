@@ -10,6 +10,8 @@ public:
 	CustomRenderGLWidget(QWidget *parent, CRVSDK_STREAM_VIEWTYPE viewType);
 	~CustomRenderGLWidget();
 
+	void setVideoID(const CRUserVideoID &id, CRVSDK_VSTEAMLV_TYPE lv = CRVSDK_VSTP_LV0);
+
 	CRVideoFrame getFrame();
 	int64_t getFrameTimestamp();
 	
@@ -30,6 +32,7 @@ protected:
 	void onRenderFrameDat(const CRVideoFrame &frm) override;
 	void hideEvent(QHideEvent* event) override;
 	void showEvent(QShowEvent* event) override;
+	void setDefaultBackground(const QColor &color){m_defBkColor = color;}
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -37,7 +40,7 @@ protected:
 	void releaseGL();
 	void clearColor(const QColor &color);
 	void fillLastColumnDate(CRVideoFrame &frm);
-	bool drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], const QSize &frmSize, const QRect &drawRt = QRect(-1, -1, -1, -1));
+	bool drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], const QSize &frmSize, CRVSDK_COLORSPACE colorSpace, CRVSDK_COLORRANGE colorRange, const QRect &drawRt = QRect(-1, -1, -1, -1));
 
 private:
 	void updateRenderHandler();
@@ -54,6 +57,7 @@ private:
 	QOpenGLTexture* m_textureV{ nullptr };
 	//CRFPSStatistics	m_recvFps;
 	//CRFPSStatistics	m_drawFps;
+	QColor m_defBkColor;
 };
 
 #endif // CUSTOMRENDERGLWIDGET_H

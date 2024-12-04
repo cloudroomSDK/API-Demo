@@ -23,6 +23,9 @@ ARCHITECTURE=$$QMAKE_HOST.arch
 contains(QMAKE_HOST.arch, aarch64) || linux-aarch64-gnu-g++{
 ARCHITECTURE=aarch64
 }
+contains(QMAKE_HOST.arch, arm) || linux-arm-gnueabihf-g++{
+ARCHITECTURE=arm-linux-gnueabihf
+}
 INCLUDEPATH += $$PWD/CRVideoSDK/include
 LIBS += -L$$PWD/CRVideoSDK/lib/$$ARCHITECTURE -lCRBase -lCRVideoSDKCpp
 QMAKE_LFLAGS += -Wl,-rpath,./:$$PWD/CRVideoSDK/lib/$$ARCHITECTURE
@@ -55,16 +58,17 @@ INCLUDEPATH += \
     $$PWD/src/TestEchoTest \
     $$PWD/src/TestNetCamera \
     $$PWD/src/TestVoiceChange \
-    $$PWD/src/TestTestScreenShare
+    $$PWD/src/TestTestScreenShare \
+    $$PWD/src/TestSubscribeAudio
 
 SOURCES += \
     src/stdafx.cpp \
     src/main.cpp \
     src/Common/Common.cpp \
     src/Common/ErrDesc.cpp \
-	src/Common/JsonHelper.cpp \
+    src/Common/JsonHelper.cpp \
     src/Common/KeepAspectRatioDrawer.cpp \
-	src/Common/CRFPSStatistics.cpp \
+    src/Common/CRFPSStatistics.cpp \
     src/Controls/CustomRenderWidget.cpp \
     src/Controls/CustomRenderGLWidget.cpp \
     src/Controls/CanvasWidget.cpp \
@@ -94,16 +98,20 @@ SOURCES += \
     src/TestVoiceChange/DlgVoiceChange.cpp \
     src/TestScreenShare/ScreenShareUI.cpp \
     src/TestScreenShare/ScreenMarkView.cpp \
-    src/TestScreenShare/DlgScreenMark.cpp
+	src/TestScreenShare/CThumbnailItem.cpp \
+	src/TestScreenShare/ShareSourceSelectDlg.cpp \
+    src/TestScreenShare/DlgScreenMark.cpp \
+    src/TestSubscribeAudio/DlgSubscribeAudio.cpp \
+    src/TestVoiceChange/CustomVoiceChgDlg.cpp
 
 HEADERS += \
     src/stdafx.h \
-	src/AccountInfo.h \
+    src/AccountInfo.h \
     src/Common/Common.h \
     src/Common/ErrDesc.h \
-	src/Common/JsonHelper.h \
+    src/Common/JsonHelper.h \
     src/Common/KeepAspectRatioDrawer.h \
-	src/Common/CRFPSStatistics.h \
+    src/Common/CRFPSStatistics.h \
     src/Controls/CustomRenderWidget.h \
     src/Controls/CustomRenderGLWidget.h \
     src/Controls/CanvasWidget.h \
@@ -133,7 +141,11 @@ HEADERS += \
     src/TestVoiceChange/DlgVoiceChange.h \
     src/TestScreenShare/ScreenShareUI.h \
     src/TestScreenShare/ScreenMarkView.h \
-    src/TestScreenShare/DlgScreenMark.h 
+    src/TestScreenShare/DlgScreenMark.h \
+	src/TestScreenShare/CThumbnailItem.h \
+	src/TestScreenShare/ShareSourceSelectDlg.h \
+    src/TestSubscribeAudio/DlgSubscribeAudio.h \
+    src/TestVoiceChange/CustomVoiceChgDlg.h
 
 FORMS += \
     src/DlgLogin.ui \
@@ -161,7 +173,12 @@ FORMS += \
     src/TestVoiceChange/DlgVoiceChange.ui \
     src/TestVoiceChange/VoiceChangeItem.ui \
     src/TestScreenShare/ScreenShareUI.ui \
-    src/TestScreenShare/ScreenSharerToolBar.ui
+    src/TestScreenShare/ScreenSharerToolBar.ui \
+	src/TestScreenShare/CThumbnailItem.ui \
+	src/TestScreenShare/ShareSourceSelectDlg.ui \
+    src/TestSubscribeAudio/DlgSubscribeAudio.ui \
+    src/TestVoiceChange/CustomVoiceChgDlg.ui \
+    src/TestVoiceChange/VoiceCustomSetting.ui
 
 RESOURCES += \
     src/APIDemo.qrc

@@ -10,6 +10,8 @@ public:
 	CustomRenderWidget(QWidget *parent, CRVSDK_STREAM_VIEWTYPE viewType);
 	~CustomRenderWidget();
 
+	void setVideoID(const CRUserVideoID &id, CRVSDK_VSTEAMLV_TYPE lv = CRVSDK_VSTP_LV0);
+
 	CRVideoFrame getFrame();
 	int64_t getFrameTimestamp();
 	
@@ -31,6 +33,7 @@ protected:
 	void paintEvent(QPaintEvent *event) override;
 	void hideEvent(QHideEvent* event) override;
 	void showEvent(QShowEvent* event) override;
+	void setDefaultBackground(const QColor &color);
 
 private:
 	void updateRenderHandler();
@@ -40,6 +43,7 @@ private:
 	bool				m_bLocMirror{ false };
 	CRVideoFrame		m_frame;
 	QMutex				m_frameLock;
+	QColor				m_defBkColor;
 
 	//CRFPSStatistics	m_recvFps;
 	//CRFPSStatistics	m_drawFps;

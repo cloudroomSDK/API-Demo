@@ -16,7 +16,7 @@ CustomAudioCapture::CustomAudioCapture(QWidget *parent)
 
 	//从测试音频文件audio_16k_1ch.pcm读取所有数据
     ReadDataFromFile(":/Resources/custom_audio_16k16bit1ch.pcm", m_audioData);
-	//初齐为10ms的整数倍
+	//对齐为10ms的整数倍
 	int dstLen = (m_audioData.length() / 320) * 320;
 	m_audioData = m_audioData.left(dstLen);
 }

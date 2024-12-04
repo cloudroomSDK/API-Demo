@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgSubscribeAudio</class>
+ <widget class="QDialog" name="DlgSubscribeAudio">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>447</width>
+    <height>298</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>音频订阅</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#DlgNetCamera {
+	background: rgb(255,255,255);
+}
+QComboBox {
+	background: transparent;
+	border: 1px solid rgb(221,221,221);
+	border-radius: 4px;
+	min-height: 30px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+QComboBox:hover {
+	border-color:rgb(57,129,252);
+}
+QComboBox::drop-down {
+	padding-top: 5px;
+	image: url(:/Resources/dropDown.png);
+}
+QComboBox QAbstractItemView{
+	margin-top:1;
+	outline:0;	
+	border:1px solid rgb(225,225,225);
+	background-color:rgb(255,255,255);
+	selection-background-color:rgb(80,145,255);
+}
+QComboBox QAbstractItemView::item{
+	min-height:30px;
+	max-height:30px;
+}
+QComboBox QAbstractItemView::item:hover{
+    background-color:rgb(240,240,240);
+	color:rgb(45,45,45);
+}
+QComboBox QAbstractItemView::item:selected{
+    background-color:rgb(240,240,240);
+	color:rgb(45,45,45);
+}
+QSlider {
+	min-height: 20px;
+	max-height: 20px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+QSlider::add-page:horizontal {       
+	background-color:rgb(223,223,223);  
+}  
+QSlider::sub-page:horizontal {  
+	background-color: rgb(57,129,252);
+}  
+QSlider::groove:horizontal {  
+	background:transparent;  
+	height:2px;
+}  
+QSlider::handle:horizontal {
+	height: 12px;
+	width: 12px;
+	margin-top: -5px;
+	margin-bottom: -5px;
+	border-radius: 6px;
+	background: rgb(57,129,252);
+}  
+QPushButton {
+	background:rgb(57,129,252);
+	color: rgb(255,255,255);
+	border: 1px solid rgb(57,129,252);
+	border-radius: 2px;
+	min-height: 28px;
+	min-width: 76px;
+}
+QPushButton:hover, QPushButton:pressed {
+	background: rgb(5,117,197);
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="horizontalWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QRadioButton" name="rbMixMode">
+        <property name="text">
+         <string>混流模式</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbSeparateMode">
+        <property name="text">
+         <string>独立流模式</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widgetSeparate" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>6</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="horizontalWidget_2" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QRadioButton" name="rbIncludeList">
+           <property name="text">
+            <string>白名单</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup_2</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="rbExcludeList">
+           <property name="text">
+            <string>黑名单</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup_2</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <item row="1" column="1">
+         <layout class="QGridLayout" name="gridLayout_2">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QListWidget" name="listSubs"/>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>房间人员（双击添加）</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>名单列表（双击删除）</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QListWidget" name="listMembers"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+ </buttongroups>
+</ui>

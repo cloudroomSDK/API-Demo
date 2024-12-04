@@ -15,11 +15,12 @@ class CustomAudioCapture;
 class CustomVideoCaptureRender;
 class MediaPlayUI;
 class ScreenShareUI;
-
-class DlgRoomAttrs;
-class DlgUserSelect;
 class DlgRoomMsg;
-class DlgNetCamera;
+
+#include "./TestRoomUsrAttrs/DlgRoomAttrs.h"
+#include "./TestNetCamera/DlgNetCamera.h"
+#include "./TestRoomUsrAttrs/DlgUserSelect.h"
+
 
 class MainDialog : public QDialog
 {
@@ -55,6 +56,8 @@ protected:
 	void slot_btnNetCameraClicked();
 	void slot_btnVoiceChangeClicked();
 	void slot_btnEchoTestClicked();
+	void slot_btnSubAudioClicked();
+	
 
 	void slot_mediaPlaying(bool bPlaying);
 	void slot_screenShareStateChanged(bool bShare);
@@ -65,18 +68,18 @@ private:
 	static int m_meetId;
 	
 	VideoWallPage *m_videoWallPage;
-	DlgLocalRecord *m_dlgLocRecord;
+	MediaPlayUI	*m_mediaPlayUI;
+	ScreenShareUI *m_screeShareUI;
+
 	DlgServerRecord *m_dlgSvrRecord;
 	CustomAudioCapture *m_customAudioCapture;
 	CustomVideoCaptureRender *m_customVideoCaptureRender;
-
-	MediaPlayUI	*m_mediaPlayUI;
-	ScreenShareUI	*m_screeShareUI;
-
-	DlgRoomAttrs *m_dlgRoomAttrs;
-	DlgUserSelect *m_dlgUserSelect;
 	DlgRoomMsg *m_dlgRoomMsg;
-	DlgNetCamera *m_dlgNetCamera;
+
+	QPointer<DlgLocalRecord> m_dlgLocRecord;
+	QPointer<DlgUserSelect> m_dlgUserSelect;
+	QPointer<DlgRoomAttrs> m_dlgRoomAttrs;
+	QPointer<DlgNetCamera> m_dlgNetCamera;
 };
 
 extern MainDialog *g_mainDialog;

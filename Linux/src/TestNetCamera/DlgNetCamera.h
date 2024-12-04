@@ -31,8 +31,10 @@ protected:
 private:
 	Ui::DlgNetCamera ui;
 	NetVideoView *m_videoView;
-	int m_videoID;
-	int m_oldDefVideoID;
+	
+	static int s_netCamID;
+	static int s_oldDefVideoID;
+	static QString s_netCamUrl;
 };
 
 #endif // DLGNETCAMERA_H

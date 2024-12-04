@@ -2,7 +2,6 @@
 #include "CustomVideoCaptureRender.h"
 #include "maindialog.h"
 
-#define VideoCapFPS 24
 #define VideoRate (float)16/9
 CRVSDK_VIDEO_FORMAT InputFrmFmt = CRVSDK_VFMT_YUV420P;  //420p内部效率最高
 
@@ -19,13 +18,6 @@ CustomVideoCaptureRender::CustomVideoCaptureRender(QWidget *parent) : QDialog(pa
 	m_capVideoDevID = 0;
 	m_oldDefVideoID = -1;
 	connect(ui.btnVideoCap, &QPushButton::clicked, this, &CustomVideoCaptureRender::slot_videoCap);
-
-	CRUserVideoID userVideoID(MainDialog::getMyUserID());
-	//自渲染
-	m_customRenderView->setVideoID(userVideoID);
-    m_customRenderView_GL->setVideoID(userVideoID);
-	//引擎渲染（仅windows生效）
-	ui.videoCanvas->setVideoID(userVideoID);
 
 	g_sdkMain->getSDKMeeting().AddCallBack(this);
 }
@@ -76,37 +68,73 @@ void CustomVideoCaptureRender::slot_videoCap()
 	m_bVideoCap = bCap;
 }
 
-void CustomVideoCaptureRender::notifyVideoStatusChanged(const char* userID, int oldStatus, int newStatus, const char* oprUserID)
+void CustomVideoCaptureRender::notifyVideoStatusChanged(const char* userID, CRVSDK_VSTATUS oldStatus, CRVSDK_VSTATUS newStatus, const char* oprUserID)
 {
 	if (MainDialog::getMyUserID() != userID)
 	{
 		return;
 	}
-
-	CRVSDK_VSTATUS videoStatus = (CRVSDK_VSTATUS)newStatus;
-	ui.videoCanvas->setVideoID(videoStatus != CRVSDK_VST_OPEN ? CRUserVideoID() : CRUserVideoID(MainDialog::getMyUserID()));
+	updateVideoID();
 }
 
+void CustomVideoCaptureRender::updateVideoID()
+{
+	CRVSDK_VSTATUS videoStatus = g_sdkMain->getSDKMeeting().getVideoStatus(MainDialog::getMyUserID().constData());
+	bool bShow = (this->isVisible() && videoStatus == CRVSDK_VST_OPEN);
+	CRUserVideoID userVideoID;
+	if (bShow)
+	{
+		userVideoID = CRUserVideoID(MainDialog::getMyUserID());
+	}
+
+	m_customRenderView->setVideoID(userVideoID);
+	m_customRenderView_GL->setVideoID(userVideoID);
+	ui.videoCanvas->setVideoID(userVideoID);
+}
+
+
+void CustomVideoCaptureRender::showEvent(QShowEvent *evt)
+{
+	QDialog::showEvent(evt);
+	updateVideoID();
+
+
+}
+
+void CustomVideoCaptureRender::hideEvent(QHideEvent *evt)
+{
+	QDialog::hideEvent(evt);
+	updateVideoID();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// CustomVideoInputThread
 void CustomVideoInputThread::slot_doInput()
 {
-	CRByteArray jpgDat;
-	ReadDataFromFile(":/Resources/custom_video_1280x720.jpg", jpgDat);
-
 	CRVSDK_ERR_DEF err;
-	CRVideoFrame frm;
-	if ((err=g_sdkMain->coverToVideoFrame(jpgDat, "jpg", frm)) != 0)
+
+	static CRVideoFrame frm;
+	if (frm.getFormat() == CRVSDK_VFMT_INVALID)
 	{
-		qDebug("decode jpg failed: %d!", err);
-		return;
+		CRByteArray jpgDat;
+		ReadDataFromFile(":/Resources/custom_video_1280x720.jpg", jpgDat);
+
+		if ((err=g_sdkMain->coverToVideoFrame(jpgDat, "jpg", frm)) != 0)
+		{
+			qDebug("decode jpg failed: %d!", err);
+			return;
+		}
+		if (!g_sdkMain->videoFrameCover(frm, InputFrmFmt, frm.getWidth(), frm.getHeight()))
+		{
+			qDebug("decode jpg failed!");
+			return;
+		}
 	}
-	if (!g_sdkMain->videoFrameCover(frm, InputFrmFmt, frm.getWidth(), frm.getHeight()))
-	{
-		qDebug("decode jpg failed!");
-		return;
-	}
+
 	if ((err = g_sdkMain->getSDKMeeting().inputCustomVideoDat(_id, frm)) != 0)
 	{
 		qDebug("inputCustomVideoDat failed: %d!", err);
 		return;
 	}
 }
+

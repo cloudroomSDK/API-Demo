@@ -8,13 +8,16 @@
 ---|---|---|---
 [/Android](./Android)|Android|Java|[云屋RTC Android SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Android)
 [/iOS](./iOS)|iOS|Objective-C|[云屋RTC iOS SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=iOS)
+[/HarmonyOS](./HarmonyOS)|HarmonyOS|ArkTS|[云屋RTC HarmonyOS SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=HarmonyOS)
 [/MacOS](./macOS)|MacOS|C++|[云屋RTC MacOS SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
 [/Windows](./Windows)|Windows|C++|[云屋RTC Windows SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
 [/Linux](./Linux)|Linux|C++|[云屋RTC Linux SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Linux)
 [/Web](./Web)|Web|JS|[云屋RTC Web SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Web)
 [/Electron](./Electron)|PC|JS|[云屋RTC Electron SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Electron)
+[/Unity](./Unity)|Windows|C#|[云屋RTC Unity SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Unity)
 [/Flutter](./Flutter)|Mobile|Dart|[云屋RTC Flutter SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=Flutter)
 [/uni-app](./uni-app)|Mobile|JS|[云屋RTC uni-app SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=uniapp)
+[/MiniApp](./MiniApp)|Mobile|JS|[云屋RTC 微信小程序 SDK](https://docs.cloudroom.com/sdk/document/intro/README?platform=miniprogram)
 
 ## 联系我们
 - 更多示例见 [官方SDK示例](https://github.com/cloudroomSDK)

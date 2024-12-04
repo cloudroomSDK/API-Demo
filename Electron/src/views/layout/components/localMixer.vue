@@ -284,7 +284,7 @@ export default {
             return videoList;
         },
         updateMixerContent() {
-            if (this.mixerId) {
+            if (this.state === 2) {
                 const layout = this.generateLayout();
                 const sdkErr = this.$rtcsdk.updateLocMixerContent(this.mixerId, JSON.stringify(layout));
 

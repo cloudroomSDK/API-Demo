@@ -8,12 +8,6 @@ $mainColor: #3981FC;
 );
 @use "element-plus/theme-chalk/src/index.scss" as *;
 
-.dialog,.el-dialog {
-  .el-dialog__body {
-      padding: 20px !important;
-  }
-}
-
 .el-drawer__header {
   margin-bottom: 0;
 }

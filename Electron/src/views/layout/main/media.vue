@@ -64,7 +64,7 @@ export default {
         },
         // 帧回调函数
         notifyFrameReceived(frame){
-            this.curTime = frame._timestamp;
+            this.curTime = frame._pts;
         }
     },
 };

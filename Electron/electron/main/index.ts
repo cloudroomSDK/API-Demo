@@ -1,7 +1,24 @@
-import { app, BrowserWindow, shell, ipcMain, Menu, dialog } from "electron";
+import { app, BrowserWindow, shell, ipcMain, Menu, dialog, systemPreferences, crashReporter } from "electron";
 import { release } from "node:os";
 import { join } from "node:path";
 import "./electron-store";
+
+//获取崩溃日志堆栈文件
+const getCrashReport = () => {
+    // 崩溃日志堆栈文件存放路径
+    try {
+        // 获取崩溃日志堆栈文件存放路径 -- electron 9.0.0 版本之后
+        console.log('------crashFilePath------', app.getPath('crashDumps'))
+    } catch (error) {
+        console.error('------获取奔溃文件路径失败------', error)
+    }
+    // 开启 crash 捕获
+    crashReporter.start({
+        uploadToServer: false, // 是否上传服务器
+        ignoreSystemCrashHandler: false // 不忽略系统自带的奔溃处理，为 true 时表示忽略，奔溃时不会生成奔溃堆栈文件
+    })
+}
+getCrashReport();
 
 // The built directory structure
 //
@@ -61,7 +78,7 @@ async function createWindow() {
         // electron-vite-vue#298
         win.loadURL(url);
         // Open devTool if the app is not packaged
-        // win.webContents.openDevTools();
+        win.webContents.openDevTools();
     } else {
         win.loadFile(indexHtml);
     }
@@ -83,7 +100,7 @@ app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
     win = null;
-    if (process.platform !== "darwin") app.quit();
+    app.quit();
 });
 
 app.on("second-instance", () => {
@@ -101,6 +118,11 @@ app.on("activate", () => {
     } else {
         createWindow();
     }
+});
+
+//返回日志路径
+ipcMain.handle("get-logs-path", (event) => {
+    return app.getPath('logs');
 });
 
 //用于影音共享时弹出文件选择逻辑
@@ -132,3 +154,22 @@ ipcMain.on("electron-open-localMixer", (event, filePath) => {
 ipcMain.on("toggleDevTools", (event, filePath) => {
     win.webContents.toggleDevTools();
 });
+
+async function checkDeviceAccessPrivilege() {
+    const cameraAccessPrivilege = systemPreferences.getMediaAccessStatus('camera');
+    if (cameraAccessPrivilege !== 'granted') {
+        await systemPreferences.askForMediaAccess('camera');
+    }
+
+    const micAccessPrivilege = systemPreferences.getMediaAccessStatus('microphone');
+    if (micAccessPrivilege !== 'granted') {
+        await systemPreferences.askForMediaAccess('microphone');
+    }
+
+    systemPreferences.getMediaAccessStatus('screen');
+}
+
+if (process.platform == 'darwin') {
+    // mac动态权限申请，如果不申请权限可能会奔溃
+    checkDeviceAccessPrivilege()
+}

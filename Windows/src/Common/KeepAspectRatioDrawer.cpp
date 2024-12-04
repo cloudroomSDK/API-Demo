@@ -22,8 +22,8 @@ QRect KeepAspectRatioDrawer::getContentRect(QWidget *p, const QSize& imgSize, CR
 		//等比完整显示
 		float diff = qAbs(imgSize.width() / float(imgSize.height()) - widgetRect.width() / float(widgetRect.height()));
 		//如果变形比例在6%以内，按拉伸模式显示，效果更好
-		if (diff < 0.06)
-			return widgetRect;
+// 		if (diff < 0.06)
+// 			return widgetRect;
 
 		targetSize = imgSize.scaled(widgetRect.size(), Qt::KeepAspectRatio);
 	}

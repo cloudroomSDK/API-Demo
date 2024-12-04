@@ -87,7 +87,7 @@ void CustomRenderGLWidget::updateRenderHandler()
 	}
 }
 
-void CustomRenderGLWidget::onRenderFrameDat(const CRVideoFrame &frm)
+void CustomRenderGLWidget::onRenderFrameDat(const CRVideoFrame &frm, const CRUserVideoID &realVideoID)
 {
 	//m_recvFps.AddCount();
 	//qDebug("recv fps:%d", int(m_recvFps.GetFPS()));

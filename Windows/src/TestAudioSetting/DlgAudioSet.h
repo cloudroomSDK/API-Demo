@@ -20,6 +20,7 @@ public slots:
 	void slot_micVolChanged(int vol);
 	void slot_spkVolChanged(int vol);
 	void slot_updateAudioVolum();
+	void slot_3AChanged();
 
 protected:
 	void initAudioDevs();

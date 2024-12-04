@@ -83,7 +83,7 @@ void CustomRenderWidget::updateRenderHandler()
 }
 
 
-void CustomRenderWidget::onRenderFrameDat(const CRVideoFrame &frm, const CRUserVideoID &realVideoID)
+void CustomRenderWidget::onRenderFrameDat(const CRVideoFrame &frm)
 {
 	//m_recvFps.AddCount();
 	//qDebug("recv fps:%d", int(m_recvFps.GetFPS()));

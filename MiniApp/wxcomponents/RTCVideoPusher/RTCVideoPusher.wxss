@@ -1,0 +1,15 @@
+.RTCVideoPusher {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.RTCVideoPusher>.live-pusher {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    font-size: 24rpx;
+}

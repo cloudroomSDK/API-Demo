@@ -1,0 +1,43 @@
+<view class="RTCVideoPusher" hidden="{{videoHidden}}">
+  <live-pusher
+    wx:if="{{showComponent}}"
+    class='live-pusher'
+    id='{{id}}'
+    url='{{url}}'
+    mode='{{mode}}'
+    autopush='{{autopush}}'
+    muted='{{muted}}'
+    enable-camera='{{enableCamera}}'
+    auto-focus='{{autoFocus}}'
+    orientation='{{orientation}}'
+    beauty='{{beauty}}'
+    whiteness='{{whiteness}}'
+    aspect='{{aspect}}'
+    min-bitrate='{{minBitrate}}'
+    max-bitrate='{{maxBitrate}}'
+    waiting-image='{{waitingImage}}'
+    zoom='{{zoom}}'
+    device-position='{{devicePosition}}'
+    background-mute='{{backgroundMute}}'
+    bindstatechange='statechange'
+    bindnetstatus='netstatus'
+    binderror='error'
+    bindaudiovolumenotify='audiovolumenotify'
+    debug='{{debug}}'
+    audio-volume-type='{{audioVolumeType}}'
+    local-mirror = '{{localMirror}}'
+    remote-mirror = '{{remoteMirror}}'
+    enable-agc= '{{enableAgc}}'
+    enable-ans= '{{enableAnc}}'
+    beauty-style= '{{beautyStyle}}'
+    filter= '{{filter}}'
+    >
+    <slot></slot>
+    <!-- <video-custom
+      id='videoCustom'
+      userInfo='{{_userInfo}}'
+      isMyVideo='{{true}}'
+      extend='{{extend}}'
+    ></video-custom> -->
+  </live-pusher>
+</view>

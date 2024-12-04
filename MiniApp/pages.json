@@ -1,0 +1,85 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+
+		{
+			"path": "pages/index",
+			"style": {
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/setting",
+			"style": {
+				"disableScroll": true,
+				"navigationBarTitleText": "设置"
+			}
+		}
+	],
+	// 使用分包加载
+	"subpackages": [{
+		"root": "package", //  分包名
+		"pages": [{
+			"path": "join",
+			"style": {
+				"disableScroll": true
+			}
+		}, {
+			"path": "audioCall",
+			"style": {
+				"disableScroll": true,
+				"usingComponents": {
+					"rtc-video-pusher": "/wxcomponents/RTCVideoPusher/RTCVideoPusher",
+					"rtc-audio-player": "/wxcomponents/RTCAudioPlayer/RTCAudioPlayer"
+				}
+			}
+		}, {
+			"path": "videoCall",
+			"style": {
+				"disableScroll": true,
+				"usingComponents": {
+					"rtc-video-player": "/wxcomponents/RTCVideoPlayer/RTCVideoPlayer",
+					"rtc-video-pusher": "/wxcomponents/RTCVideoPusher/RTCVideoPusher",
+					"rtc-audio-player": "/wxcomponents/RTCAudioPlayer/RTCAudioPlayer"
+				}
+			}
+		}, {
+			"path": "videoSetting",
+			"style": {
+				"disableScroll": true,
+				"usingComponents": {
+					"rtc-video-player": "/wxcomponents/RTCVideoPlayer/RTCVideoPlayer",
+					"rtc-video-pusher": "/wxcomponents/RTCVideoPusher/RTCVideoPusher",
+					"rtc-audio-player": "/wxcomponents/RTCAudioPlayer/RTCAudioPlayer"
+				}
+			}
+		}, {
+			"path": "cloudMixer",
+			"style": {
+				"disableScroll": true,
+				"usingComponents": {
+					"rtc-video-player": "/wxcomponents/RTCVideoPlayer/RTCVideoPlayer",
+					"rtc-video-pusher": "/wxcomponents/RTCVideoPusher/RTCVideoPusher",
+					"rtc-audio-player": "/wxcomponents/RTCAudioPlayer/RTCAudioPlayer"
+				}
+			}
+		}, {
+			"path": "chat",
+			"style": {
+				"disableScroll": true
+			}
+		}]
+	}],
+	"preloadRule": {
+		"pages/index": {
+			"network": "all",
+			"packages": ["package"]
+		}
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "API DEMO",
+		"navigationBarBackgroundColor": "#3980fc",
+		"backgroundColor": "#f0f0f0"
+	},
+	"uniIdRouter": {}
+}

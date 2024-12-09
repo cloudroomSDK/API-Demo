@@ -123,10 +123,10 @@
 					this.curMicState = newStatus === 3;
 				}
 			},
-			_notifyScreenShareStarted(e) {
+			_notifyScreenShareStarted({ sharerID }) {
 				this.curShareState = true;
 			},
-			_notifyScreenShareStopped(e) {
+			_notifyScreenShareStopped({ oprUserID }) {
 				this.curShareState = false;
 				this.isMyShare = false;
 			}

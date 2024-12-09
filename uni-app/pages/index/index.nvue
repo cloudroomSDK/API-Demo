@@ -23,13 +23,14 @@
 	import md5 from '@/js_sdk/js-md5/src/md5.js'
 	const loginEnum = createEnum(['logout', 'logging', 'loged']);
 	const app = getApp();
+	const loginInfo = app.globalData.loginInfo;
+
 	export default {
 		data() {
 			return {
 				RTCSDK: null,
 				loginState: loginEnum.logout,
 				LoginState: loginEnum,
-				initState: false,
 				list: [{
 					section: "基础功能",
 					rows: [{
@@ -59,31 +60,16 @@
 					}, {
 						name: "聊天",
 						type: "chat",
+					}, {
+						name: "更多",
+						type: "outside",
 					}]
 				}]
 			}
 		},
 
-		async onLoad() {
+		onLoad() {
 			this.RTCSDK = app.globalData.RTCSDK.getInstance();
-
-			const path = await readAppDir();
-			this.RTCSDK.init({
-				sdkDatSavePath: path, //SDK内部使用文件位置
-				noCall: false,
-				noQueue: false,
-				noMediaDatToSvr: null,
-				timeOut: 120000,
-				datEncType: "1",
-			}, (sdkErr) => {
-				if (sdkErr !== 0) {
-					showToast(`初始化失败，错误码: ${sdkErr}, ${constantDesc[sdkErr]}`);
-					return;
-				}
-				this.initState = true;
-				this.handleEvents();
-				this.startLogin();
-			})
 		},
 		onNavigationBarButtonTap(e) {
 			uni.navigateTo({ url: '/pages/setting/index' });
@@ -93,7 +79,9 @@
 		},
 		onShow() {
 			this.loginState = app.globalData.isLogin ? loginEnum.loged : loginEnum.logout;
-			this.startLogin();
+			if (!app.globalData.initState || this.loginState === loginEnum.logout) {
+				this.startLogin();
+			}
 		},
 		onHide() {
 			clearTimeout(this.loginTimer);
@@ -110,23 +98,59 @@
 					showToast(`正在登录`);
 					return;
 				}
-				uni.navigateTo({
-					url: `/pages/join/index?type=${type}&title=${name}`
-				})
+				if (type === 'outside') {
+					uni.navigateTo({
+						url: `/pages/outside/index`
+					})
+				} else {
+					uni.navigateTo({
+						url: `/pages/join/index?type=${type}&title=${name}`
+					})
+				}
 			},
-			startLogin() {
-				if (this.initState && this.loginState === loginEnum.logout) {
-					const { addr, appId, appSecret } = app.globalData.loginInfo;
+			async init(useHttps) {
+				return new Promise(async (resolve, reject) => {
+					const path = await readAppDir();
+					this.RTCSDK.init({
+						sdkDatSavePath: path, //SDK内部使用文件位置
+						noCall: false,
+						noQueue: false,
+						noMediaDatToSvr: null,
+						timeOut: 120000,
+						datEncType: useHttps ? "1" : "0",
+					}, (sdkErr) => {
+						if (sdkErr !== 0) {
+							return reject(sdkErr);
+						}
+						app.globalData.initState = true;
+						this.handleEvents();
+						resolve();
+					})
+				})
+
+			},
+			async startLogin() {
+				const { useToken, useHttps, addr, appId, appSecret, token } = loginInfo;
+				console.log({ useToken, useHttps, addr, appId, appSecret, token });
+				try {
+					if (!app.globalData.initState) {
+						await this.init(useHttps);
+					}
+
 					const { userId, nickname } = app.globalData.userInfo;
 					this.RTCSDK.setServerAddr(addr);
 					this.RTCSDK.login({
-						appId,
-						appSecret: md5(appSecret),
+						appId: useToken ? undefined : appId,
+						appSecret: useToken ? undefined : md5(appSecret),
+						token: useToken ? token : undefined,
 						userId,
 						nickName: nickname,
 					});
 					clearTimeout(this.loginTimer);
 					this.loginTimer = setTimeout(this.startLogin, 1e4);
+				} catch (e) {
+					showToast(`初始化失败，错误码: ${sdkErr}, ${constantDesc[sdkErr]}`);
+					//TODO handle the exception
 				}
 			},
 			_loginSuccess({ userID }) {
@@ -156,7 +180,8 @@
 						showCancel: false,
 						success(res) {
 							if (res.confirm) {
-								uni.reLaunch({ url: '/pages/index/index' })
+								const currentPages = getCurrentPages();
+								uni.navigateBack({ delta: currentPages.length - 1 })
 							}
 						}
 					});

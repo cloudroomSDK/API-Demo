@@ -1,0 +1,375 @@
+<!-- 视频通话 -->
+<template>
+	<view class="content">
+		<view class="zhezhao" v-if="openAttr" @click.prevent>
+			<MeetingAttr class='meetingAttr' :userId="attrUserId" @close="openAttr=false" />
+		</view>
+		<view class="video-box">
+			<view class="myVideo">
+				<rtcsdk-video-view class="video-ui" :usrVideoId="{ userId: userInfo.userId }" />
+				<view class="video-text">
+					<text class="text">{{userInfo.nickname}}</text>
+				</view>
+			</view>
+			<view class="videoList">
+				<view class="video" v-for="item in openCamList" :key="item.userId">
+					<rtcsdk-video-view class="video-ui" :usrVideoId="{ userId: item.userId }" />
+					<view class="video-text">
+						<text class="text">{{item.nickName}}</text>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="btn-box">
+			<button class="btn primary" @click="toggleCamDevices">
+				<text class="btn-text">{{curFrontCam ? '后置摄像头':'前置摄像头'}}</text>
+			</button>
+			<button class="btn primary" @click="toggleCamState">
+				<text class="btn-text">{{curCamState ? '关闭摄像头':'打开摄像头'}}</text>
+			</button>
+			<button class="btn primary" @click="toggleMicState">
+				<text class="btn-text">{{curMicState ? '关闭麦克风':'打开麦克风'}}</text>
+			</button>
+			<button class="btn primary" @click="invite">
+				<text class="btn-text">邀请</text>
+			</button>
+			<button class="btn primary" @click="kickout">
+				<text class="btn-text">踢人</text>
+			</button>
+			<button class="btn primary" @click="openAttrSet">
+				<text class="btn-text">房间和成员属性</text>
+			</button>
+		</view>
+	</view>
+</template>
+
+<script>
+	import constantDesc from '../../util/constantDesc';
+	import { RtcsdkVideoView } from '@/RTCSDK/component';
+	import MeetingAttr from './meetingAttr';
+	export default {
+		components: {
+			RtcsdkVideoView,
+			MeetingAttr,
+		},
+		data() {
+			return {
+				userInfo: null,
+				RTCSDK: null,
+				curFrontCam: true, //当前使用前置摄像头
+				curCamState: true, //摄像头开启状态
+				curMicState: true, //麦克风开启状态
+				openAttr: false,
+				attrUserId: null,
+				roomId: null,
+				memberList: [],
+			};
+		},
+		computed: {
+			//打开了摄像头的成员列表
+			openCamList() {
+				const openCamList = this.memberList.filter(item => item.userId !== this.userInfo.userId && item.videoStatus === 3);
+				if (openCamList.length > 9) {
+					openCamList.length = 9;
+				}
+				return openCamList;
+			}
+		},
+		onLoad({ roomId }) {
+			uni.setNavigationBarTitle({
+				title: `房间号：${roomId}`
+			});
+			this.roomId = roomId;
+			this.RTCSDK = getApp().globalData.RTCSDK.getInstance();
+			this.userInfo = getApp().globalData.userInfo;
+			this.handleEventsPage(true);
+			this.memberList = this.RTCSDK.getAllMembers();
+
+			//获取前后置摄像头
+			const devicePosition = this.RTCSDK.getMyVideoPosition();
+			//将前置摄像头设置为默认摄像头
+			this.RTCSDK.setDefaultVideo(this.userInfo.userId, devicePosition.front);
+		},
+		mounted() {
+			if (this.curCamState) {
+				this.RTCSDK.openVideo(this.userInfo.userId);
+			}
+			if (this.curMicState) {
+				this.RTCSDK.openMic(this.userInfo.userId);
+			}
+		},
+		destroyed() {
+			this.handleEventsPage(false);
+			this.RTCSDK.exitMeeting();
+		},
+		methods: {
+			//注册回调函数
+			handleEventsPage(bool) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("userLeftMeeting", this._userLeftMeeting);
+				handle("userEnterMeeting", this._userEnterMeeting);
+				handle("meetingDropped", this._meetingDropped);
+				handle("videoStatusChanged", this._videoStatusChanged);
+				handle("audioStatusChanged", this._audioStatusChanged);
+				handle("notifyCallHungup", this._notifyCallHungup);
+				handle("notifyInviteAccepted", this._notifyInviteAccepted);
+				handle("notifyInviteRejected", this._notifyInviteRejected);
+				handle("notifyInviteCanceled", this._notifyInviteCanceled);
+			},
+			//切换前后摄像头
+			toggleCamDevices() {
+				const devicePosition = this.RTCSDK.getMyVideoPosition();
+				this.curFrontCam = !this.curFrontCam;
+				this.RTCSDK.setDefaultVideo(this.userInfo.userId, devicePosition[this.curFrontCam ? 'front' : 'back']);
+			},
+			//开关摄像头
+			toggleCamState() {
+				this.curCamState = !this.curCamState;
+				if (this.curCamState) {
+					this.RTCSDK.openVideo(this.userInfo.userId);
+				} else {
+					this.RTCSDK.closeVideo(this.userInfo.userId);
+				}
+			},
+			//开关麦克风
+			toggleMicState() {
+				this.curMicState = !this.curMicState;
+				if (this.curMicState) {
+					this.RTCSDK.openMic(this.userInfo.userId);
+				} else {
+					this.RTCSDK.closeMic(this.userInfo.userId);
+				}
+			},
+			invite() {
+				uni.showModal({
+					title: '发起邀请',
+					content: '邀请是房间外接口，可以在房间外发送邀请',
+					placeholderText: '请输入被邀端userID',
+					editable: true,
+					success: async (res) => {
+						if (res.confirm && res.content) {
+							// demo产品约定的格式，业务可以传自己的数据
+							const data = {
+								meeting: {
+									ID: this.roomId
+								}
+							}
+							this.RTCSDK.invite(res.content, JSON.stringify(data));
+						}
+					}
+				})
+			},
+			kickout() {
+				const arr = this.memberList.filter(item => item.userId !== this.userInfo.userId)
+				if (!arr.length) {
+					uni.showToast({
+						title: '房间内无可踢出的成员',
+						icon: 'none'
+					})
+					return;
+				}
+				uni.showActionSheet({
+					itemList: arr.map(item => item.nickName),
+					success: (res) => {
+						const selectItem = arr[res.tapIndex];
+						this.RTCSDK.kickout(selectItem.userId)
+					}
+				});
+			},
+			//房间和成员属性按钮
+			openAttrSet() {
+				uni.showActionSheet({
+					itemList: this.memberList.map(item => `${item.nickName}(用户属性)`).concat(['房间属性']),
+					success: (res) => {
+						let userId;
+						if (res.tapIndex !== this.memberList.length) {
+							const selectItem = this.memberList[res.tapIndex];
+							userId = selectItem.userId;
+						}
+						this.openAttr = true;
+						this.attrUserId = userId;
+					}
+				});
+			},
+			_userEnterMeeting({ userID }) {
+				const memberInfo = this.RTCSDK.getMemberInfo(userID);
+				this.memberList.push(memberInfo);
+			},
+			_userLeftMeeting({ userID }) {
+				const idx = this.memberList.findIndex(item => item.userId === userID);
+				if (idx > -1) {
+					this.memberList.splice(idx, 1);
+				}
+			},
+			_meetingDropped({ reason }) {
+				uni.showModal({
+					title: '掉线通知',
+					content: ['网络通信超时', '被他人请出会议', '余额不足', 'Token鉴权方式下，token无效或过期'][reason],
+					showCancel: false,
+					success: (res) => {
+						uni.navigateBack()
+					}
+				})
+			},
+			_videoStatusChanged({ userID, newStatus }) {
+				if (userID == this.userInfo.userId) {
+					//进入到这里可能是别人改变了自己的摄像头开关
+					this.curCamState = newStatus === 3;
+				} else {
+					const idx = this.memberList.findIndex(item => item.userId === userID);
+					if (idx > -1) {
+						this.memberList[idx].videoStatus = newStatus;
+					}
+				}
+			},
+			_audioStatusChanged({ userID, newStatus }) {
+				if (userID == this.userInfo.userId) {
+					//进入到这里可能是别人改变了自己的麦克风开关
+					this.curMicState = newStatus === 3;
+				}
+			},
+			_notifyCallHungup({ callID }) {
+				uni.showModal({
+					title: '呼叫挂断',
+					content: '对方已挂断当前呼叫,您是否要退出房间？',
+					success: (res) => {
+						if (res.confirm) {
+							uni.navigateBack()
+						}
+					}
+				})
+			},
+			_notifyInviteAccepted({ inviteID, usrExtDat }) {
+				uni.showToast({
+					title: `对方已接受邀请`,
+					icon: "none",
+					duration: 2000
+				})
+			},
+			_notifyInviteRejected({ inviteID, sdkErr, usrExtDat }) {
+				uni.showToast({
+					title: `对方已拒绝邀请，错误码: ${sdkErr}, ${constantDesc[sdkErr]}`,
+					icon: "none",
+					duration: 4000
+				})
+			},
+			_notifyInviteCanceled({ inviteID, sdkErr, usrExtDat }) {
+				uni.showToast({
+					title: `对方已取消邀请，错误码: ${sdkErr}, ${constantDesc[sdkErr]}`,
+					icon: "none",
+					duration: 4000
+				})
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content {
+		flex: 1;
+		position: relative;
+
+		.zhezhao {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			justify-content: center;
+			align-items: center;
+			background-color: rgba(0, 0, 0, .3);
+
+			.meetingAttr {
+				width: 600rpx;
+				height: 900rpx;
+				background-color: #e1e1e1;
+				border-radius: 20rpx;
+			}
+		}
+
+		.video-box {
+			flex: 1;
+			background-color: #1d232f;
+			position: relative;
+
+			.myVideo {
+				width: 750rpx;
+				flex: 1;
+				position: relative;
+
+				.video-ui {
+					width: 750rpx;
+					flex: 1;
+				}
+
+				.video-text {
+					position: absolute;
+					top: 20rpx;
+					left: 20rpx;
+					background-color: rgba(0, 0, 0, .6);
+					padding: 4rpx 10rpx;
+					border-radius: 10rpx;
+
+					.text {
+						font-size: 24rpx;
+						color: #fff;
+					}
+				}
+			}
+
+			.videoList {
+				position: absolute;
+				right: 0;
+				top: 10rpx;
+				right: 5rpx;
+				display: flex;
+				flex-wrap: wrap-reverse;
+				flex-direction: column;
+				width: 492rpx;
+				height: 830rpx;
+
+				.video {
+					width: 144rpx;
+					height: 256rpx;
+					background-color: #000;
+					margin-bottom: 20rpx;
+					margin-left: 20rpx;
+					position: relative;
+
+					.video-ui {
+						width: 144rpx;
+						height: 256rpx;
+					}
+
+					.video-text {
+						position: absolute;
+						top: 10rpx;
+						left: 10rpx;
+						background-color: rgba(0, 0, 0, .6);
+						padding: 4rpx 10rpx;
+						border-radius: 10rpx;
+
+						.text {
+							font-size: 12rpx;
+							color: #fff;
+						}
+					}
+				}
+			}
+		}
+
+		.btn-box {
+			padding: 20rpx 0 0;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-around;
+			flex-wrap: wrap;
+			background-color: #070604;
+
+			.btn {
+				width: 340rpx;
+				margin-bottom: 20rpx;
+			}
+		}
+	}
+</style>

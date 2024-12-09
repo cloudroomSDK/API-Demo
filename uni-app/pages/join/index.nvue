@@ -30,7 +30,7 @@
 				type: null,
 			};
 		},
-		onLoad({ type,title }) {
+		onLoad({ type, title }) {
 			this.type = type;
 			uni.setNavigationBarTitle({ title });
 			this.RTCSDK = getApp().globalData.RTCSDK.getInstance();
@@ -61,7 +61,7 @@
 				showLoading(undefined, true);
 				this.RTCSDK.createMeeting();
 			},
-			async permissionHandle(){
+			async permissionHandle() {
 				if (uni.getSystemInfoSync().platform == "ios") {
 					await permision.judgeIosPermission("camera")
 					await permision.judgeIosPermission("record")
@@ -94,8 +94,8 @@
 					}
 				})
 			},
-			_createMeetingSuccess({ meetInfo }) {
-				this.roomId = String(meetInfo.ID);
+			_createMeetingSuccess({ ID }) {
+				this.roomId = String(ID);
 				this.join();
 			},
 			_createMeetingFail({ sdkErr }) {

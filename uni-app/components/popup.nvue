@@ -1,0 +1,197 @@
+<template>
+	<view class="popup" @click="maskClick">
+		<view class="popup-mask" @click="maskClick">
+			<view class="content" v-if="popupConfig">
+				<view class="hd" v-if="titleText">
+					<text class="title" :style="{color:titleColor}">{{titleText}}</text>
+				</view>
+				<view class="bd">
+					<text class="text" :style="{color:contentColor}">{{contentText}}</text>
+				</view>
+				<view class="ft">
+					<view class="btns" v-if="btnType==1">
+						<button type="default" class="btn" v-if="showCancel" @click="cancel">
+							<text class="text cancel" :style="{'color':cancelColor}">{{cancelText}}</text>
+						</button>
+						<view class="line" v-if="showCancel"></view>
+						<button type="default" class="btn" @click="confirm">
+							<text class="text confirm" :style="{'color':confirmColor}">{{confirmText}}</text>
+						</button>
+					</view>
+					<view class="btns" v-if="btnType==2">
+						<button type="default" class="btn" @click="confirm">
+							<text class="text confirm" :style="{'color':confirmColor}">{{confirmText}}</text>
+						</button>
+						<view class="line" v-if="showCancel"></view>
+						<button type="default" class="btn" v-if="showCancel" @click="cancel">
+							<text class="text cancel" :style="{'color':cancelColor}">{{cancelText}}</text>
+						</button>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+<script>
+	const app = getApp()
+	export default {
+		data() {
+			return {
+				allowBack: true,
+				show: false,
+				flag: true
+			}
+		},
+		onBackPress({ from }) {
+			if (from === 'navigateBack') return false
+			// 不允许点击蒙层的时同时禁止侧滑返回
+			if (!this.allowBack) return true;
+		},
+		onLoad() {
+			this.popupConfig = app.globalData.popupConfig;
+			this.allowBack = this.popupConfig.maskClick;
+			this.titleText = this.popupConfig.title;
+			this.titleColor = this.popupConfig.titleColor;
+			this.contentText = this.popupConfig.content;
+			this.contentColor = this.popupConfig.contentColor;
+			this.confirmText = this.popupConfig.confirmText;
+			this.cancelText = this.popupConfig.cancelText;
+			this.cancelColor = this.popupConfig.cancelColor;
+			this.confirmColor = this.popupConfig.confirmColor;
+			this.showCancel = this.popupConfig.showCancel;
+			this.btnType = this.popupConfig.btnType;
+		},
+		onShow() {
+			setTimeout(() => {
+				this.show = true;
+			}, 200)
+		},
+		destroyed() {
+			app.globalData.popupConfig = null;
+		},
+		methods: {
+			confirm() {
+				this.allowBack = true;
+				let _customPopup = this.popupConfig;
+				uni.navigateBack();
+				if (_customPopup.confirm) {
+					this.flag = false;
+					_customPopup.confirm();
+				}
+			},
+			cancel() {
+				this.allowBack = true;
+				let _customPopup = this.popupConfig;
+				uni.navigateBack();
+				if (_customPopup.cancel) {
+					this.flag = false;
+					_customPopup.cancel();
+				}
+			},
+			// 点击蒙层
+			maskClick() {
+				let _customPopup = this.popupConfig;
+				if (_customPopup.maskClick && this.show && this.flag) {
+					if (_customPopup.cancel) {
+						_customPopup.cancel();
+					};
+					this.flag = false;
+					uni.navigateBack();
+				}
+			}
+		}
+	}
+</script>
+<style scoped>
+	.popup {
+		flex: 1;
+	}
+
+	.uni-transition {
+		flex: 1;
+	}
+
+	.popup-mask {
+		flex: 1;
+		background-color: rgba(0, 0, 0, .5);
+		align-items: center;
+		justify-content: center;
+	}
+
+	.content {
+		align-items: center;
+		width: 600rpx;
+		padding: 30rpx 0 0;
+		border-radius: 16rpx;
+		background-color: #fff;
+	}
+
+	.content .hd .title {
+		width: 540rpx;
+		margin: 10rpx 0 30rpx;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		lines: 1;
+		text-align: center;
+		font-weight: 700;
+		font-size: 36rpx;
+		color: #222;
+	}
+
+	.content .bd {
+		width: 540rpx;
+		margin: 0 0 40rpx;
+	}
+
+	.content .bd .text {
+		text-align: center;
+		line-height: 40rpx;
+		font-size: 30rpx;
+		color: #222;
+	}
+
+	.content .ft {
+		width: 600rpx;
+		height: 102rpx;
+	}
+
+	.content .ft .btns {
+		flex: 1;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		border-top: 1px solid #EEE;
+	}
+
+	.content .ft .btn {
+		flex: 1;
+		height: 100rpx;
+		border: 0;
+		padding: 0;
+	}
+
+	.content .ft .btn .text {
+		flex: 1;
+		height: 100rpx;
+		line-height: 100rpx;
+		text-align: center;
+		font-size: 32rpx;
+		color: #222;
+		background-color: #fff;
+	}
+
+	.content .ft .line {
+		height: 100rpx;
+		width: 1px;
+		background-color: #eee;
+	}
+
+	.content .ft,
+	.content .ft.btns,
+	.content .ft .btn,
+	.content .ft .btn .text {
+		border-bottom-left-radius: 16rpx;
+		border-bottom-right-radius: 16rpx;
+		color: #2878FF;
+	}
+</style>

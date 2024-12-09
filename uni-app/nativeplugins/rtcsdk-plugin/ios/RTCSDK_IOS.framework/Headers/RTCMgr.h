@@ -263,11 +263,11 @@ CRVSDK_EXPORT
 // 取消发送数据结果
 - (void)cancelSendRlst:(NSString *)sendId sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
 // 接收信令
-- (void)notifyCmdData:(NSString *)sourceUserId data:(NSString *)data;
+- (void)notifyCmdData:(NSString *)sendId sourceUserId:(NSString *)sourceUserId data:(NSString *)data;
 // 接收数据
-- (void)notifyBufferData:(NSString *)sourceUserId data:(NSString *)data;
+- (void)notifyBufferData:(NSString *)sendId sourceUserId:(NSString *)sourceUserId data:(NSString *)data;
 // 接收文件
-- (void)notifyFileData:(NSString *)sourceUserId tmpFile:(NSString *)tmpFile orgFileName:(NSString *)orgFileName;
+- (void)notifyFileData:(NSString *)sendId sourceUserId:(NSString *)sourceUserId tmpFile:(NSString *)tmpFile orgFileName:(NSString *)orgFileName;
 // 取消数据发送
 - (void)notifyCancelSend:(NSString *)sendId;
 

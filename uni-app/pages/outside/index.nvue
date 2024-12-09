@@ -1,0 +1,355 @@
+<template>
+	<view class="content">
+		<list class="msg" ref="msg">
+			<!-- 注意事项: 不能使用 index 作为 key 的唯一标识 -->
+			<cell v-for="(item, index) in msgList" :key="index" ref="msgItem">
+				<text class="text">{{item}}</text>
+			</cell>
+		</list>
+
+		<list class="main">
+			<cell>
+				<view class="module">
+					<text class="text">基础</text>
+					<view class="btn-group">
+						<button class="btn primary" @click="createRoom">
+							<text class="btn-text">创建并进入房间</text>
+						</button>
+						<button class="btn primary" @click="updateToken">
+							<text class="btn-text">更新token</text>
+						</button>
+						<button class="btn primary" @click="getUserStatus">
+							<text class="btn-text">获取所有用户在线状态</text>
+						</button>
+						<button class="btn primary" @click="changePushUserStatus">
+							<text class="btn-text">{{startPushUserStatus ? '关闭用户状态推送' : '开启用户状态推送'}}</text>
+						</button>
+						<button class="btn primary" @click="setStatus">
+							<text class="btn-text">{{isOpenNotDisturb ? "关闭免打扰" : "开启免打扰" }}</text>
+						</button>
+						<button class="btn primary" @click="call">
+							<text class="btn-text">发起呼叫</text>
+						</button>
+					</view>
+				</view>
+			</cell>
+			<cell>
+				<view class="module">
+					<text class="text">队列(坐席)</text>
+					<view class="btn-group">
+						<button class="btn primary" @click="startService">
+							<text class="btn-text">开始服务队列</text>
+						</button>
+						<button class="btn primary" @click="stopService">
+							<text class="btn-text">停止服务队列</text>
+						</button>
+						<button class="btn primary" @click="getServiceQueues">
+							<text class="btn-text">获取我服务的所有队列</text>
+						</button>
+						<button class="btn primary" @click="getQueueStatus">
+							<text class="btn-text">获取我服务的队列状态</text>
+						</button>
+						<button class="btn primary" @click="getAllQueueInfo">
+							<text class="btn-text">获取所有队列信息</text>
+						</button>
+						<button class="btn primary" @click="reqAssignUser">
+							<text class="btn-text">分配下一个客户</text>
+						</button>
+					</view>
+				</view>
+			</cell>
+			<cell>
+				<view class="module">
+					<text class="text">队列(客户)</text>
+					<view class="btn-group">
+						<button class="btn primary" @click="startQueuing">
+							<text class="btn-text">开始排队</text>
+						</button>
+						<button class="btn primary" @click="getAllQueueInfo">
+							<text class="btn-text">获取所有队列信息</text>
+						</button>
+					</view>
+				</view>
+			</cell>
+			<cell>
+				<view class="module">
+					<text class="text">透明通道</text>
+					<view class="btn-group">
+						<button class="btn primary" @click="sendCmd">
+							<text class="btn-text">发送点对点消息</text>
+						</button>
+						<button class="btn primary" @click="sendBuffer">
+							<text class="btn-text">发送点对点大数据</text>
+						</button>
+					</view>
+				</view>
+			</cell>
+		</list>
+	</view>
+</template>
+
+<script>
+	import callMixin from './mixin/call.vue'
+	import inviteMixin from './mixin/invite.vue'
+	import cmdMixin from './mixin/cmd.vue'
+	import clientQueueMixin from './mixin/clientQueue.vue'
+	import serviceQueue from './mixin/serviceQueue.vue'
+	import constantDesc from '@/util/constantDesc.js'
+	import permision from "@/js_sdk/wa-permission/permission.js"
+	import { openPopup, closePopup } from '@/util'
+
+	const dom = uni.requireNativePlugin('dom')
+	const app = getApp()
+	export default {
+		mixins: [callMixin, inviteMixin, cmdMixin, clientQueueMixin, serviceQueue],
+		data() {
+			return {
+				msgList: ['本页面支持房间外接口调试，包括呼叫和被呼、邀请和被邀、队列（坐席端和客户）、透明通道，被呼和被邀在当在页面收到通知后会弹出提示框。'],
+				startPushUserStatus: false, //开启用户状态推送
+				roomId: null, //保存上次关联的房间号
+				callID: null, //保存当前呼叫ID
+				isOpenNotDisturb: false, //开启了免打扰
+			};
+		},
+		computed: {
+
+		},
+		onLoad() {
+			uni.setKeepScreenOn({ keepScreenOn: true }); // 保持屏幕常亮
+			
+			this.RTCSDK = app.globalData.RTCSDK.getInstance();
+			this.userInfo = app.globalData.userInfo;
+			this.msgPush(`我的userId: ${this.userInfo.userId}`)
+			this.handleEventsPage(true)
+
+			this.RTCSDK.initQueue();
+			this.RTCSDK.setDNDStatus(0); //关闭免打扰
+		},
+		destroyed() {
+			this.handleEventsPage(false)
+			uni.setKeepScreenOn({ keepScreenOn: false });
+		},
+		methods: {
+			//注册SDK回调函数
+			handleEventsPage(bool) {
+				const handle = this.RTCSDK[bool ? 'on' : 'off'];
+				handle("notifyTokenWillExpire", this._notifyTokenWillExpire);
+				handle("getUserStatusRslt", this._getUserStatusRslt);
+				handle("notifyUserStatus", this._notifyUserStatus);
+				handle("startStatusPushRslt", this._startStatusPushRslt);
+				handle("stopStatusPushRslt", this._stopStatusPushRslt);
+				handle("createMeetingSuccess", this._createMeetingSuccess);
+				handle("createMeetingFail", this._createMeetingFail);
+				handle("enterMeetingRslt", this._enterMeetingRslt);
+				handle("initQueueDatRslt", this._pageInitQueueDatRslt);
+				handle("setDNDStatusSuccess", this._setDNDStatusSuccess);
+				handle("setDNDStatusFail", this._setDNDStatusFail);
+			},
+			msgPush(str) {
+				this.msgList.push(str);
+				this.$nextTick(() => {
+					const item = this.$refs.msgItem;
+					dom.scrollToElement(item[item.length - 1])
+				})
+				setTimeout(() => {
+					const item = this.$refs.msgItem;
+					dom.scrollToElement(item[item.length - 1])
+				}, 50)
+			},
+			async permissionHandle() {
+				if (uni.getSystemInfoSync().platform == "ios") {
+					await permision.judgeIosPermission("camera")
+					await permision.judgeIosPermission("record")
+				}
+
+				if (uni.getSystemInfoSync().platform == "android") {
+					await permision.requestAndroidPermission('android.permission.RECORD_AUDIO')
+					await permision.requestAndroidPermission('android.permission.CAMERA')
+					// await permision.requestAndroidPermission('android.permission.READ_PHONE_STATE')
+				}
+			},
+			updateToken() {
+				const { useToken } = app.globalData.loginInfo;
+				if (useToken) {
+					uni.showModal({
+						title: '更新Token',
+						editable: true,
+						success: (res) => {
+							if (res.confirm) {
+								this.msgPush(`更新Token: ${res.content}`)
+								this.RTCSDK.updateToken(res.content);
+							}
+						}
+					})
+				} else {
+					uni.showToast({
+						title: '非token登录',
+						icon: 'none'
+					});
+				}
+			},
+			createRoom() {
+				this.msgPush(`正在创建房间...`)
+				this.RTCSDK.createMeeting();
+			},
+			getUserStatus() {
+				this.RTCSDK.getUserStatus();
+			},
+			changePushUserStatus() {
+				if (this.startPushUserStatus) {
+					this.RTCSDK.stopUserStatusNotify()
+				} else {
+					this.RTCSDK.startUserStatusNotify()
+				}
+				this.startPushUserStatus = !this.startPushUserStatus;
+			},
+			setStatus() {
+				if (this.isOpenNotDisturb) {
+					this.msgPush(`关闭免打扰`)
+					this.RTCSDK.setDNDStatus(0)
+					this.isOpenNotDisturb = false;
+				} else {
+					uni.showModal({
+						title: '提示',
+						content: '开启免打扰后，坐席将不再自动分配客户，您需要点击分配按钮进行分配',
+						success: (res) => {
+							if (res.confirm) {
+								this.msgPush(`开启免打扰`)
+								this.RTCSDK.setDNDStatus(1)
+								this.isOpenNotDisturb = true;
+							}
+						}
+					})
+				}
+			},
+			// token即将过期
+			_notifyTokenWillExpire() {
+				this.msgPush('token即将过期，请及时更新')
+			},
+			_getUserStatusRslt({ sdkErr, userStatus, cookie }) {
+				if (sdkErr === 0) {
+					this.msgPush(`用户状态列表: ${JSON.stringify(userStatus)}`)
+				} else {
+					this.msgPush(`获取用户状态失败，错误码:${sdkErr},${constantDesc[sdkErr]}`)
+				}
+			},
+			_startStatusPushRslt({ sdkErr, cookie }) {
+				if (sdkErr === 0) {
+					this.msgPush(`开启用户状态推送成功`)
+				} else {
+					this.msgPush(`开启用户状态推送失败，错误码:${sdkErr},${constantDesc[sdkErr]}`)
+					this.startPushUserStatus = false;
+				}
+			},
+			_stopStatusPushRslt({ sdkErr, cookie }) {
+				if (sdkErr === 0) {
+					this.msgPush(`关闭用户状态推送成功`)
+				} else {
+					this.msgPush(`关闭用户状态推送失败，错误码:${sdkErr},${constantDesc[sdkErr]}`)
+					this.startPushUserStatus = true;
+				}
+			},
+			_notifyUserStatus({ uStatus }) {
+				this.msgPush(`用户状态变化通知: ${JSON.stringify(uStatus)}`)
+			},
+			async _createMeetingSuccess({ ID, cookie }) {
+				this.msgPush(`创建房间成功,房间号: ${ID}`)
+				const data = JSON.parse(cookie || '{}');
+				if (data.type === 'call') {
+					const callID = this.RTCSDK.call(data.calledUserID, ID);
+					this.callID = callID;
+					this.msgPush(`正在发起呼叫，呼叫ID: ${callID},被呼端ID: ${data.calledUserID}...`)
+				} else {
+					this.msgPush(`正在进入房间...`);
+					await this.permissionHandle();
+					this.roomId = ID;
+					this.RTCSDK.enterMeeting(ID);
+				}
+			},
+			_createMeetingFail({sdkErr}) {
+				this.msgPush(`创建房间失败，错误码:${sdkErr},${constantDesc[sdkErr]}`)
+			},
+			_enterMeetingRslt({ sdkErr }) {
+				if (sdkErr !== 0) {
+					this.msgPush(`进入房间失败，错误码: ${sdkErr},${constantDesc[sdkErr]}`)
+					return;
+				}
+
+				uni.navigateTo({
+					url: `/pages/outside/videoCall?roomId=${this.roomId}`
+				})
+			},
+			_setDNDStatusSuccess() {
+				this.msgPush(`设置免打扰状态成功`)
+			},
+			_setDNDStatusFail({ sdkErr }) {
+				this.msgPush(`设置免打扰状态失败，错误码:${sdkErr},${constantDesc[sdkErr]}`)
+			},
+			_pageInitQueueDatRslt() {
+				this.msgPush('队列初始化成功');
+
+				const sessionInfo = this.RTCSDK.getSessionInfo();
+				if (sessionInfo.callID) {
+					this.callID = sessionInfo.callID;
+					this.msgPush(`检测到有未挂断的会话`)
+					openPopup({
+						title: '恢复会话',
+						content: `检测到有未挂断的会话，是否要恢复？`,
+						cancelText: '挂断',
+						confirmText: '恢复',
+						confirm: async (res) => {
+							await this.permissionHandle()
+							this.roomId = sessionInfo.meetingID;
+							this.RTCSDK.enterMeeting(sessionInfo.meetingID);
+						},
+						cancel: (res) => {
+							this.msgPush(`挂断呼叫，呼叫ID: ${sessionInfo.callID}`)
+							this.RTCSDK.hangupCall(sessionInfo.callID)
+							this.callID = null;
+						}
+					})
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content {
+		.msg {
+			padding: 10rpx;
+			margin: 10rpx 0;
+			background-color: #e1e1e1;
+			height: 300rpx;
+
+			.text {
+				font-size: 24rpx;
+				line-height: 40rpx;
+			}
+		}
+
+		.main {
+			.module {
+				margin-bottom: 30rpx;
+
+				.text {
+					padding-left: 20rpx;
+					font-size: 32rpx;
+					color: #666;
+				}
+
+				.btn-group {
+					flex-direction: row;
+					flex-wrap: wrap;
+
+					.btn {
+						padding: 0 20rpx;
+						margin: 10rpx;
+						height: 70rpx;
+					}
+				}
+			}
+		}
+
+	}
+</style>

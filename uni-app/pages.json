@@ -48,6 +48,24 @@
 			"path": "pages/examples/localRecord"
 		}, {
 			"path": "pages/examples/cloudRecord"
+		}, {
+			"path": "pages/outside/index"
+		}, {
+			"path": "pages/outside/videoCall"
+		}, {
+			"path": "components/popup",
+			"style": {
+				"disableScroll": true,
+				"app-plus": {
+					"backgroundColorTop": "transparent",
+					"background": "transparent",
+					"titleNView": false,
+					"scrollIndicator": false,
+					"popGesture": "none",
+					"animationType": "fade-in",
+					"animationDuration": 300
+				}
+			}
 		}
 	],
 	"globalStyle": {

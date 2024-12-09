@@ -2,7 +2,7 @@ import Observer from "./observer.js";
 
 const RtcPlugin = uni.requireNativePlugin("rtcsdk-plugin");
 const globalEvent = uni.requireNativePlugin("globalEvent");
-const version = "1.0.0";
+const version = "1.2.5";
 const eventBus = new Observer();
 
 const isAndroid = uni.getSystemInfoSync().platform == "android";
@@ -17,7 +17,7 @@ let firstEnterMeeting = true;
 let firstOpenMic = false;
 
 globalEvent.addEventListener("mgrCallback", (data) => {
-	if (['micEnergyUpdate'].indexOf(data.method) == -1) {
+	if (['micEnergyUpdate', 'notifyAudioPCMData'].indexOf(data.method) == -1) {
 		console.log(data.method, data);
 	}
 	if (data.method === 'enterMeetingRslt' && data.sdkErr === 0) {
@@ -71,12 +71,6 @@ export default class RtcCloud {
 	getRTCSDKVer() {
 		return RtcPlugin.GetRTCSDKVer();
 	}
-	isNotificationPermissionOpen() {
-		return RtcPlugin.isNotificationPermissionOpen();
-	}
-	openNotificationPermissionSetting() {
-		return RtcPlugin.openNotificationPermissionSetting();
-	}
 	getSDKVersion() {
 		return version;
 	}
@@ -95,18 +89,161 @@ export default class RtcCloud {
 		RtcPlugin.setServerAddr(addr);
 	}
 	//登录
-	login({ appId, appSecret, nickName, userId, userAuthCode, cookie }) {
-		const obj = {
-			nickName: nickName,
-			privAcnt: userId,
-			authAcnt: appId,
-			authPswd: appSecret,
-			privAuthCode: userAuthCode
+	login({ appId, appSecret, token, nickName, userId, userAuthCode }, cookie) {
+		if (token) {
+			RtcPlugin.loginByToken(token, nickName, userId, userAuthCode, cookie)
+		} else {
+			const obj = {
+				token: token,
+				nickName: nickName,
+				privAcnt: userId,
+				authAcnt: appId,
+				authPswd: appSecret,
+				privAuthCode: userAuthCode
+			}
+			RtcPlugin.login(obj, cookie);
 		}
-		RtcPlugin.login(obj);
 	}
+	//更新token
+	updateToken(token) {
+		RtcPlugin.updateToken(token);
+	}
+	//注销
 	logout() {
 		RtcPlugin.logout();
+	}
+	//获取第三方鉴权失败码
+	getUserAuthErrCode() {
+		return RtcPlugin.getUserAuthErrCode();
+	}
+	//获取第三方鉴权失败描述
+	getUserAuthErrDesc() {
+		return RtcPlugin.getUserAuthErrDesc();
+	}
+	setDNDStatus(DNDStatus, cookie) {
+		RtcPlugin.setDNDStatus(DNDStatus, cookie);
+	}
+	//获取用户状态
+	getUserStatus(userID = '', cookie) {
+		RtcPlugin.getUserStatus(userID, cookie);
+	}
+	//开启用户的状态推送
+	startUserStatusNotify(cookie) {
+		RtcPlugin.startUserStatusNotify(cookie);
+	}
+	//关闭用户的状态推送
+	stopUserStatusNotify(cookie) {
+		RtcPlugin.stopUserStatusNotify(cookie);
+	}
+	//发送点对点消息
+	sendCmd(targetUserId, data) {
+		return RtcPlugin.sendCmd(targetUserId, data);
+	}
+	//发送点对点大数据
+	sendBuffer(targetUserId, data) {
+		return RtcPlugin.sendBuffer(targetUserId, data);
+	}
+	//发送点对点文件
+	sendFile(targetUserId, fileName) {
+		return RtcPlugin.sendFile(targetUserId, fileName);
+	}
+	//取消大数据、文件的发送
+	cancelSend(taskID) {
+		RtcPlugin.cancelSend(taskID);
+	}
+	//发起呼叫
+	call(calledUserID, ID, userExtDat, cookie) {
+		return RtcPlugin.call(calledUserID, ID, userExtDat, cookie);
+	}
+	//接受他人的呼叫
+	acceptCall(callID, ID, usrExtDat, cookie) {
+		RtcPlugin.acceptCall(callID, ID, usrExtDat, cookie);
+	}
+	//拒接他人的呼叫
+	rejectCall(callID, usrExtDat, cookie) {
+		RtcPlugin.rejectCall(callID, usrExtDat, cookie);
+	}
+	//挂断通话
+	hangupCall(callID, usrExtDat, cookie) {
+		RtcPlugin.hangupCall(callID, usrExtDat, cookie);
+	}
+	//发起多方呼叫（或呼转）
+	callMoreParty(calledUserID, ID, usrExtDat, cookie) {
+		return RtcPlugin.callMoreParty(calledUserID, ID, usrExtDat, cookie);
+	}
+	//取消多方呼叫
+	cancelCallMoreParty(callID, usrExtDat, cookie) {
+		RtcPlugin.cancelCallMoreParty(callID, usrExtDat, cookie);
+	}
+
+	//发送邀请
+	invite(invitedUserID, usrExtDat, cookie) {
+		return RtcPlugin.invite(invitedUserID, usrExtDat, cookie);
+	}
+	//接受邀请
+	acceptInvite(inviteID, usrExtDat, cookie) {
+		RtcPlugin.acceptInvite(inviteID, usrExtDat, cookie);
+	}
+	//拒接邀请
+	rejectInvite(inviteID, usrExtDat, cookie) {
+		RtcPlugin.rejectInvite(inviteID, usrExtDat, cookie);
+	}
+	//取消邀请
+	cancelInvite(inviteID, usrExtDat, cookie) {
+		RtcPlugin.cancelInvite(inviteID, usrExtDat, cookie);
+	}
+
+	//初始化用户队列功能数据
+	initQueue(cookie) {
+		RtcPlugin.initQueue(cookie);
+	}
+	//获取AppID下的所有队列基础信息
+	getAllQueueInfo() {
+		return RtcPlugin.getAllQueueInfo();
+	}
+	//获取指定队列的排队状况
+	getQueueStatus(queID) {
+		return RtcPlugin.getQueueStatus(queID);
+	}
+	//获取我的排队信息
+	getQueuingInfo() {
+		return RtcPlugin.getQueuingInfo();
+	}
+	//获取我服务的所有队列
+	getServiceQueues() {
+		return RtcPlugin.getServiceQueues();
+	}
+	//获取我的会话信息
+	getSessionInfo() {
+		return RtcPlugin.getSessionInfo();
+	}
+	//客户开始排队
+	startQueuing(queID, usrExtDat, cookie) {
+		RtcPlugin.startQueuing(queID, usrExtDat, cookie);
+	}
+	//客户停止排队
+	stopQueuing(cookie) {
+		RtcPlugin.stopQueuing(cookie);
+	}
+	//座席开始服务某队列
+	startService(queID, priority, cookie) {
+		RtcPlugin.startService(queID, priority, cookie);
+	}
+	//座席停止服务某队列
+	stopService(queID, cookie) {
+		RtcPlugin.stopService(queID, cookie);
+	}
+	//座席手动分配客户
+	reqAssignUser(cookie) {
+		RtcPlugin.reqAssignUser(cookie);
+	}
+	//接受系统自动分配的客户
+	acceptAssignUser(queID, userID, cookie) {
+		RtcPlugin.acceptAssignUser(queID, userID, cookie);
+	}
+	//拒绝系统自动分配的客户
+	rejectAssignUser(queID, userID, cookie) {
+		RtcPlugin.rejectAssignUser(queID, userID, cookie);
 	}
 
 	getMyUserID() {
@@ -116,39 +253,41 @@ export default class RtcCloud {
 	getAllMembers() {
 		return RtcPlugin.getAllMembers();
 	}
-	getMemberInfo(userId) {
-		return RtcPlugin.getMemberInfo(userId);
+	getMemberInfo(userID) {
+		return RtcPlugin.getMemberInfo(userID);
 	}
-	getNickName() {
-		const nickname = RtcPlugin.getNickName();
-	}
-	setNickName() {
-		RtcPlugin.setNickName();
+	setNickName(userID, nickName) {
+		RtcPlugin.setNickName(userID, nickName);
 	}
 	isUserInMeeting() {
 		const isUserInMeet = RtcPlugin.isUserInMeeting();
 	}
-	createMeeting() {
-		RtcPlugin.createMeeting();
+	createMeeting(cookie) {
+		RtcPlugin.createMeeting(cookie);
 	}
 	// 进入会议
-	enterMeeting(confId) {
-		RtcPlugin.enterMeeting(confId);
+	enterMeeting(ID) {
+		RtcPlugin.enterMeeting(ID);
 	}
-	destroyMeeting(meetID, cookie = '') {
+	//销毁房间
+	destroyMeeting(meetID, cookie) {
 		RtcPlugin.destroyMeeting(meetID, cookie);
 	}
-	// 离开会议
+	//离开会议
 	exitMeeting() {
 		RtcPlugin.exitMeeting();
 	}
-	// 打开麦克风
-	openMic(userId) {
-		RtcPlugin.openMic(userId);
+	//把某个成员踢出房间
+	kickout(userID) {
+		RtcPlugin.kickout(userID);
 	}
-	// 关闭麦克风
-	closeMic(userId) {
-		RtcPlugin.closeMic(userId);
+	//打开麦克风
+	openMic(userID) {
+		RtcPlugin.openMic(userID);
+	}
+	//关闭麦克风
+	closeMic(userID) {
+		RtcPlugin.closeMic(userID);
 	}
 	getAudioCfg() {
 		const cfg = RtcPlugin.getAudioCfg();
@@ -185,10 +324,6 @@ export default class RtcCloud {
 		RtcPlugin.setAudioCfg(obj);
 	}
 
-	getAudioStatus() {
-		const aStatus = RtcPlugin.getAudioStatus();
-	}
-
 	getMicVolume() {
 		const volume = RtcPlugin.getMicVolume();
 	}
@@ -221,11 +356,21 @@ export default class RtcCloud {
 	setAllAudioClose() {
 		RtcPlugin.setAllAudioClose();
 	}
-	openVideo(userId) {
-		RtcPlugin.openVideo(userId);
+
+	// 开始获取语音pcm数据
+	startGetAudioPCM(aSide, getType, jsonParam) {
+		RtcPlugin.startGetAudioPCM(aSide, getType, jsonParam);
 	}
-	closeVideo(userId) {
-		RtcPlugin.closeVideo(userId);
+	// 停止获取语音pcm数据
+	stopGetAudioPCM(aSide) {
+		RtcPlugin.stopGetAudioPCM(aSide);
+	}
+
+	openVideo(userID) {
+		RtcPlugin.openVideo(userID);
+	}
+	closeVideo(userID) {
+		RtcPlugin.closeVideo(userID);
 	}
 	getVideoCfg() {
 		return RtcPlugin.getVideoCfg();
@@ -242,17 +387,19 @@ export default class RtcCloud {
 	setVideoEffects(option) {
 		RtcPlugin.setVideoEffects(option);
 	}
+	//获取房间内所有可观看的摄像头
 	getWatchableVideos() {
-		const wvsJsonStr = RtcPlugin.getWatchableVideos();
+		return RtcPlugin.getWatchableVideos();
 	}
-
-	getAllVideoInfo(userId) {
-		return RtcPlugin.getAllVideoInfo(userId);
+	//获取用户所有的摄像头信息
+	getAllVideoInfo(userID) {
+		return RtcPlugin.getAllVideoInfo(userID);
 	}
-
-	getDefaultVideo(userId) {
-		return RtcPlugin.getDefaultVideo(userId);
+	//获取指定用户的默认摄像头 ，如果用户没有摄像头，返回0
+	getDefaultVideo(userID) {
+		return RtcPlugin.getDefaultVideo(userID);
 	}
+	//设置默认的摄像头 ，videoID 应该从getAllVideoInfo返回值中获取
 	setDefaultVideo(userID, videoID) {
 		RtcPlugin.setDefaultVideo({
 			userID,
@@ -305,8 +452,8 @@ export default class RtcCloud {
 	setMediaCfg(options) {
 		RtcPlugin.setMediaCfg(options);
 	}
-	getMediaInfo(options) {
-		return RtcPlugin.getMediaInfo(options);
+	getMediaInfo() {
+		return RtcPlugin.getMediaInfo();
 	}
 	getMediaVolume() {
 		return RtcPlugin.getMediaVolume();
@@ -330,10 +477,55 @@ export default class RtcCloud {
 		RtcPlugin.setMediaPlayPos(pos);
 	}
 	sendMeetingCustomMsg(text, cookie) {
-		RtcPlugin.sendMeetingCustomMsg({
-			text,
-			cookie,
-		});
+		RtcPlugin.sendMeetingCustomMsg(text, cookie);
+	}
+	//获取房间所有属性
+	getMeetingAllAttrs(cookie) {
+		RtcPlugin.getMeetingAllAttrs(cookie);
+	}
+	//获取房间部份属性
+	getMeetingAttrs(keys, cookie) {
+		RtcPlugin.getMeetingAttrs(keys, cookie);
+	}
+	//重置房间属性
+	setMeetingAttrs(attrs, options, cookie) {
+		RtcPlugin.setMeetingAttrs(attrs, options, cookie);
+	}
+	//增加或者更新房间属性
+	addOrUpdateMeetingAttrs(attrs, options, cookie) {
+		RtcPlugin.addOrUpdateMeetingAttrs(attrs, options, cookie);
+	}
+	//删除特定房间属性
+	delMeetingAttrs(keys, options, cookie) {
+		RtcPlugin.delMeetingAttrs(keys, options, cookie);
+	}
+	//清除房间属性
+	clearMeetingAttrs(options, cookie) {
+		RtcPlugin.clearMeetingAttrs(options, cookie);
+	}
+	//获取指定用户的所有属性
+	getUserAttrs(userIDs, keys = [], cookie) {
+		RtcPlugin.getUserAttrs(userIDs, keys, cookie);
+	}
+	//重置指定用户的属性
+	setUserAttrs(userID, attrs, options, cookie) {
+		RtcPlugin.setUserAttrs(userID, attrs, options, cookie);
+	}
+	//添加或更新指定用户的属性
+	addOrUpdateUserAttrs(userID, attrs, options, cookie) {
+		RtcPlugin.addOrUpdateUserAttrs(userID, attrs, options, cookie);
+	}
+	//删除指定用户的属性
+	delUserAttrs(userID, keys, options, cookie) {
+		RtcPlugin.delUserAttrs(userID, keys, options, cookie);
+	}
+	//清空所有用户的属性
+	clearAllUserAttrs(options, cookie) {
+		RtcPlugin.clearAllUserAttrs(options, cookie);
+	}
+	//清空指定用户的属性
+	clearUserAttrs(userID, options, cookie) {
+		RtcPlugin.clearUserAttrs(userID, options, cookie);
 	}
 	getCloudMixerInfo(mixerId) {
 		return RtcPlugin.getCloudMixerInfo(mixerId);
@@ -371,23 +563,4 @@ export default class RtcCloud {
 	rmLocMixerOutput(mixerID, nameOrUrls) {
 		RtcPlugin.rmLocMixerOutput(mixerID, nameOrUrls);
 	}
-	getAllRecordFiles() {
-		return RtcPlugin.getAllRecordFiles();
-	}
-	cancelUploadRecordFile(fileName) {
-		RtcPlugin.cancelUploadRecordFile(fileName);
-	}
-	uploadRecordFile(fileName, svrPathFileName) {
-		RtcPlugin.uploadRecordFile(fileName, svrPathFileName);
-	}
-	addFileToRecordMgr(fileName, filePath) {
-		return RtcPlugin.addFileToRecordMgr(fileName, filePath);
-	}
-	removeFromFileMgr(fileName) {
-		RtcPlugin.removeFromFileMgr(fileName);
-	}
-	// playbackRecordFile() {}
-	// setMarkText() {}
-	// removeMarkText() {}
-	// getVideoMarkFile() {}
 }

@@ -2,8 +2,8 @@
     "name" : "Api Demo",
     "appid" : "__UNI__0C4E355",
     "description" : "",
-    "versionName" : "1.0.5",
-    "versionCode" : 105,
+    "versionName" : "1.1.5",
+    "versionCode" : 115,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -50,7 +50,7 @@
                     "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
                     "<uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\"/>"
                 ],
-                "minSdkVersion" : 17,
+                "minSdkVersion" : 19,
                 "abiFilters" : [ "armeabi-v7a", "x86" ]
             },
             /* ios打包配置 */
@@ -99,7 +99,7 @@
                 "__plugin_info__" : {
                     "name" : "rtcsdk-plugin",
                     "description" : "",
-                    "platforms" : "Android",
+                    "platforms" : "Android,iOS",
                     "url" : "",
                     "android_package_name" : "",
                     "ios_bundle_id" : "",

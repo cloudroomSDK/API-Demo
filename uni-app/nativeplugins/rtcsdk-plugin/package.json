@@ -1,7 +1,7 @@
 {
 	"name": "rtcsdk-plugin",
 	"id": "rtcsdk-plugin",
-	"version": "1.0.4",
+	"version": "1.2.5",
 	"description": "",
 	"_dp_type": "nativeplugin",
 	"_dp_nativeplugin": {
@@ -32,7 +32,7 @@
 				"x86"
 			],
 			"dependencies": [
-				"com.github.cloudroomSDK:cloudroomvideo_android_library:4.4.9"
+				"com.github.cloudroomSDK:cloudroomvideo_android_library:4.6.1"
 			]
 		},
 		"ios": {

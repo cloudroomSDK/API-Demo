@@ -34,7 +34,7 @@ typedef NS_ENUM(uint8_t, YWOrientation) {
 };
 
 CRVSDK_EXPORT
-@interface FileInfo : NSObject
+@interface CRFileInfo : NSObject
 @property (nonatomic, assign) short ownerID;
 @property (nonatomic, assign) int size;
 @property (nonatomic, assign) int orgSize;

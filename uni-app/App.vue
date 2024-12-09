@@ -3,7 +3,8 @@
 	import RTCSDK from './RTCSDK/index.js'
 	export default {
 		globalData: {
-			RTCSDK: RTCSDK
+			RTCSDK: RTCSDK,
+			popupConfig: null, //全局弹窗配置
 		},
 		onLaunch: function() {
 			console.log('App Launch')
@@ -14,13 +15,11 @@
 			try {
 				const value = uni.getStorageSync('loginInfo');
 				if (value) {
-					const obj = JSON.parse(value);
-					this.globalData.loginInfo = obj;
+					this.globalData.loginInfo = value;
 				} else {
 					throw '';
 				}
 			} catch (e) {
-				const obj = defaultLoginInfo;
 				this.globalData.loginInfo = defaultLoginInfo;
 			}
 
@@ -86,8 +85,8 @@
 				font-size: 32rpx;
 				color: $uni-text-color-primary;
 			}
-			
-			&.disabled {	
+
+			&.disabled {
 				background-color: #aaa;
 			}
 

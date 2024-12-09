@@ -1,24 +1,42 @@
 <template>
 	<view class="content">
 		<view class="card">
+			<view class="input-switch">
+				<view class="item">
+					<text class='text'>使用https</text>
+					<switch :checked='useHttps' @change="changeUseHttpsSwitch" />
+				</view>
+				<view class="item">
+					<text class='text'>token鉴权</text>
+					<switch :checked='useToken' @change="changeUseTokenSwitch" />
+				</view>
+			</view>
 			<view class="input-from">
 				<view><text class="title">服务器地址：</text></view>
 				<view class="wrapper">
 					<input v-model='addr' class="uni-input" placeholder="服务器地址" />
 				</view>
 			</view>
-			<view class="input-from">
-				<view><text class="title">APP ID :</text></view>
+			<view class="input-from" v-if="useToken">
+				<view><text class="title">Token：</text></view>
 				<view class="wrapper">
-					<input v-model='appId' class="uni-input" placeholder="appid" />
+					<textarea v-model='token' :maxlength="-1" class="uni-input" style="height: unset;" placeholder="Token" />
 				</view>
 			</view>
-			<view class="input-from">
-				<view><text class="title">APP Secret :</text></view>
-				<view class="wrapper">
-					<input v-model='appSecret' class="uni-input" type="text" password />
+			<template v-else>
+				<view class="input-from">
+					<view><text class="title">APP ID :</text></view>
+					<view class="wrapper">
+						<input v-model='appId' class="uni-input" placeholder="appid" />
+					</view>
 				</view>
-			</view>
+				<view class="input-from">
+					<view><text class="title">APP Secret :</text></view>
+					<view class="wrapper">
+						<input v-model='appSecret' class="uni-input" type="text" password />
+					</view>
+				</view>
+			</template>
 		</view>
 		<button @click="reset" class="btn primary">
 			<text class="btn-text">恢复默认</text>
@@ -32,13 +50,17 @@
 <script>
 	const app = getApp();
 	const loginInfo = app.globalData.loginInfo;
-	import { defaultLoginInfo } from '@/config/index.js';
+	import { defaultLoginInfo } from '@/config';
+	import { showToast } from '@/util'
 	export default {
 		data() {
 			return {
 				RTCSDK: null,
+				useHttps: true,
+				useToken: false,
 				addr: '',
 				appId: '',
+				appSecret: '',
 				appSecret: '',
 				version: app.globalData.version
 			}
@@ -46,40 +68,79 @@
 		onLoad() {
 			this.RTCSDK = app.globalData.RTCSDK.getInstance();
 
-			const { addr, appId, appSecret } = loginInfo;
+			const { useHttps, useToken, addr, appId, appSecret, token } = loginInfo;
+			console.log(useHttps, useToken, addr, appId, appSecret, token)
+			this.useHttps = useHttps;
+			this.useToken = useToken;
 			this.addr = addr;
 			this.appId = appId;
-			this.appSecret = appSecret;
+			this.token = token;
 			setTimeout(() => {
-				this.appSecret = appSecret; //密码框要延迟一会才能赋值
+				this.appSecret = appSecret; //官方bug，密码框要延迟一会才能赋值
 			}, 500)
 		},
 		onNavigationBarButtonTap(e) {
-			const { addr, appId, appSecret } = defaultLoginInfo;
+			const { useHttps, useToken, addr, appId, appSecret, token } = loginInfo;
 
-			if (loginInfo.addr !== this.addr || loginInfo.appId !== this.appId || loginInfo.appSecret !== this.appSecret) {
-				loginInfo.addr = this.addr;
-				loginInfo.appId = this.appId;
-				loginInfo.appSecret = this.appSecret;
+			if (this.useToken && !this.token.trim()) {
+				return showToast(`请输入token`);;
+			}
+
+			if (!this.useToken && (!this.appId || !this.appSecret)) {
+				return showToast(`请输入appId和appSecret`);;
+			}
+
+			if (this.useHttps !== useHttps) {
+				this.RTCSDK.uninit();
+				app.globalData.initState = false;
+				app.globalData.isLogin = false;
+			} else if (useToken !== this.useToken || addr !== this.addr || appId !== this.appId || appSecret !== this.appSecret || token !== this.token) {
 				if (app.globalData.isLogin) {
 					this.RTCSDK.logout();
 					app.globalData.isLogin = false;
 				}
 
-				try {
-					uni.setStorageSync('loginInfo', JSON.stringify(loginInfo));
-				} catch (e) {
-					// error
+			}
+
+			try {
+				loginInfo.addr = this.addr;
+				loginInfo.useHttps = this.useHttps;
+				loginInfo.useToken = this.useToken;
+				if (this.useToken) {
+					loginInfo.token = this.token;
+				} else {
+					loginInfo.appId = this.appId;
+					loginInfo.appSecret = this.appSecret;
 				}
+				uni.setStorageSync('loginInfo', loginInfo)
+			} catch (e) {
+				// error
 			}
 			uni.navigateBack()
 		},
 		methods: {
+			changeUseHttpsSwitch(e) {
+				this.useHttps = e.detail.value; //组件点击后获得当前组件状态更新flag变量的值
+			},
+			changeUseTokenSwitch(e) {
+				this.useToken = e.detail.value; //组件点击后获得当前组件状态更新flag变量的值
+				if (!this.useToken) {
+					const temp = this.appSecret;
+					setTimeout(() => {
+						this.appSecret = temp; //官方bug，密码框要延迟一会才能赋值
+					}, 200)
+				}
+			},
 			reset() {
-				const { addr, appId, appSecret } = defaultLoginInfo
+				const { useHttps, useToken, addr, appId, appSecret, token } = defaultLoginInfo
+				this.useHttps = useHttps;
+				this.useToken = useToken;
 				this.addr = addr;
 				this.appId = appId;
-				this.appSecret = appSecret;
+				this.token = token;
+				setTimeout(() => {
+					this.appSecret = appSecret;
+				}, 500)
 			}
 		}
 	}
@@ -89,10 +150,25 @@
 <style lang="scss">
 	.content {
 		position: relative;
+
 		.card {
 			background-color: $uni-bg-color;
 			padding: 14rpx 54rpx 60rpx;
 			margin-top: 22rpx;
+
+			.input-switch {
+				flex-direction: row;
+				justify-content: space-between;
+
+				.text {
+					margin-right: 10rpx;
+				}
+
+				.item {
+					flex-direction: row;
+					align-items: center;
+				}
+			}
 
 			.input-from {
 				.title {
@@ -108,6 +184,7 @@
 						border-radius: 5rpx;
 						border: 1rpx solid $uni-border-color;
 					}
+
 				}
 			}
 		}
@@ -120,6 +197,7 @@
 			position: fixed;
 			bottom: 20rpx;
 			width: 750rpx;
+
 			.text {
 				text-align: center;
 				font-size: 28rpx;

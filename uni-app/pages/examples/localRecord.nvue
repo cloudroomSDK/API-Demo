@@ -75,9 +75,6 @@
 			this.RTCSDK.setDefaultVideo(this.userInfo.userId, devicePosition.front);
 
 			this.createLocMixer(); //创建本地混图器
-
-			const allRecordFiles = this.RTCSDK.getAllRecordFiles();
-			console.log(allRecordFiles)
 		},
 		mounted() {
 			this.RTCSDK.openVideo(this.userInfo.userId);
@@ -220,20 +217,6 @@
 				console.log('layout: ', layout);
 				return layout;
 			},
-			// 上传录制文件到云平台
-			uploadRecordFile(nameOrUrl) {
-				const date = new Date();
-				const year = date.getFullYear(),
-					month = String(date.getMonth() + 1).padStart(2, '0'),
-					day = String(date.getDate()).padStart(2, '0'),
-					hour = String(date.getHours()).padStart(2, '0'),
-					min = String(date.getMinutes()).padStart(2, '0'),
-					sec = String(date.getSeconds()).padStart(2, '0');
-
-				const svrPathFileName = `/${year}-${month}-${day}/${year}-${month}-${day}_${hour}-${min}-${sec}_Uniapp_API_${this.roomId}.mp4`;
-				const filename = nameOrUrl.split('/').pop();
-				this.RTCSDK.uploadRecordFile(filename, svrPathFileName);
-			},
 			_userEnterMeeting({ userID }) {
 				const memberInfo = this.RTCSDK.getMemberInfo(userID);
 				this.memberList.push(memberInfo);
@@ -261,8 +244,21 @@
 			_locMixerOutputInfo({ mixerID, nameOrUrl, outputInfo }) {
 				if (mixerID === this.myMixerId) {
 					if (outputInfo.state === 2) {
-						showToast(`录制完成，存储目录: ${nameOrUrl}`, 5000);
-						// this.uploadRecordFile(nameOrUrl);
+						uni.saveVideoToPhotosAlbum({
+							filePath: nameOrUrl,
+							success() {
+								showToast(`录制完成，录像文件已存入系统相册`, 5000);
+								uni.removeSavedFile({
+									filePath: nameOrUrl,
+									complete(res) {
+										console.log('删除文件结果', res);
+									}
+								})
+							},
+							fail() {
+								showToast(`录制完成，存储目录: ${nameOrUrl}`, 5000);
+							}
+						});
 					} else if (outputInfo.state === 3) {
 						this.recordState = RecordState.noStart;
 						showToast(`录制失败，错误码: ${outputInfo.errCode},${constantDesc[outputInfo.errCode]}`);

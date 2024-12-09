@@ -21,9 +21,6 @@ CRVSDK_EXPORT
 
 @property (nonatomic, copy) NSString *sdkDatSavePath; // sdk内部使用的文件位置
 @property (nonatomic, assign) BOOL showSDKLogConsole; // 显示日志到控制台
-@property (nonatomic, assign) BOOL noCall; // 是否有呼叫功能
-@property (nonatomic, assign) BOOL noQueue; // 是否有排队功能
-@property (nonatomic, assign) BOOL noMediaDatToSvr; // 是否上传影音数据到服务器
 @property (nonatomic, assign) int timeOut; // 超时时间设置(单位:ms)
 @property (nonatomic, copy) NSString *datEncType; // 数据加密类型(0:敏感数据加密，1:全面加密; 缺省:1)
 @property (nonatomic, assign) BOOL isMultiDelegate; // 配置是否启用代理模式
@@ -113,9 +110,6 @@ CRVSDK_EXPORT
  @return 服务器地址
  */
 - (NSString *)serverAddr;
-
-
--(void)setAliyunOssAccountInfo:(NSString *)accessKey accessSecret:(NSString *)accessSecret;
 
 @end
 

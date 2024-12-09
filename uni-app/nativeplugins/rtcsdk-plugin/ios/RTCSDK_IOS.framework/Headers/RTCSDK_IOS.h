@@ -20,5 +20,4 @@ FOUNDATION_EXPORT const unsigned char RTCSDK_IOSVersionString[];
 #import <RTCSDK_IOS/RTCMgr.h>
 #import <RTCSDK_IOS/RTCMeeting.h>
 #import <RTCSDK_IOS/RTCQueue.h>
-#import <RTCSDK_IOS/RTCHttpFileMgr.h>
 #import <RTCSDK_IOS/RTCCommonType.h>

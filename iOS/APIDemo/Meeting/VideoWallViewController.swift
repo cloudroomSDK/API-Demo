@@ -30,7 +30,7 @@ class VideoWallViewController: CommonMeetingViewController {
         print("setupUI frame")
         print(mineCameraView.frame)
         print(videoWallView.frame)
-        mineCameraView.keepAspectRatio = false
+        mineCameraView.scaleType = .aspectFill
     }
     
     func updateVideoWall() {
@@ -149,12 +149,12 @@ extension VideoWallViewController {
         
         let recContent = MixerContent()
         let recordVideos = NSMutableArray()
-        let rows = 3
+        let columns = 3
         let vSpace = 8.0
         let hSpace = 25.0
         let contentWidth = dstResolution().width
         let contentHeight = dstResolution().height
-        let itemWidth = (contentWidth - CGFloat(rows - 1)*hSpace)/CGFloat(rows)
+        let itemWidth = (contentWidth - CGFloat(columns - 1)*hSpace)/CGFloat(columns)
         let itemHeight = itemWidth*16/9
         
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
@@ -183,8 +183,8 @@ extension VideoWallViewController {
             
             let usrVideoId = videos[i]
             
-            let column = i/rows
-            let row = i%rows
+            let row = i/columns
+            let column = i%columns
             
             let x = contentWidth - CGFloat(column + 1)*itemWidth - Double(column)*hSpace
             let y = CGFloat(row)*itemHeight + Double(row)*vSpace
@@ -200,6 +200,7 @@ extension VideoWallViewController {
         
         // 加时间戳
         let time = RecTimeStampContentItem(rect: CGRect(x: 3, y: 3, width: contentWidth - 3*2, height: 15), resID: "time")
+        time?.keepAspectRatio = true
         recordVideos.add(time as Any)
         
         recContent.contents = recordVideos

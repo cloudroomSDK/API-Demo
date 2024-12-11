@@ -74,6 +74,7 @@
 		1675A47F27A27E2B0031351E /* ConstraintDirectionalInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1675A45A27A27E2B0031351E /* ConstraintDirectionalInsets.swift */; };
 		1675A48027A27E2B0031351E /* ConstraintLayoutSupportDSL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1675A45B27A27E2B0031351E /* ConstraintLayoutSupportDSL.swift */; };
 		1675A48127A27E2B0031351E /* ConstraintMakerRelatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1675A45C27A27E2B0031351E /* ConstraintMakerRelatable.swift */; };
+		167FF8E32C01F01700F61192 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 167FF8E22C01F01700F61192 /* PrivacyInfo.xcprivacy */; };
 		1685164A27893D5D008B7951 /* VideoWallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1685164927893D5D008B7951 /* VideoWallViewController.swift */; };
 		1685164C27893D84008B7951 /* IMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1685164B27893D84008B7951 /* IMViewController.swift */; };
 		1685164E27893D93008B7951 /* VoiceCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1685164D27893D93008B7951 /* VoiceCallViewController.swift */; };
@@ -215,6 +216,7 @@
 		1675A45A27A27E2B0031351E /* ConstraintDirectionalInsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintDirectionalInsets.swift; sourceTree = "<group>"; };
 		1675A45B27A27E2B0031351E /* ConstraintLayoutSupportDSL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintLayoutSupportDSL.swift; sourceTree = "<group>"; };
 		1675A45C27A27E2B0031351E /* ConstraintMakerRelatable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintMakerRelatable.swift; sourceTree = "<group>"; };
+		167FF8E22C01F01700F61192 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		1685164927893D5D008B7951 /* VideoWallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoWallViewController.swift; sourceTree = "<group>"; };
 		1685164B27893D84008B7951 /* IMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMViewController.swift; sourceTree = "<group>"; };
 		1685164D27893D93008B7951 /* VoiceCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCallViewController.swift; sourceTree = "<group>"; };
@@ -496,6 +498,7 @@
 			children = (
 				16F789F4278D5C8C000BD7C3 /* ScreenShareUpload.entitlements */,
 				16F789E9278D559E000BD7C3 /* SampleHandler.swift */,
+				167FF8E22C01F01700F61192 /* PrivacyInfo.xcprivacy */,
 				16F789EB278D559E000BD7C3 /* Info.plist */,
 				16F789F9278D5DA3000BD7C3 /* ScreenShareUpload-Bridging-Header.h */,
 			);
@@ -645,6 +648,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				167FF8E32C01F01700F61192 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -797,7 +801,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScreenShareUpload/Info.plist;
@@ -830,7 +834,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScreenShareUpload/Info.plist;
@@ -978,7 +982,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = APIDemo/APIDemo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = NO;
@@ -1003,7 +1007,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.4.19;
+				MARKETING_VERSION = 4.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cloudroom.APIDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1021,7 +1025,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = APIDemo/APIDemo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
@@ -1045,7 +1049,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.4.19;
+				MARKETING_VERSION = 4.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cloudroom.APIDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

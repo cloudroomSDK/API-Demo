@@ -28,7 +28,7 @@
             </div>
         </el-scrollbar>
         <div class="ctrl">
-            <el-checkbox v-model="isShareSound">共享电脑的声音</el-checkbox>
+            <el-checkbox v-if="appStore.platform === 'win32'" v-model="isShareSound">共享电脑的声音</el-checkbox>
             <el-checkbox v-model="isFluency">流畅优先</el-checkbox>
             <el-button class="btn" type="primary" :disabled="selectID === null" @click="startShare">开始共享</el-button>
         </div>

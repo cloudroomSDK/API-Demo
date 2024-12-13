@@ -52,6 +52,8 @@ npm run dev
 | 变声 | 调节自己或他人的变声 |
 | 声音环回测试 | 服务端将自己的声音回传，用于麦克风测试  |
 
+## Windows 7/8/8.1下无法运行
+如果您需要兼容这些系统，可以自行降低Electron应用版本至22或以下。原因是Chromium内核从110版本之后不再兼容这些系统,详情[参见这里](https://www.electronjs.org/zh/blog/windows-7-to-8-1-deprecation-notice)。
 
 ## 🔖 附录
 

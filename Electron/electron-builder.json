@@ -15,8 +15,8 @@
     "dist-electron",
     "dist"
   ],
+  "artifactName": "${productName}_${version}_${arch}.${ext}",
   "mac": {
-    "artifactName": "${productName}_${version}.${ext}",
     "target": [
       "dmg"
     ]
@@ -30,8 +30,7 @@
           "x64"
         ]
       }
-    ],
-    "artifactName": "${productName}_${version}_${arch}.${ext}"
+    ]
   },
   "nsis": {
     "oneClick": false,
@@ -41,6 +40,12 @@
     "runAfterFinish": false
   },
   "linux": {
-    "target": ["AppImage"],
-    }
+    "target": [{
+      "target": "AppImage",
+      "arch": [
+        "x64",
+        "arm64"
+      ]
+    }]
+  }
 }

@@ -29,13 +29,14 @@ class CRSDKHelper {
     init() {
         readInfo()
         
-        guard let server = server, server.count > 0,
-              let APPID = APPID, APPID.count > 0,
-              let APPSecret = APPSecret, APPSecret.count > 0,
-              let nickname = nickname, nickname.count > 0 else {
-                  resetInfo()
-                  return
-              }
+        if APPID == nil || APPSecret == nil || APPID?.isEmpty == true || APPSecret?.isEmpty == true {
+            APPID = KDefaultAppID
+            APPSecret = KDefaultAppSecret
+        }
+        
+        if server == nil || server?.isEmpty == true {
+            resetInfo()
+        }
     }
     
     private

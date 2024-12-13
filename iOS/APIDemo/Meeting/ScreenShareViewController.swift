@@ -59,12 +59,12 @@ class ScreenShareViewController: CommonMeetingViewController {
         usernameLabel.text = CloudroomVideoMeeting.shareInstance().getNickName(myUserId())
     }
     
-    func notifyScreenShareStarted() {
+    func notifyScreenShareStarted(_ shareId: String) {
         shareView.clearFrame()
         self.view.bringSubviewToFront(self.shareView)
     }
-    
-    func notifyScreenShareStopped() {
+
+    func notifyScreenShareStopped(_ oprUserID: String) {
         shareView.clearFrame()
         self.view.bringSubviewToFront(self.shareConfigView)
     }

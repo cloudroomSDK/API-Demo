@@ -50,9 +50,6 @@ extension AppDelegate {
         let sdkInitData:SdkInitDat = SdkInitDat()
         sdkInitData.sdkDatSavePath = sdkPath
         sdkInitData.showSDKLogConsole = true
-        sdkInitData.params.setValue("0", forKey: "noCall")
-        sdkInitData.params.setValue("1", forKey: "noQueue")
-        sdkInitData.params.setValue("0", forKey: "noMediaDatToSvr")
         
         let dataEncTypeInt = Int(CRSDKHelper.shared.datEncType ?? "0")
         sdkInitData.datEncType = dataEncTypeInt! >= 1 ? "1" : "0"

@@ -34,7 +34,7 @@ app.directive("setVideo", {
         console.log("mounted", el, binding);
         const { type = 0, userId, camId = -1, notifyFrameReceived } = binding.value;
         const videoUI = rtcsdk.createVideoUI(el, {
-            notifyFrameReceived: notifyFrameReceived
+            notifyFrameReceived: notifyFrameReceived,
         });
         el.videoUI = videoUI;
         try {
@@ -46,7 +46,12 @@ app.directive("setVideo", {
                     videoId: camId,
                 };
             }
-
+            // 设置屏幕共享标注选项
+            videoUI.setMarkOption({
+                allowMark: true, //允许标注
+                color: "#3981FC", //画笔颜色
+                width: 3, //画笔宽度
+            });
             videoUI.setVideo(videoCfg);
         } catch (error) {}
 
@@ -94,6 +99,6 @@ app.mount("#app").$nextTick(() => {
 
 window.onkeydown = (e) => {
     if (e.key === "F12") {
-        ipcRenderer.send("toggleDevTools"); //通知主进程弹出文件选择框
+        ipcRenderer.send("common", { method: "toggleDevTools" }); //通知主进程弹出文件选择框
     }
 };

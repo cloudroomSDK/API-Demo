@@ -110,6 +110,7 @@ import MeetingMsg from "./components/meetingMsg";
 import VirtualCam from "./components/virtualCam";
 import EchoTest from "./components/echoTest";
 import VoiceChange from "./components/voiceChange";
+import { ipcRenderer } from "electron";
 
 export default {
     components: {
@@ -137,6 +138,8 @@ export default {
         exitMeeting() {
             this.$rtcsdk.exitMeeting();
             this.appStore.meetId = null;
+            this.appStore.isMyScreenShare = false;
+            ipcRenderer.send("common", { method: "exitMeeting" });
             this.$router.replace("/");
         },
         openAudioSetting() {

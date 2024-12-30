@@ -37,7 +37,11 @@ export default {
             return Math.round(num * 100) / 100;
         },
         open() {
-            ipcRenderer.send("electron-open-localMixer", this.info.filePath); //通知主进程弹出文件选择框
+            //通知主进程弹出文件选择框
+            ipcRenderer.send("common", {
+                method: "openFile",
+                data: this.info.filePath,
+            });
         },
     },
 };

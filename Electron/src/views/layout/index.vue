@@ -44,7 +44,7 @@ export default {
 
         this.appStore.memberList = this.$rtcsdk.getAllMembers().reduce((previousValue, currentValue) => {
             previousValue[currentValue._userId] = {
-                nickName: currentValue._nickName,
+                nickname: currentValue._nickName,
                 audioStatus: currentValue._audioStatus,
                 videoStatus: currentValue._videoStatus,
             };
@@ -68,7 +68,7 @@ export default {
         notifyUserEnterMeeting(userId) {
             const userInfo = this.$rtcsdk.getMemberInfo(userId);
             this.appStore.memberList[userId] = {
-                nickName: userInfo._nickName,
+                nickname: userInfo._nickName,
                 audioStatus: userInfo._audioStatus,
                 videoStatus: userInfo._videoStatus,
             };

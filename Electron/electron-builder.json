@@ -13,7 +13,8 @@
   "afterPack": "./myAfterPackHook",
   "files": [
     "dist-electron",
-    "dist"
+    "dist",
+    "screenOption"
   ],
   "artifactName": "${productName}_${version}_${arch}.${ext}",
   "mac": {

@@ -45,7 +45,9 @@ export default {
             if (this.appStore.shareType === 2) {
                 return ElMessage.warning(`请先停止屏幕共享`);
             }
-            const path = await ipcRenderer.invoke("electron-select-meida"); //通知主进程弹出文件选择框
+
+            //通知主进程弹出文件选择框
+            const path = await ipcRenderer.invoke("common", { method: "openSelectVideo" });
 
             if (this.appStore.shareType === 2) {
                 return ElMessage.warning(`请先停止屏幕共享`);

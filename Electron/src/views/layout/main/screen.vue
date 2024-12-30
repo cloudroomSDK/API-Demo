@@ -1,32 +1,7 @@
 <template>
     <div v-if="shareUserId">
-        <!-- 主控端端选项 -->
-        <!-- <div class="ctrlOption" v-if="appStore.hasCtrlMode">
-            <el-dropdown>
-                <el-button type="primary"> 发送组合键(系统键暂不可用) </el-button>
-                <template #dropdown>
-                    <el-dropdown-menu>
-                        <el-dropdown-item @click="sengKey(162, 164, 46)">Ctrl+Alt+Del</el-dropdown-item>
-                        <el-dropdown-item @click="sengKey(17, 18, 46)">Ctrl+Alt+Del</el-dropdown-item>
-                        <el-dropdown-item @click="sengKey(92, 76)">锁屏</el-dropdown-item>
-                        <el-dropdown-item @click="sengKey(162, 86)">Ctrl+V</el-dropdown-item>
-                    </el-dropdown-menu>
-                </template>
-            </el-dropdown>
-        </div> -->
-        <!-- 被控端选项 -->
-        <div class="screenOption" v-if="appStore.platform === 'win32' && appStore.myUserId === shareUserId">
-            共享选项：
-            <div class="screenOptionItem">
-                <span class="span"><el-switch class="switch" v-model="allowRemoteControl" />允许他人远程控制</span>
-                <el-select v-model="remoteControler" style="width: 240px" size="small" :disabled="!allowRemoteControl">
-                    <el-option label="请选择远程控制者" value="" />
-                    <el-option v-for="item in optionList" :key="item.userId" :label="item.nickname" :value="item.userId" />
-                </el-select>
-            </div>
-        </div>
         <!-- 屏幕共享组件 -->
-        <div class="screen" v-setVideo="{ type: 1 }" ref="screenRef">
+        <div class="screen" :class="{ fullscreen: fullscreen }" v-setVideo="{ type: 1 }" ref="screenRef">
             <span class="name">{{ shareUserId }}的屏幕</span>
         </div>
     </div>
@@ -36,12 +11,13 @@
 import store from "@/store";
 import { mapStores } from "pinia";
 import { ElMessageBox } from "element-plus";
+import { ipcRenderer } from "electron";
 export default {
     data() {
         return {
             shareUserId: null, //当前的共享者
-            allowRemoteControl: false, //是否允许远程控制
-            remoteControler: "",
+            remoteControler: null, //远程控制者ID
+            fullscreen: false, //是否全屏
         };
     },
     computed: {
@@ -57,19 +33,12 @@ export default {
         },
     },
     watch: {
-        allowRemoteControl(newVal) {
-            if (this.remoteControler) {
-                if (newVal) {
-                    this.$rtcsdk.giveCtrlRight(this.remoteControler);
-                } else {
-                    this.$rtcsdk.releaseCtrlRight(this.remoteControler);
-                }
-            }
-        },
-        remoteControler(newVal, oldVal) {
-            console.log(newVal, oldVal);
-            oldVal && this.$rtcsdk.releaseCtrlRight(oldVal);
-            newVal && this.$rtcsdk.giveCtrlRight(newVal);
+        optionList() {
+            ipcRenderer.send("common", {
+                module: "screenOption",
+                method: "updateMemberList",
+                data: this.optionList,
+            });
         },
         "appStore.hasCtrlMode"(newVal) {
             this.toggleCtrlMode(newVal);
@@ -82,6 +51,40 @@ export default {
             this.shareUserId = _sharerUserID;
         }
         this.callbackHanle(true);
+        // 开始标注
+        ipcRenderer.on("marker-start", (event) => {
+            this.startScreenMark();
+        });
+        // 停止标注
+        ipcRenderer.on("marker-stop", (event) => {
+            this.stopScreenMark();
+        });
+        // 清空标注
+        ipcRenderer.on("marker-clear", (event) => {
+            this.clearScreenMarks();
+        });
+        //刷新浮窗成员列表
+        ipcRenderer.on("getMemberList", (event) => {
+            ipcRenderer.send("common", {
+                module: "screenOption",
+                method: "updateMemberList",
+                data: this.optionList,
+            });
+        });
+        //回收远程控制权限
+        ipcRenderer.on("releaseCtrlRight", (event) => {
+            console.log("releaseCtrlRight");
+            this.$rtcsdk.releaseCtrlRight(this.remoteControler);
+            this.remoteControler = null;
+        });
+        //赋予远程控制权限
+        ipcRenderer.on("giveCtrlRight", (event, data) => {
+            if (this.remoteControler) {
+                this.$rtcsdk.releaseCtrlRight(this.remoteControler);
+            }
+            this.remoteControler = data;
+            this.$rtcsdk.giveCtrlRight(data);
+        });
     },
     mounted() {
         this.appStore.hasCtrlMode && this.toggleCtrlMode(true);
@@ -111,19 +114,6 @@ export default {
                 this.$refs.screenRef?.videoUI?.ctrlMode(false);
             }
         },
-        // sengKey(...args) {
-        //     console.log(args);
-        //     args.forEach((keyCode, i) => {
-        //         setTimeout(() => {
-        //             this.$rtcsdk.sendKeyCtrlMsg(0, keyCode,1);
-        //         }, i * 20);
-        //     });
-        //     setTimeout(() => {
-        //         args.forEach((keyCode) => {
-        //             this.$rtcsdk.sendKeyCtrlMsg(1, keyCode,1);
-        //         });
-        //     }, 1000);
-        // },
         notifyScreenShareStarted(userId) {
             this.shareUserId = userId;
         },
@@ -134,13 +124,34 @@ export default {
         startScreenShareRslt(sdkErr) {
             if (sdkErr === 0) {
                 this.shareUserId = this.appStore.myUserId;
+                //打开控制条浮窗
+                ipcRenderer.send("common", { method: "createScreenOption" });
             }
         },
         //自己停止屏幕共享按钮接收到的回调
         stopScreenShareRslt(sdkErr) {
             if (sdkErr === 0) {
                 this.shareUserId = null;
+                this.fullscreen = false;
+
+                //销毁控制条浮窗
+                ipcRenderer.send("common", { method: "destoryScreenOption" });
             }
+        },
+        startScreenMark() {
+            this.$rtcsdk.startScreenMark();
+            //如果调用videoUI会报错，因为全屏事件需要从交互事件中调用，否则会报错
+            //这里采用了一个伪全屏的方式结合主线程调用的setFullScreen Api，实现全屏效果。
+            setTimeout(() => {
+                this.fullscreen = true;
+            }, 200);
+        },
+        stopScreenMark() {
+            this.$rtcsdk.stopScreenMark();
+            this.fullscreen = false;
+        },
+        clearScreenMarks() {
+            this.$rtcsdk.clearScreenMarks();
         },
     },
 };
@@ -173,6 +184,15 @@ export default {
     width: 100%;
     background-color: #000;
     margin-bottom: 1px;
+    &.fullscreen {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin-bottom: 0;
+        z-index: 999;
+    }
 
     .name {
         position: absolute;

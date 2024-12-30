@@ -16,7 +16,7 @@ const notifyReleaseCtrlRight = (operUserId, targetUserId) => {
 }
 
 async function start() {
-    const logsPath = await ipcRenderer.invoke("get-logs-path");
+    const logsPath = await ipcRenderer.invoke("common", { method: 'get-logs-path' });
     console.log('logs: ', logsPath);
 
     rtcsdk.init({

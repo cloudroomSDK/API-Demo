@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: #dedede;
+            border-radius: 0 0 10px 10px;
+            padding: 6px 16px;
+            display: flex;
+            text-wrap: nowrap;
+            flex-wrap: nowrap;
+            margin-top: 0px;
+            height: 24px;
+            transition: all 0.5s;
+        }
+
+        .container.hide {
+            margin-top: -30px;
+        }
+
+        .container>button,
+        .container>div {
+            float: left;
+            margin-left: 10px;
+        }
+
+        button {
+            padding: 4px 6px;
+            background-color: #3981FC;
+            border: 0;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+
+        button:active {
+            background-color: #1269ff;
+        }
+
+        button.danger {
+            background-color: #f56c6c;
+        }
+
+        button.danger:active {
+            background-color: #f89898;
+        }
+
+        button[disabled] {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <button id="start">开始标注</button>
+        <button id="clear" style="display: none;">清空标注</button>
+        <button id="stop" style="display: none;">停止标注</button>
+        <button id="destory" class="danger">结束共享</button>
+
+        <!-- 被控端选项 -->
+        <div id="screenOption" style="display: none;">
+            <div class="screenOptionItem">
+                <span>远程控制者：</span>
+                <select id="memberSelect" value="nAllow">
+                    <option value="nAllow">不允许被控制</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <script>
+        const { ipcRenderer } = require("electron");
+        const container = document.getElementById('container');
+        const startBtn = document.getElementById('start');
+        const clearBtn = document.getElementById('clear');
+        const stopBtn = document.getElementById('stop');
+        const destoryBtn = document.getElementById('destory');
+        const memberSelect = document.getElementById('memberSelect');
+
+
+        let timerId;
+        const showToast = () => {
+            clearTimeout(timerId)
+            container.className = 'container';
+        }
+        const hideToast = () => {
+            clearTimeout(timerId)
+            timerId = setTimeout(() => {
+                container.className = 'container hide';
+            }, 3000);
+        }
+
+        hideToast();
+        ipcRenderer.send('common', { method: 'onScreenOptionMouseleave' })
+        container.addEventListener('mouseenter', () => {
+            showToast()
+            ipcRenderer.send('common', { method: 'onScreenOptionMouseenter' })
+        })
+        container.addEventListener('mouseleave', () => {
+            ipcRenderer.send('common', { method: 'onScreenOptionMouseleave' })
+            hideToast();
+        })
+        function resize() {
+            ipcRenderer.send('common', {
+                method: 'resizeScreenOption',
+                data: {
+                    w: container.offsetWidth,
+                    h: container.offsetHeight
+                }
+            })
+        }
+
+        startBtn.onclick = function () {
+            ipcRenderer.send('common', { method: 'marker-start' })
+            this.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+            clearBtn.style.display = 'inline-block';
+            memberSelect.setAttribute('disabled', true);
+            resize()
+        }
+        stopBtn.onclick = function () {
+            ipcRenderer.send('common', { method: 'marker-stop' })
+            this.style.display = 'none';
+            clearBtn.style.display = 'none';
+            startBtn.style.display = 'inline-block';
+            memberSelect.removeAttribute('disabled');
+            resize()
+        }
+        clearBtn.onclick = function () {
+            ipcRenderer.send('common', { method: 'marker-clear' })
+        }
+        destoryBtn.onclick = function () {
+            ipcRenderer.send('common', { method: 'screen-destory' })
+        }
+        if (process.platform === 'win32') {
+            document.getElementById('screenOption').style.display = 'block';
+            updateMemberList()
+            memberSelect.onchange = function () {
+                if (this.value === 'nAllow') {
+                    ipcRenderer.send('common', { module: 'win', method: 'releaseCtrlRight' })
+                    startBtn.removeAttribute('disabled');
+                } else {
+                    ipcRenderer.send('common', { module: 'win', method: 'giveCtrlRight', data: this.value })
+                    startBtn.setAttribute('disabled', true);
+                }
+            }
+
+            resize()
+        }
+
+        function updateMemberList() {
+            ipcRenderer.invoke('common', { module: 'win', method: 'getMemberList' })
+        }
+        ipcRenderer.on('updateMemberList', (event, data) => {
+            memberSelect.innerHTML = `<option value="nAllow">不允许被控制</option>` + data.map(item => `<option value="${item.userId}">${item.nickname}</option>`).join('')
+        })
+        resize();
+    </script>
+</body>
+
+</html>

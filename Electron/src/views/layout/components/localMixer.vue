@@ -107,7 +107,11 @@ export default {
             this.$rtcsdk[bool ? "on" : "off"]("notifyScreenShareStopped", this.notifyShareStopped);
         },
         async folderSelect() {
-            const path = await ipcRenderer.invoke("electron-select-localMixer"); //通知主进程弹出文件选择框
+            //通知主进程弹出文件选择框
+            const path = await ipcRenderer.invoke("common", {
+                method: "openSelectFolder",
+                data: { title: "选择存储视频的文件夹" },
+            });
             if (path) this.folderInput = path;
         },
         start() {

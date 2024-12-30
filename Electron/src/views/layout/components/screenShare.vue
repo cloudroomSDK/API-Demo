@@ -8,6 +8,7 @@ import { ElMessage } from "element-plus";
 import { errDesc } from "@/rtcsdk/sdkErr";
 import store from "@/store";
 import { mapStores } from "pinia";
+import { ipcRenderer } from "electron";
 export default {
     data() {
         return {
@@ -22,6 +23,10 @@ export default {
             this.otherUserShare = true;
         }
         this.callbackHanle(true);
+
+        ipcRenderer.on("screen-destory", (event) => {
+            this.stop();
+        });
     },
     unmounted() {
         this.callbackHanle(false);

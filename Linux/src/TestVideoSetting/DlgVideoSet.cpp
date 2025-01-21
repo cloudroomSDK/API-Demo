@@ -34,6 +34,7 @@ DlgVideoSet::DlgVideoSet(QWidget *parent)
 	connect(ui.cbBx_resolution, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_resolutionChanged(int)));
 	connect(ui.cbBx_fps, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_fpsChanged(int)));
 	connect(ui.sld_bps, &QSlider::valueChanged, this, &DlgVideoSet::slot_bpsChanged);
+	connect(ui.ck_denoise, SIGNAL(stateChanged(int)), this, SLOT(slot_denoiseStateChanged(int)));
 
 	QButtonGroup *modeGrp = new QButtonGroup(this);
 	modeGrp->setExclusive(true);
@@ -159,6 +160,14 @@ void DlgVideoSet::slot_videoTransModeChanged(int id)
 	g_sdkMain->getSDKMeeting().setVideoCfg(jsonCfg.constData());
 }
 
+void DlgVideoSet::slot_denoiseStateChanged(int st)
+{
+	m_vEffects._denoise = (st == Qt::Checked);
+	QByteArray jsonCfg = StructToJson(m_vEffects);
+	g_sdkMain->getSDKMeeting().setVideoEffects(jsonCfg.constData());
+}
+
+
 void DlgVideoSet::initVideoParams()
 {
 	initCamera();
@@ -168,6 +177,7 @@ void DlgVideoSet::initVideoParams()
 	ui.sld_bps->blockSignals(true);
 	ui.rb_qualityMode->blockSignals(true);
 	ui.rb_smoothMode->blockSignals(true);
+	ui.ck_denoise->blockSignals(true);
 
 	CRString jsonStr = g_sdkMain->getSDKMeeting().getVideoCfg();
 	m_vCfg = JsonToStruct<VideoCfg>(crStrToByteArray(jsonStr));
@@ -245,11 +255,16 @@ void DlgVideoSet::initVideoParams()
 		ui.rb_smoothMode->setChecked(true);
 	}
 
+	jsonStr = g_sdkMain->getSDKMeeting().getVideoEffects();
+	m_vEffects = JsonToStruct<VideoEffectsObj>(crStrToByteArray(jsonStr));
+	ui.ck_denoise->setChecked(m_vEffects._denoise);
+
 	ui.cbBx_resolution->blockSignals(false);
 	ui.cbBx_fps->blockSignals(false);
 	ui.sld_bps->blockSignals(false);
 	ui.rb_qualityMode->blockSignals(false);
 	ui.rb_smoothMode->blockSignals(false);
+	ui.ck_denoise->blockSignals(false);
 }
 
 void DlgVideoSet::initCamera()

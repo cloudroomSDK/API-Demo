@@ -6,8 +6,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 TEMPLATE = app
 TARGET = APIDemo
-
 # Winodws
+mingw {
+error("unsupported mingw")
+}
 msvc {
 contains(QT_ARCH, i386): ARCHITECTURE = x86
 else: ARCHITECTURE = $$QT_ARCH
@@ -60,6 +62,7 @@ INCLUDEPATH += \
     $$PWD/src/TestVoiceChange \
     $$PWD/src/TestTestScreenShare \
     $$PWD/src/TestSubscribeAudio
+    $$PWD/src/TestVideoBeauty
 
 SOURCES += \
     src/stdafx.cpp \
@@ -102,7 +105,8 @@ SOURCES += \
 	src/TestScreenShare/ShareSourceSelectDlg.cpp \
     src/TestScreenShare/DlgScreenMark.cpp \
     src/TestSubscribeAudio/DlgSubscribeAudio.cpp \
-    src/TestVoiceChange/CustomVoiceChgDlg.cpp
+    src/TestVoiceChange/CustomVoiceChgDlg.cpp \
+    src/TestVideoBeauty/TestVideoBeauty.cpp
 
 HEADERS += \
     src/stdafx.h \
@@ -145,7 +149,8 @@ HEADERS += \
 	src/TestScreenShare/CThumbnailItem.h \
 	src/TestScreenShare/ShareSourceSelectDlg.h \
     src/TestSubscribeAudio/DlgSubscribeAudio.h \
-    src/TestVoiceChange/CustomVoiceChgDlg.h
+    src/TestVoiceChange/CustomVoiceChgDlg.h \
+    src/TestVideoBeauty/TestVideoBeauty.h
 
 FORMS += \
     src/DlgLogin.ui \
@@ -178,7 +183,8 @@ FORMS += \
 	src/TestScreenShare/ShareSourceSelectDlg.ui \
     src/TestSubscribeAudio/DlgSubscribeAudio.ui \
     src/TestVoiceChange/CustomVoiceChgDlg.ui \
-    src/TestVoiceChange/VoiceCustomSetting.ui
+    src/TestVoiceChange/VoiceCustomSetting.ui \
+    src/TestVideoBeauty/TestVideoBeauty.ui
 
 RESOURCES += \
     src/APIDemo.qrc

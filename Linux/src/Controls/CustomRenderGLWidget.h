@@ -29,7 +29,7 @@ signals:
 	void s_recvFrame(qint64 ts);
 
 protected:
-	void onRenderFrameDat(const CRVideoFrame &frm) override;
+	void onRenderFrameDat(const CRVideoFrame &frm, const CRUserVideoID &realVideoID) override;
 	void hideEvent(QHideEvent* event) override;
 	void showEvent(QShowEvent* event) override;
 	void setDefaultBackground(const QColor &color){m_defBkColor = color;}
@@ -58,6 +58,13 @@ private:
 	//CRFPSStatistics	m_recvFps;
 	//CRFPSStatistics	m_drawFps;
 	QColor m_defBkColor;
+};
+
+
+class CustomVideoView_GL : public CustomRenderGLWidget
+{
+public:
+	CustomVideoView_GL(QWidget *parent) : CustomRenderGLWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
 };
 
 #endif // CUSTOMRENDERGLWIDGET_H

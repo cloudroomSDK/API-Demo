@@ -4,7 +4,7 @@
 #include "maindialog.h"
 #include "KeepAspectRatioDrawer.h"
 
-KVideoUI::KVideoUI(QWidget* pParent) : CustomRenderBase(pParent, CRVSDK_VIEWTP_VIDEO)
+KVideoUI::KVideoUI(QWidget* pParent) : CustomRenderBase(pParent)
 {
 	ui = new Ui::KVideoUI;
 	ui->setupUi(this);

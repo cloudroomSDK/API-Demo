@@ -16,6 +16,7 @@
 #include "./TestVoiceChange/DlgVoiceChange.h"
 #include "./TestEchoTest/DlgEchoTest.h"
 #include "./TestSubscribeAudio/DlgSubscribeAudio.h"
+#include "./TestVideoBeauty/TestVideoBeauty.h"
 
 
 MainDialog *g_mainDialog = NULL;
@@ -61,6 +62,7 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	connect(ui->btnStartScreenShare, &QPushButton::clicked, this, &MainDialog::slot_btnStartScreenClicked);
 	connect(ui->btnStopScreenShare, &QPushButton::clicked, this, &MainDialog::slot_btnStopScreenClicked);
 	connect(ui->btnSubAudio, &QPushButton::clicked, this, &MainDialog::slot_btnSubAudioClicked);
+	connect(ui->btnBeauty, &QPushButton::clicked, this, &MainDialog::slot_btnBeautyClicked);
 
 	QLayout *pLayout = ui->mainFuncWidget->layout();
 	pLayout->setSpacing(VIDEO_WALL_SPACE);
@@ -395,3 +397,11 @@ void MainDialog::slot_btnSubAudioClicked()
 	dlgSubscribeAudio->setAttribute(Qt::WA_DeleteOnClose);
 	dlgSubscribeAudio->show();
 }
+
+void MainDialog::slot_btnBeautyClicked()
+{
+	TestVideoBeauty *dlg = new TestVideoBeauty(this);
+	dlg->setAttribute(Qt::WA_DeleteOnClose);
+	dlg->show();
+}
+

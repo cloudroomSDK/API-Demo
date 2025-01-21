@@ -5,17 +5,7 @@
 #include "CustomRenderWidget.h"
 #include "CustomRenderGLWidget.h"
 
-class CustomVideoView : public CustomRenderWidget
-{
-public:
-	CustomVideoView(QWidget *parent) : CustomRenderWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
-};
 
-class CustomVideoView_GL : public CustomRenderGLWidget
-{
-public:
-	CustomVideoView_GL(QWidget *parent) : CustomRenderGLWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
-};
 
 class CustomVideoInputThread : public QThread
 {
@@ -72,6 +62,7 @@ protected:
 	void showEvent(QShowEvent *evt) override;
 	void hideEvent(QHideEvent *evt) override;
 
+	void loadPicFrame();
 	void updateVideoID();
 
 private:

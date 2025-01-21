@@ -29,7 +29,7 @@ signals:
 	void s_recvFrame(qint64 ts);
 
 protected:
-	void onRenderFrameDat(const CRVideoFrame &frm) override;
+	void onRenderFrameDat(const CRVideoFrame &frm, const CRUserVideoID &realVideoID) override;
 	void paintEvent(QPaintEvent *event) override;
 	void hideEvent(QHideEvent* event) override;
 	void showEvent(QShowEvent* event) override;
@@ -47,6 +47,12 @@ private:
 
 	//CRFPSStatistics	m_recvFps;
 	//CRFPSStatistics	m_drawFps;
+};
+
+class CustomVideoView : public CustomRenderWidget
+{
+public:
+	CustomVideoView(QWidget *parent) : CustomRenderWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
 };
 
 #endif // CUSTOMRENDERWIDGET_H

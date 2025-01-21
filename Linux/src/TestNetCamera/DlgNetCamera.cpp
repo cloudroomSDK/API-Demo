@@ -13,9 +13,6 @@ DlgNetCamera::DlgNetCamera(QWidget *parent)
 	: QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint)
 {
 	ui.setupUi(this);	
-	m_videoView = new NetVideoView(this);
-	ui.videoLayout->addWidget(m_videoView);
-
 	connect(ui.btnOperate, &QPushButton::clicked, this, &DlgNetCamera::slot_btnOperateClicked);
 
 	g_sdkMain->getSDKMeeting().AddCallBack(this);
@@ -38,13 +35,13 @@ void DlgNetCamera::updateUI()
 	ui.btnOperate->setText(s_netCamID == -1 ? tr("添加") : tr("删除"));
 	if (s_netCamID == -1)
 	{
-		m_videoView->setVideoID(CRUserVideoID());
+		ui.videoView->setVideoID(CRUserVideoID());
 	}
 	else
 	{
 		//打开
 		g_sdkMain->getSDKMeeting().openVideo(MainDialog::getMyUserID().constData());
-		m_videoView->setVideoID(CRUserVideoID(MainDialog::getMyUserID(), s_netCamID));
+		ui.videoView->setVideoID(CRUserVideoID(MainDialog::getMyUserID(), s_netCamID));
 	}
 }
 

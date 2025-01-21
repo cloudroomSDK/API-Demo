@@ -23,6 +23,7 @@ public slots:
 	void slot_bpsChanged(int val);
 	void slot_videoTransModeChanged(int id);
 	void slot_HwChanged();
+	void slot_denoiseStateChanged(int st);
 
 protected:
 	void initVideoParams();
@@ -33,6 +34,7 @@ private:
 	Ui::DlgVideoSet ui;
 	VideoCfg		m_vCfg;
 	int				m_defKBps;
+	VideoEffectsObj	m_vEffects;
 
 	enum VIDEO_TRANS_MODE {VTM_QUALITY, VTM_SMOOTH, VTM_BUTT};
 };

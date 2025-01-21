@@ -33,6 +33,13 @@ QString getErrDesc(CRVSDK_ERR_DEF err)
 		{ CRVSDKERR_TOKEN_AUTH_FAILED, "鉴权失败" },
 		{ CRVSDKERR_TOKEN_NOTTOKENTYPE, "非token鉴权方式" },
 		{ CRVSDKERR_API_NO_PERMISSION, "没有api访问权限" },
+
+		{ CRVSDKERR_CLIENT_NO_PERMISSION, "所有终端未授权" },
+		{ CRVSDKERR_CLIENT_SIP_NO_PERMISSION, "sip/h323终端未授权" },
+		{ CRVSDKERR_CLIENT_IPC_NO_PERMISSION, "IPC终端未授权" },
+		{ CRVSDKERR_CLIENT_PLATFORM_NO_PERMISSION, "当前使用的终端平台未授权" },
+		{ CRVSDKERR_CLIENT_PLATFORM_UNSPPORT, "不支持当前使用的终端平台" },
+
 		{ CRVSDKERR_ACCOUNT_EXPIRED, "账号已过期" },
 		{ CRVSDKERR_NETWORK_INITFAILED, "网络初始化失败" },
 		{ CRVSDKERR_NO_SERVERINFO, "没有服务器信息" },
@@ -110,13 +117,17 @@ QString getErrDesc(CRVSDK_ERR_DEF err)
 		{ CRVSDKERR_NETDISK_FILEORDIRECTORYNOTEXISTS, "文件或目录不存在" },
 		{ CRVSDKERR_NETDISK_FILENOTTRANSFORM, "文件没有转换" },
 		{ CRVSDKERR_NETDISK_TRANSFORMFAILED, "文件转换失败" },
-		{ CRVSDKERR_NETDISK_NOSPACE, "空间不足" }
+		{ CRVSDKERR_NETDISK_NOSPACE, "空间不足" },
+
+		{ CRVSDKERR_PLUGIN_INITFAILED, "插件加载失败" },
+		{ CRVSDKERR_PLUGIN_NOTINIT, "插件还未初始化" },
+		{ CRVSDKERR_PLUGIN_CREATEFAILED, "创建插件实例失败" }
 	};
 
 	auto pos = errs.find(err);
 	if (pos == errs.end())
 	{
-		return QString("未知错误(%d)").arg(err);
+		return QString("未知错误(%1)").arg(err);
 	}
 	return pos.value();
 }

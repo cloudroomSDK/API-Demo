@@ -6,14 +6,13 @@
 const int LOC_VERTEXIN = 0;
 const int LOC_TEXTUREIN_Y = 1;
 const int LOC_TEXTUREIN_U = 2;
+
 CustomRenderGLWidget::CustomRenderGLWidget(QWidget *parent, CRVSDK_STREAM_VIEWTYPE viewType) : QOpenGLWidget(NULL), CRCustomRenderHandler(viewType)
 {
 	this->setAttribute(Qt::WA_OpaquePaintEvent);
 	this->setAttribute(Qt::WA_NoSystemBackground);
-	m_bLocMirror = false;
-    m_textureU = m_textureV = m_textureY = nullptr;
-    m_programYUV420p = nullptr;
 	connect(this, SIGNAL(s_recvFrame(qint64)), this, SLOT(update()));
+	m_defBkColor = Qt::black;
 }
 
 CustomRenderGLWidget::~CustomRenderGLWidget()
@@ -21,6 +20,22 @@ CustomRenderGLWidget::~CustomRenderGLWidget()
 	releaseGL();
 	g_sdkMain->getSDKMeeting().rmCustomRender(this);
 }
+
+
+void CustomRenderGLWidget::setVideoID(const CRUserVideoID &id, CRVSDK_VSTEAMLV_TYPE lv)
+{
+	if (id == getVideoID() && lv == getVideoStreamLv())
+		return;
+
+	CRCustomRenderHandler::setVideoID(id, lv);
+	clearFrame();
+	if (!id._userID.isEmpty())
+	{
+		QMutexLocker locker(&m_frameLock);
+		m_frame = g_sdkMain->getSDKMeeting().GetVideoImg(id, lv);
+	}
+}
+
 
 CRVideoFrame CustomRenderGLWidget::getFrame()
 {
@@ -72,7 +87,7 @@ void CustomRenderGLWidget::updateRenderHandler()
 	}
 }
 
-void CustomRenderGLWidget::onRenderFrameDat(const CRVideoFrame &frm)
+void CustomRenderGLWidget::onRenderFrameDat(const CRVideoFrame &frm, const CRUserVideoID &realVideoID)
 {
 	//m_recvFps.AddCount();
 	//qDebug("recv fps:%d", int(m_recvFps.GetFPS()));
@@ -93,17 +108,14 @@ void CustomRenderGLWidget::showEvent(QShowEvent* event)
 {
 	QWidget::showEvent(event);
 	updateRenderHandler();
+	//QOpenGLWidget显示时不会触发update，需要手动调用
+	update();
 }
 
 void CustomRenderGLWidget::initializeGL()
 {
     QOpenGLWidget::initializeGL();
     initializeOpenGLFunctions();
-    if (!context()->isOpenGLES())
-    {
-        QMessageBox::information(g_mainDialog, tr("提示"), tr("启用OpenGL ES2.0失败！"));
-        return;
-    }
 
 	if (m_programYUV420p)
 	{
@@ -173,7 +185,7 @@ void CustomRenderGLWidget::paintGL()
 	{
 		return;
 	}
-	clearColor(Qt::black);
+	clearColor(m_defBkColor);
 
 	QPainter p(this);
 	if (this->width() <= 16 && this->height() <= 16)
@@ -193,10 +205,13 @@ void CustomRenderGLWidget::paintGL()
 			QRect drawRect = KeepAspectRatioDrawer::getContentRect(this, frmSize, CRVSDK_RENDERMD_FIT);
 			fillLastColumnDate(frm);
 
+			CRVSDK_COLORSPACE colorSpace = frm.getColSpace();
+			CRVSDK_COLORRANGE colorRange = frm.getColRange();
+
 			uint8_t *yuvDat[3];
 			int yuvLineSize[3];
 			frm.getRawDatPtr(yuvDat, yuvLineSize, 3);
-			drawYuv420p(yuvDat, yuvLineSize, frmSize, drawRect);
+			drawYuv420p(yuvDat, yuvLineSize, frmSize, colorSpace, colorRange, drawRect);
 		}
 	}
 
@@ -259,7 +274,7 @@ void CustomRenderGLWidget::fillLastColumnDate(CRVideoFrame &frm)
 }
 
 
-bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], const QSize &frmSize, const QRect &drawRt)
+bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], const QSize &frmSize, CRVSDK_COLORSPACE colorSpace, CRVSDK_COLORRANGE colorRange, const QRect &drawRt)
 {
 	QRect rt = !drawRt.isValid() ? rect() : drawRt;
 	glViewport(rt.left(), rt.top(), rt.width(), rt.height());
@@ -267,16 +282,16 @@ bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], c
 	m_programYUV420p->bind();
 	//视图矩阵
 	static const GLfloat vertexVertices[] = {
-		-1.0f, -1.0f,	// Bottom Left
-		1.0f, -1.0f,	//Bottom Right
-		-1.0f, 1.0f,	//Top Left  
-		1.0f, 1.0f,		//Top Right
+		-1.0f, -1.0f,	// Left Bottom
+		1.0f, -1.0f,	// Right Bottom
+		-1.0f, 1.0f,	// Left Top
+		1.0f, 1.0f,		// Right Top
 	};
 	static const GLfloat vertexVertices_mirror[] = {
-		1.0f, -1.0f,	//Bottom Right
-		-1.0f, -1.0f,	//Bottom Left
-		1.0f, 1.0f,		//Top Right
-		-1.0f, 1.0f,	//Top Left  
+		1.0f, -1.0f,	// Right Bottom
+		-1.0f, -1.0f,	// Left Bottom
+		1.0f, 1.0f,		// Right Top
+		-1.0f, 1.0f,	// Left Top
 	};
 	m_programYUV420p->enableAttributeArray(LOC_VERTEXIN);
 	m_programYUV420p->setAttributeArray(LOC_VERTEXIN, GL_FLOAT, m_bLocMirror ? vertexVertices_mirror:vertexVertices, 2);
@@ -284,10 +299,10 @@ bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], c
 	//y矩阵
 	float validRight_y = (float)frmSize.width() / yuvLineSize[0];
 	const GLfloat textureVertices_y[] = {
-		0.0f, 1.0f,			//Bottom Left 
-		validRight_y, 1.0f,	//Bottom Right
-		0.0f, 0.0f,			//Top Left 
-		validRight_y, 0.0f,	//Top Right 
+		0.0f, 1.0f,			// Left Bottom 
+		validRight_y, 1.0f,	// Right Bottom
+		0.0f, 0.0f,			// Left Top
+		validRight_y, 0.0f,	// Right Top 
 	};
 	m_programYUV420p->enableAttributeArray(LOC_TEXTUREIN_Y);
 	m_programYUV420p->setAttributeArray(LOC_TEXTUREIN_Y, GL_FLOAT, textureVertices_y, 2);
@@ -295,10 +310,10 @@ bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], c
 	//uv矩阵
 	float validRight_uv = (float)(frmSize.width() / 2) / yuvLineSize[1];
 	const GLfloat textureVertices_u[] = {
-		0.0f, 1.0f,				//Bottom Left 
-		validRight_uv, 1.0f,	//Bottom Right
-		0.0f, 0.0f,				//Top Left  
-		validRight_uv, 0.0f,	//Top Right
+		0.0f, 1.0f,				// Left Bottom 
+		validRight_uv, 1.0f,	// Right Bottom
+		0.0f, 0.0f,				// Left Top
+		validRight_uv, 0.0f,	// Right Top 
 	};
 	m_programYUV420p->enableAttributeArray(LOC_TEXTUREIN_U);
 	m_programYUV420p->setAttributeArray(LOC_TEXTUREIN_U, GL_FLOAT, textureVertices_u, 2);
@@ -306,17 +321,26 @@ bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], c
 
 	m_textureY->bind(0);//激活纹理单元GL_TEXTURE0
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, yuvLineSize[0], frmSize.height(), 0, GL_RED, GL_UNSIGNED_BYTE, yuvDat[0]);
+	//glGenerateMipmap(GL_TEXTURE_2D);
 
 	m_textureU->bind(1);//激活纹理单元GL_TEXTURE1
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, yuvLineSize[1], frmSize.height() / 2, 0, GL_RED, GL_UNSIGNED_BYTE, yuvDat[1]);
+	//glGenerateMipmap(GL_TEXTURE_2D);
 
 	m_textureV->bind(2);//激活纹理单元GL_TEXTURE2
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, yuvLineSize[2], frmSize.height() / 2, 0, GL_RED, GL_UNSIGNED_BYTE, yuvDat[2]);
+	//glGenerateMipmap(GL_TEXTURE_2D);
 
-	//绘制
+	//
 	m_programYUV420p->setUniformValue("tex_y", 0);
 	m_programYUV420p->setUniformValue("tex_u", 1);
 	m_programYUV420p->setUniformValue("tex_v", 2);
+
+	//颜色空间
+	m_programYUV420p->setUniformValue("color_space", int(colorSpace));
+	m_programYUV420p->setUniformValue("color_range", int(colorRange));
+
+	//绘制
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	m_textureY->release();

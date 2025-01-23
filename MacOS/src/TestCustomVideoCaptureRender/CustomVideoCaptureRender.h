@@ -5,17 +5,48 @@
 #include "CustomRenderWidget.h"
 #include "CustomRenderGLWidget.h"
 
-class CustomVideoView : public CustomRenderWidget
+
+
+class CustomVideoInputThread : public QThread
 {
+	Q_OBJECT
 public:
-	CustomVideoView(QWidget *parent) : CustomRenderWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
+	CustomVideoInputThread()
+	{
+		this->moveToThread(this);
+		_timer.moveToThread(this);
+		_timer.setTimerType(Qt::PreciseTimer);
+		connect(&_timer, &QTimer::timeout, this, &CustomVideoInputThread::slot_doInput);
+	}
+	~CustomVideoInputThread() = default;
+
+	void start(int videoID)
+	{
+		_id = videoID;
+		QThread::start();
+	}
+	void stop()
+	{
+		QThread::quit();
+	}
+
+protected:
+	virtual void run()
+	{
+		_timer.start(16); //fps 60
+		QThread::run();
+		_timer.stop();
+	}
+
+protected slots :
+	void slot_doInput();
+
+private:
+	QTimer	_timer;
+	int		_id{ 0 };
 };
 
-class CustomVideoView_GL : public CustomRenderGLWidget
-{
-public:
-	CustomVideoView_GL(QWidget *parent) : CustomRenderGLWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
-};
+
 class CustomVideoCaptureRender : public QDialog, public CRVideoSDKMeetingCallBack
 {
 	Q_OBJECT
@@ -27,8 +58,12 @@ protected slots:
 	void slot_videoCap();
 
 protected:
-	void inputCustomPic();
-	virtual void notifyVideoStatusChanged(const char* userID, int oldStatus, int newStatus, const char* oprUserID);
+	void notifyVideoStatusChanged(const char* userID, CRVSDK_VSTATUS oldStatus, CRVSDK_VSTATUS newStatus, const char* oprUserID) override;
+	void showEvent(QShowEvent *evt) override;
+	void hideEvent(QHideEvent *evt) override;
+
+	void loadPicFrame();
+	void updateVideoID();
 
 private:
 	Ui::CustomVideoCaptureRender ui;
@@ -37,10 +72,12 @@ private:
 	bool m_bVideoCap;
 	int m_capVideoDevID;
 	int m_oldDefVideoID;
+	CustomVideoInputThread m_customInputThrd;
 
 	//渲染部分
 	CustomVideoView* m_customRenderView;
 	CustomVideoView_GL* m_customRenderView_GL;
+
 };
 
 #endif // CUSTOMVIDEOCAPTURERENDER_H

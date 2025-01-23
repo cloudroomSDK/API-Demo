@@ -21,16 +21,20 @@ DlgVideoSet::DlgVideoSet(QWidget *parent)
 
 	ui.cbBx_fps->insertItem(0, QString("8"), 8);
 	ui.cbBx_fps->insertItem(1, QString("15"), 15);
-	ui.cbBx_fps->insertItem(2, QString("30"), 30);
-	ui.cbBx_fps->insertItem(3, QString("60"), 60);
+	ui.cbBx_fps->insertItem(2, QString("25"), 25);
+	ui.cbBx_fps->insertItem(3, QString("30"), 30);
+	ui.cbBx_fps->insertItem(4, QString("60"), 60);
 
 	m_defKBps = 350;
 	ui.sld_bps->setRange(5, 20);
 
 	connect(ui.cbBx_camSel, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_camSelChanged(int)));
+	connect(ui.cbBx_camSel_2, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_camSel2Changed(int)));
+	
 	connect(ui.cbBx_resolution, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_resolutionChanged(int)));
 	connect(ui.cbBx_fps, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_fpsChanged(int)));
 	connect(ui.sld_bps, &QSlider::valueChanged, this, &DlgVideoSet::slot_bpsChanged);
+	connect(ui.ck_denoise, SIGNAL(stateChanged(int)), this, SLOT(slot_denoiseStateChanged(int)));
 
 	QButtonGroup *modeGrp = new QButtonGroup(this);
 	modeGrp->setExclusive(true);
@@ -40,7 +44,6 @@ DlgVideoSet::DlgVideoSet(QWidget *parent)
 
 	initVideoParams();
 	g_sdkMain->getSDKMeeting().AddCallBack(this);
-
 }
 
 DlgVideoSet::~DlgVideoSet()
@@ -69,6 +72,23 @@ void DlgVideoSet::slot_camSelChanged(int idx)
 	int camId = ui.cbBx_camSel->itemData(idx).toInt();
 
 	g_sdkMain->getSDKMeeting().setDefaultVideo(camId);
+}
+
+void DlgVideoSet::slot_camSel2Changed(int idx)
+{
+	int camId = ui.cbBx_camSel_2->itemData(idx).toInt();
+	if (camId != 0)
+	{
+		//开启多摄像头
+		int moreVideos[1];
+		moreVideos[0] = camId;
+		g_sdkMain->getSDKMeeting().setMutiVideos(moreVideos, 1);
+	}
+	else
+	{
+		//关闭多摄像头
+		g_sdkMain->getSDKMeeting().setMutiVideos(NULL, 0);
+	}
 }
 
 void DlgVideoSet::slot_resolutionChanged(int idx)
@@ -140,6 +160,14 @@ void DlgVideoSet::slot_videoTransModeChanged(int id)
 	g_sdkMain->getSDKMeeting().setVideoCfg(jsonCfg.constData());
 }
 
+void DlgVideoSet::slot_denoiseStateChanged(int st)
+{
+	m_vEffects._denoise = (st == Qt::Checked);
+	QByteArray jsonCfg = StructToJson(m_vEffects);
+	g_sdkMain->getSDKMeeting().setVideoEffects(jsonCfg.constData());
+}
+
+
 void DlgVideoSet::initVideoParams()
 {
 	initCamera();
@@ -149,6 +177,7 @@ void DlgVideoSet::initVideoParams()
 	ui.sld_bps->blockSignals(true);
 	ui.rb_qualityMode->blockSignals(true);
 	ui.rb_smoothMode->blockSignals(true);
+	ui.ck_denoise->blockSignals(true);
 
 	CRString jsonStr = g_sdkMain->getSDKMeeting().getVideoCfg();
 	m_vCfg = JsonToStruct<VideoCfg>(crStrToByteArray(jsonStr));
@@ -161,6 +190,10 @@ void DlgVideoSet::initVideoParams()
 	else if(m_vCfg._fps >= 30)
 	{
 		findFps = 30;
+	}
+	else if (m_vCfg._fps >= 25)
+	{
+		findFps = 25;
 	}
 	else if(m_vCfg._fps >= 15)
 	{
@@ -222,40 +255,55 @@ void DlgVideoSet::initVideoParams()
 		ui.rb_smoothMode->setChecked(true);
 	}
 
+	jsonStr = g_sdkMain->getSDKMeeting().getVideoEffects();
+	m_vEffects = JsonToStruct<VideoEffectsObj>(crStrToByteArray(jsonStr));
+	ui.ck_denoise->setChecked(m_vEffects._denoise);
+
 	ui.cbBx_resolution->blockSignals(false);
 	ui.cbBx_fps->blockSignals(false);
 	ui.sld_bps->blockSignals(false);
 	ui.rb_qualityMode->blockSignals(false);
 	ui.rb_smoothMode->blockSignals(false);
+	ui.ck_denoise->blockSignals(false);
 }
 
 void DlgVideoSet::initCamera()
 {
-	ui.cbBx_camSel->blockSignals(true);
+	int defCam = g_sdkMain->getSDKMeeting().getDefaultVideo(MainDialog::getMyUserID().constData());
+	initCamera(ui.cbBx_camSel, defCam);
 
-	ui.cbBx_camSel->clear();
+	int multiCam = -1;
+	CRBase::CRArray<int> lst = g_sdkMain->getSDKMeeting().getMutiVideos(MainDialog::getMyUserID().constData());
+	if (lst.count() > 0)
+	{
+		multiCam = lst.item(0);
+	}
+	initCamera(ui.cbBx_camSel_2, multiCam);
+}
+
+void DlgVideoSet::initCamera(QComboBox *box, int defCam)
+{
+	box->blockSignals(true);
+
+	box->clear();
+	if (ui.cbBx_camSel_2 == box)
+	{
+		box->insertItem(0, tr("无"), 0);
+	}
 	CRBase::CRArray<CRVideoDevInfo> camDevs = g_sdkMain->getSDKMeeting().getAllVideoInfo(MainDialog::getMyUserID().constData());
     for(uint32_t i = 0; i < camDevs.count(); i++)
 	{
 		const CRVideoDevInfo &devInfo = camDevs.item(i);
-		ui.cbBx_camSel->insertItem(i, crStrToQStr(devInfo._devName), devInfo._videoID);
+		box->insertItem(box->count(), crStrToQStr(devInfo._devName), devInfo._videoID);
 	}
 
-	int defCam = g_sdkMain->getSDKMeeting().getDefaultVideo(MainDialog::getMyUserID().constData());
-	if(defCam >= 0 && ui.cbBx_camSel->count() > 0)
+	int boxIndex = -1;
+	if (defCam >= 0 && box->count() > 0)
 	{
-		int camIdx = ui.cbBx_camSel->findData(defCam);
-		if(camIdx > -1)
-		{
-			ui.cbBx_camSel->setCurrentIndex(camIdx);
-		}
-		else
-		{
-			ui.cbBx_camSel->setCurrentIndex(0);
-		}
+		boxIndex = box->findData(defCam);
 	}
-
-	ui.cbBx_camSel->blockSignals(false);
+	box->setCurrentIndex(boxIndex != -1 ? boxIndex: 0);
+	box->blockSignals(false);
 }
 
 void DlgVideoSet::slot_HwChanged()

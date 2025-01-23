@@ -37,10 +37,11 @@ protected:
 	virtual void notifyMicEnergy(const char* userID, int oldLevel, int newLevel);
 
 	virtual void notifyVideoStatusChanged(const char* userID, CRVSDK_VSTATUS oldStatus, CRVSDK_VSTATUS newStatus, const char* oprUserID);
+	virtual void notifyVideoDevChanged(const char* userID);
 
 private:
 	KVideoUI* createVideoUI();
-	KVideoUI* findVideoUIByUserID(const char* userID);
+	QList<KVideoUI*> findVideoUIByUserID(const char* userID);
 	KVideoUI* findUnusedUI();
 	KVideoUI* findLastUsedUI();
 	bool isWallPageFull();
@@ -55,6 +56,7 @@ private:
 	void resetVideoWidgetSize();
 	void relayoutVideoWidgets_H();
 	void resetVideoWidgetSize_H();
+	QList<CRUserVideoID> addUserToVideoList(const CRBase::CRString &userId, bool bInsertFront);
 
 private:
 	Ui::VideoWallPage*		ui;

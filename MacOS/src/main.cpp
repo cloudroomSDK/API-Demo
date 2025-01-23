@@ -44,7 +44,6 @@ public:
 	}
 };
 
-
 int main(int argc, char *argv[])
 {
 	QFileInfo qfinfo(QString::fromLocal8Bit(argv[0]));

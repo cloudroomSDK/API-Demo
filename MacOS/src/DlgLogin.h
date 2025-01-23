@@ -49,7 +49,7 @@ private:
 	QString m_userId;
 	int m_meetid;
 	UI_STATE m_state;
-	MainDialog* m_mainDlg;
+	MainDialog* m_mainDlg = nullptr;
 };
 
 #endif // DLGLOGIN_H

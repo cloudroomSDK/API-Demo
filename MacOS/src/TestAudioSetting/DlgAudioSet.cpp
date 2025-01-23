@@ -16,6 +16,9 @@ DlgAudioSet::DlgAudioSet(QWidget *parent)
     connect(ui.cbBx_spkSel, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_spkSelChanged(int)));
 	connect(ui.sld_micVol, &QSlider::valueChanged, this, &DlgAudioSet::slot_micVolChanged);
 	connect(ui.sld_spkVol, &QSlider::valueChanged, this, &DlgAudioSet::slot_spkVolChanged);
+	connect(ui.agc, &QCheckBox::stateChanged, this, &DlgAudioSet::slot_3AChanged);
+	connect(ui.ans, &QCheckBox::stateChanged, this, &DlgAudioSet::slot_3AChanged);
+	connect(ui.aec, &QCheckBox::stateChanged, this, &DlgAudioSet::slot_3AChanged);
 
 	ui.sld_micVol->setRange(0, 255);
 	ui.sld_spkVol->setRange(0, 255);
@@ -61,10 +64,25 @@ void DlgAudioSet::slot_spkVolChanged(int vol)
 	g_sdkMain->getSDKMeeting().setSpkVolume(vol);
 }
 
+void DlgAudioSet::slot_3AChanged()
+{
+	CRAudioCfg aCfg = g_sdkMain->getSDKMeeting().getAudioCfg();
+	aCfg._agc = ui.agc->isChecked();
+	aCfg._ans = ui.ans->isChecked();
+	aCfg._aec = ui.aec->isChecked();
+	g_sdkMain->getSDKMeeting().setAudioCfg(aCfg);
+
+	ui.sld_micVol->setEnabled(!aCfg._agc);
+}
+
+
 void DlgAudioSet::initAudioDevs()
 {
 	ui.cbBx_micSel->blockSignals(true);
 	ui.cbBx_spkSel->blockSignals(true);
+	ui.agc->blockSignals(true);
+	ui.aec->blockSignals(true);
+	ui.ans->blockSignals(true);
 
 	//添加麦设备列表
 	ui.cbBx_micSel->clear();
@@ -120,9 +138,17 @@ void DlgAudioSet::initAudioDevs()
 			ui.cbBx_spkSel->setCurrentIndex(0);
 		}
 	}
+	ui.agc->setChecked(aCfg._agc);
+	ui.aec->setChecked(aCfg._aec);
+	ui.ans->setChecked(aCfg._ans);
 
 	ui.cbBx_micSel->blockSignals(false);
 	ui.cbBx_spkSel->blockSignals(false);
+	ui.agc->blockSignals(false);
+	ui.aec->blockSignals(false);
+	ui.ans->blockSignals(false);
+
+	ui.sld_micVol->setEnabled(!aCfg._agc);
 }
 
 void DlgAudioSet::slot_updateAudioVolum()

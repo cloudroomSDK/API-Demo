@@ -115,11 +115,19 @@ QPushButton:hover, QPushButton:pressed {
     </widget>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="videoLayout"/>
+    <widget class="CustomVideoView" name="videoView" native="true"/>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>CustomVideoView</class>
+   <extends>QWidget</extends>
+   <header location="global">CustomRenderWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

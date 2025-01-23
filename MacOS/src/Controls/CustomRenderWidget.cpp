@@ -9,6 +9,7 @@ CustomRenderWidget::CustomRenderWidget(QWidget *parent, CRVSDK_STREAM_VIEWTYPE v
 
 	connect(this, SIGNAL(s_recvFrame(qint64)), this, SLOT(update()));
 	m_bLocMirror = false;
+	m_defBkColor = Qt::black;
 }
 
 CustomRenderWidget::~CustomRenderWidget()
@@ -21,6 +22,21 @@ CRVideoFrame CustomRenderWidget::getFrame()
 	QMutexLocker locker(&m_frameLock);
 	return m_frame;
 }
+
+void CustomRenderWidget::setVideoID(const CRUserVideoID &id, CRVSDK_VSTEAMLV_TYPE lv)
+{
+	if (id == getVideoID() && lv == getVideoStreamLv())
+		return;
+
+	CRCustomRenderHandler::setVideoID(id, lv);
+	clearFrame();
+	if (!id._userID.isEmpty())
+	{
+		QMutexLocker locker(&m_frameLock);
+		m_frame = g_sdkMain->getSDKMeeting().GetVideoImg(id, lv);
+	}
+}
+
 
 int64_t CustomRenderWidget::getFrameTimestamp()
 {
@@ -67,7 +83,7 @@ void CustomRenderWidget::updateRenderHandler()
 }
 
 
-void CustomRenderWidget::onRenderFrameDat(const CRVideoFrame &frm)
+void CustomRenderWidget::onRenderFrameDat(const CRVideoFrame &frm, const CRUserVideoID &realVideoID)
 {
 	//m_recvFps.AddCount();
 	//qDebug("recv fps:%d", int(m_recvFps.GetFPS()));
@@ -79,13 +95,26 @@ void CustomRenderWidget::onRenderFrameDat(const CRVideoFrame &frm)
 	emit s_recvFrame(frm.getPts());
 }
 
+void CustomRenderWidget::setDefaultBackground(const QColor &color)
+{
+	m_defBkColor = color; 
+	update();
+}
+
 void CustomRenderWidget::paintEvent(QPaintEvent *event)
 {
 	//m_drawFps.AddCount();
 	//qDebug("draw fps:%d", int(m_drawFps.GetFPS()));
-
 	CRVideoFrame frm = getFrame();
-	KeepAspectRatioDrawer::DrawImage(this, frm, CRVSDK_RENDERMD_FIT, m_bLocMirror);
+	if (frm.getFrameSize().isEmpty())
+	{
+		QPainter p(this);
+		p.fillRect(rect(), m_defBkColor);
+	}
+	else
+	{
+		KeepAspectRatioDrawer::DrawImage(this, frm, CRVSDK_RENDERMD_FIT, m_bLocMirror);
+	}
 }
 
 

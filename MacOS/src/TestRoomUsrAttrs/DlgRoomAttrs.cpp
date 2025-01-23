@@ -3,6 +3,8 @@
 #include "DlgAddOrEditAttr.h"
 #include "maindialog.h"
 
+const std::string g_notifyAll = "{\"notifyAll\":1}";
+
 DlgRoomAttrs::DlgRoomAttrs(QWidget *parent)
 	: QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint)
 {
@@ -121,7 +123,7 @@ void DlgRoomAttrs::slot_btnAddClicked()
 		QVariantMap varMap;
 		varMap[m_operKey] = m_operVal;
 		QByteArray jsonStr = CoverJsonToString(varMap);
-		g_sdkMain->getSDKMeeting().addOrUpdateMeetingAttrs(jsonStr.constData(), NULL, m_cookie.constData());
+		g_sdkMain->getSDKMeeting().addOrUpdateMeetingAttrs(jsonStr.constData(), g_notifyAll.c_str(), m_cookie.constData());
 	}
 }
 
@@ -137,7 +139,7 @@ void DlgRoomAttrs::slot_btnRemoveClicked()
 	varList.push_back(m_operKey);
 	QByteArray jsonStr = CoverJsonToString(varList);
 
-	g_sdkMain->getSDKMeeting().delMeetingAttrs(jsonStr.constData(), NULL, m_cookie.constData());
+	g_sdkMain->getSDKMeeting().delMeetingAttrs(jsonStr.constData(), g_notifyAll.c_str(), m_cookie.constData());
 }
 
 void DlgRoomAttrs::slot_btnRemoveAllClicked()
@@ -146,7 +148,7 @@ void DlgRoomAttrs::slot_btnRemoveAllClicked()
 		return;
 
 	clearOperStrings();
-	g_sdkMain->getSDKMeeting().clearMeetingAttrs(NULL, m_cookie.constData());
+	g_sdkMain->getSDKMeeting().clearMeetingAttrs(g_notifyAll.c_str(), m_cookie.constData());
 }
 
 void DlgRoomAttrs::slot_btnEditClicked()
@@ -180,7 +182,7 @@ void DlgRoomAttrs::slot_cellDoubleClicked(int row, int col)
 		QVariantMap varMap;
 		varMap[m_operKey] = m_operVal;
 		QByteArray jsonStr = CoverJsonToString(varMap);
-		g_sdkMain->getSDKMeeting().addOrUpdateMeetingAttrs(jsonStr.constData(), NULL, m_cookie.constData());
+		g_sdkMain->getSDKMeeting().addOrUpdateMeetingAttrs(jsonStr.constData(), g_notifyAll.c_str(), m_cookie.constData());
 	}
 }
 

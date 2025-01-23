@@ -26,5 +26,34 @@ struct VideoCfg
 void Struct_Cov(const QVariantMap &src, VideoCfg &dst);
 void Struct_Cov(const VideoCfg &src, QVariantMap &dst);
 
+struct VideoEffectsObj
+{
+	int _denoise = 1;
+	int _mirror = 0;
+};
+void Struct_Cov(const QVariantMap &src, VideoEffectsObj &dst);
+void Struct_Cov(const VideoEffectsObj &src, QVariantMap &dst);
+
+enum BeautyFilterType
+{
+	//美颜
+	BeautySmooth = 0,	//磨皮，0~1, 默认0
+	BeautyWhiten,		//美白，0~1, 默认0
+	BeautyLipstick,		//红唇，0~1, 默认0
+	BeautyBlusher,		//腮红，0~1, 默认0
+	BeautyThinFace,		//瘦脸，0~1, 默认0
+	BeautyBigEye,		//大眼，0~1, 默认0
+
+	BeautyFilterType_Butt
+};
+QString getBeautyFilterTypeName(BeautyFilterType type);
+
+struct BeautyCfg {
+	std::map<BeautyFilterType, float> filters;
+};
+
+void Struct_Cov(const QVariantMap &src, BeautyCfg &dst);
+void Struct_Cov(const BeautyCfg &src, QVariantMap &dst);
+
 
 #endif	//_OBJSDEF_H_

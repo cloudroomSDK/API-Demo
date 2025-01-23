@@ -4,11 +4,6 @@
 #include "ui_DlgNetCamera.h"
 #include "CustomRenderWidget.h"
 
-class NetVideoView : public CustomRenderWidget
-{
-public:
-	NetVideoView(QWidget *parent) : CustomRenderWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
-};
 
 class DlgNetCamera : public QDialog, public CRVideoSDKMeetingCallBack
 {
@@ -30,7 +25,6 @@ protected:
 
 private:
 	Ui::DlgNetCamera ui;
-	NetVideoView *m_videoView;
 	
 	static int s_netCamID;
 	static int s_oldDefVideoID;

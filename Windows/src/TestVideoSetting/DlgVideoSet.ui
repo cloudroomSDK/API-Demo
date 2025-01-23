@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>354</width>
-    <height>238</height>
+    <height>273</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,6 +103,16 @@ QSlider::handle:horizontal {
    <item row="0" column="1">
     <widget class="QComboBox" name="cbBx_camSel"/>
    </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>选择副摄像头：</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="cbBx_camSel_2"/>
+   </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
@@ -165,15 +175,22 @@ QSlider::handle:horizontal {
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_5">
+   <item row="6" column="1">
+    <widget class="QCheckBox" name="ck_denoise">
+     <property name="styleSheet">
+      <string notr="true">color: rgba(0, 0, 0,0);</string>
+     </property>
      <property name="text">
-      <string>选择副摄像头：</string>
+      <string>aaaaaaaaaaaaaaaaaaaaa</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="cbBx_camSel_2"/>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>视频降噪：</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

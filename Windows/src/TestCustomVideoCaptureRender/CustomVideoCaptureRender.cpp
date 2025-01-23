@@ -2,8 +2,8 @@
 #include "CustomVideoCaptureRender.h"
 #include "maindialog.h"
 
-#define VideoRate (float)16/9
-CRVSDK_VIDEO_FORMAT InputFrmFmt = CRVSDK_VFMT_YUV420P;  //420p内部效率最高
+
+static CRVideoFrame g_picFrm;
 
 CustomVideoCaptureRender::CustomVideoCaptureRender(QWidget *parent) : QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint)
 {
@@ -33,13 +33,39 @@ CustomVideoCaptureRender::~CustomVideoCaptureRender()
 }
 
 ///////////////自定义采集///////////////////
+
+void CustomVideoCaptureRender::loadPicFrame()
+{
+	g_picFrm.clear();
+
+	QString fileName = QString(":/Resources/custom_video_1280x720.jpg");
+	CRByteArray jpgDat;
+	ReadDataFromFile(fileName, jpgDat);
+
+	CRVSDK_ERR_DEF err;
+	if ((err = g_sdkMain->coverToVideoFrame(jpgDat, "jpg", g_picFrm)) != 0)
+	{
+		qDebug("decode jpg failed: %d!", err);
+		return;
+	}
+
+	//420p内部效率最高
+	if (!g_sdkMain->videoFrameCover(g_picFrm, CRVSDK_VFMT_YUV420P, g_picFrm.getWidth(), g_picFrm.getHeight()))
+	{
+		qDebug("decode jpg failed!");
+		return;
+	}
+}
+
 void CustomVideoCaptureRender::slot_videoCap()
 {
 	bool bCap = !m_bVideoCap;
 	if (bCap)//开始视频采集
 	{
+		loadPicFrame();
+
 		//添加一个自定义设备
-		m_capVideoDevID = g_sdkMain->getSDKMeeting().createCustomVideoDev(qStrToStdStr(makeUUID()).c_str(), InputFrmFmt, 1280, 720, "");
+		m_capVideoDevID = g_sdkMain->getSDKMeeting().createCustomVideoDev(qStrToStdStr(makeUUID()).c_str(), g_picFrm.getFormat(), g_picFrm.getWidth(), g_picFrm.getHeight(), "");
 		if (m_capVideoDevID <= 0)
 		{
 			QMessageBox::information(this, "提示", tr("开始视频自定义采集"));
@@ -112,26 +138,7 @@ void CustomVideoCaptureRender::hideEvent(QHideEvent *evt)
 void CustomVideoInputThread::slot_doInput()
 {
 	CRVSDK_ERR_DEF err;
-
-	static CRVideoFrame frm;
-	if (frm.getFormat() == CRVSDK_VFMT_INVALID)
-	{
-		CRByteArray jpgDat;
-		ReadDataFromFile(":/Resources/custom_video_1280x720.jpg", jpgDat);
-
-		if ((err=g_sdkMain->coverToVideoFrame(jpgDat, "jpg", frm)) != 0)
-		{
-			qDebug("decode jpg failed: %d!", err);
-			return;
-		}
-		if (!g_sdkMain->videoFrameCover(frm, InputFrmFmt, frm.getWidth(), frm.getHeight()))
-		{
-			qDebug("decode jpg failed!");
-			return;
-		}
-	}
-
-	if ((err = g_sdkMain->getSDKMeeting().inputCustomVideoDat(_id, frm)) != 0)
+	if ((err = g_sdkMain->getSDKMeeting().inputCustomVideoDat(_id, g_picFrm)) != 0)
 	{
 		qDebug("inputCustomVideoDat failed: %d!", err);
 		return;

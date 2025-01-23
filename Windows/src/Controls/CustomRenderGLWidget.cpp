@@ -282,16 +282,16 @@ bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], c
 	m_programYUV420p->bind();
 	//视图矩阵
 	static const GLfloat vertexVertices[] = {
-		-1.0f, -1.0f,	// Bottom Left
-		1.0f, -1.0f,	//Bottom Right
-		-1.0f, 1.0f,	//Top Left  
-		1.0f, 1.0f,		//Top Right
+		-1.0f, -1.0f,	// Left Bottom
+		1.0f, -1.0f,	// Right Bottom
+		-1.0f, 1.0f,	// Left Top
+		1.0f, 1.0f,		// Right Top
 	};
 	static const GLfloat vertexVertices_mirror[] = {
-		1.0f, -1.0f,	//Bottom Right
-		-1.0f, -1.0f,	//Bottom Left
-		1.0f, 1.0f,		//Top Right
-		-1.0f, 1.0f,	//Top Left  
+		1.0f, -1.0f,	// Right Bottom
+		-1.0f, -1.0f,	// Left Bottom
+		1.0f, 1.0f,		// Right Top
+		-1.0f, 1.0f,	// Left Top
 	};
 	m_programYUV420p->enableAttributeArray(LOC_VERTEXIN);
 	m_programYUV420p->setAttributeArray(LOC_VERTEXIN, GL_FLOAT, m_bLocMirror ? vertexVertices_mirror:vertexVertices, 2);
@@ -299,10 +299,10 @@ bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], c
 	//y矩阵
 	float validRight_y = (float)frmSize.width() / yuvLineSize[0];
 	const GLfloat textureVertices_y[] = {
-		0.0f, 1.0f,			//Bottom Left 
-		validRight_y, 1.0f,	//Bottom Right
-		0.0f, 0.0f,			//Top Left 
-		validRight_y, 0.0f,	//Top Right 
+		0.0f, 1.0f,			// Left Bottom 
+		validRight_y, 1.0f,	// Right Bottom
+		0.0f, 0.0f,			// Left Top
+		validRight_y, 0.0f,	// Right Top 
 	};
 	m_programYUV420p->enableAttributeArray(LOC_TEXTUREIN_Y);
 	m_programYUV420p->setAttributeArray(LOC_TEXTUREIN_Y, GL_FLOAT, textureVertices_y, 2);
@@ -310,10 +310,10 @@ bool CustomRenderGLWidget::drawYuv420p(uint8_t *yuvDat[3], int yuvLineSize[3], c
 	//uv矩阵
 	float validRight_uv = (float)(frmSize.width() / 2) / yuvLineSize[1];
 	const GLfloat textureVertices_u[] = {
-		0.0f, 1.0f,				//Bottom Left 
-		validRight_uv, 1.0f,	//Bottom Right
-		0.0f, 0.0f,				//Top Left  
-		validRight_uv, 0.0f,	//Top Right
+		0.0f, 1.0f,				// Left Bottom 
+		validRight_uv, 1.0f,	// Right Bottom
+		0.0f, 0.0f,				// Left Top
+		validRight_uv, 0.0f,	// Right Top 
 	};
 	m_programYUV420p->enableAttributeArray(LOC_TEXTUREIN_U);
 	m_programYUV420p->setAttributeArray(LOC_TEXTUREIN_U, GL_FLOAT, textureVertices_u, 2);

@@ -57,6 +57,7 @@ protected:
 	void slot_btnVoiceChangeClicked();
 	void slot_btnEchoTestClicked();
 	void slot_btnSubAudioClicked();
+	void slot_btnBeautyClicked();
 	
 
 	void slot_mediaPlaying(bool bPlaying);

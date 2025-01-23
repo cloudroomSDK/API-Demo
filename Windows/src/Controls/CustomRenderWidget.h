@@ -49,4 +49,10 @@ private:
 	//CRFPSStatistics	m_drawFps;
 };
 
+class CustomVideoView : public CustomRenderWidget
+{
+public:
+	CustomVideoView(QWidget *parent) : CustomRenderWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
+};
+
 #endif // CUSTOMRENDERWIDGET_H

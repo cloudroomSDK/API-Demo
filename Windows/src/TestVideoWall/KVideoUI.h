@@ -10,9 +10,9 @@ namespace Ui { class KVideoUI; }
 QT_END_NAMESPACE
 
 #if 1
-#	define CustomRenderBase CustomRenderWidget
+#	define CustomRenderBase CustomVideoView
 #else
-#	define CustomRenderBase CustomRenderGLWidget
+#	define CustomRenderBase CustomVideoView_GL
 #endif
 
 class KVideoUI : public CustomRenderBase

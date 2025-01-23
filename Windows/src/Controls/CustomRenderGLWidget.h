@@ -60,4 +60,11 @@ private:
 	QColor m_defBkColor;
 };
 
+
+class CustomVideoView_GL : public CustomRenderGLWidget
+{
+public:
+	CustomVideoView_GL(QWidget *parent) : CustomRenderGLWidget(parent, CRVSDK_VIEWTP_VIDEO) {}
+};
+
 #endif // CUSTOMRENDERGLWIDGET_H

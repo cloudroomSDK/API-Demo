@@ -3,6 +3,8 @@
 #include "DlgAddOrEditAttr.h"
 #include "maindialog.h"
 
+const std::string g_notifyAll = "{\"notifyAll\":1}";
+
 DlgUserAttrs::DlgUserAttrs(const CRString &userId, QWidget *parent)
 	: QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint), m_userId(userId)
 {
@@ -128,7 +130,7 @@ void DlgUserAttrs::slot_btnAddClicked()
 		QVariantMap varMap;
 		varMap[m_operKey] = m_operVal;
 		QByteArray jsonStr = CoverJsonToString(varMap);
-		g_sdkMain->getSDKMeeting().addOrUpdateUserAttrs(m_userId.constData(), jsonStr.constData(), NULL, m_cookie.constData());
+		g_sdkMain->getSDKMeeting().addOrUpdateUserAttrs(m_userId.constData(), jsonStr.constData(), g_notifyAll.c_str(), m_cookie.constData());
 	}
 }
 
@@ -144,7 +146,7 @@ void DlgUserAttrs::slot_btnRemoveClicked()
 	varList.push_back(m_operKey);
 	QByteArray jsonStr = CoverJsonToString(varList);
 
-	g_sdkMain->getSDKMeeting().delUserAttrs(m_userId.constData(), jsonStr.constData(), NULL, m_cookie.constData());
+	g_sdkMain->getSDKMeeting().delUserAttrs(m_userId.constData(), jsonStr.constData(), g_notifyAll.c_str(), m_cookie.constData());
 }
 
 void DlgUserAttrs::slot_btnRemoveAllClicked()
@@ -153,7 +155,7 @@ void DlgUserAttrs::slot_btnRemoveAllClicked()
 		return;
 
 	clearOperStrings();
-	g_sdkMain->getSDKMeeting().clearUserAttrs(m_userId.constData(), NULL, m_cookie.constData());
+	g_sdkMain->getSDKMeeting().clearUserAttrs(m_userId.constData(), g_notifyAll.c_str(), m_cookie.constData());
 }
 
 void DlgUserAttrs::slot_btnEditClicked()
@@ -187,7 +189,7 @@ void DlgUserAttrs::slot_cellDoubleClicked(int row, int col)
 		QVariantMap varMap;
 		varMap[m_operKey] = m_operVal;
 		QByteArray jsonStr = CoverJsonToString(varMap);
-		g_sdkMain->getSDKMeeting().addOrUpdateUserAttrs(m_userId.constData(), jsonStr.constData(), NULL, m_cookie.constData());
+		g_sdkMain->getSDKMeeting().addOrUpdateUserAttrs(m_userId.constData(), jsonStr.constData(), g_notifyAll.c_str(), m_cookie.constData());
 	}
 }
 

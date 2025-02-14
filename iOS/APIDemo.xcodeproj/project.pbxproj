@@ -85,6 +85,17 @@
 		1685165827893E94008B7951 /* VideoConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1685165727893E94008B7951 /* VideoConfigViewController.swift */; };
 		1685165C27897308008B7951 /* MenuContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1685165B27897308008B7951 /* MenuContainerView.swift */; };
 		1685165E278975FC008B7951 /* UIColor+HexColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1685165D278975FC008B7951 /* UIColor+HexColor.swift */; };
+		16E4C8042D57506100AFC2E7 /* CloudroomReplayKitExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C8032D57506100AFC2E7 /* CloudroomReplayKitExt.framework */; };
+		16E4C8092D5750D800AFC2E7 /* BeautyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16E4C8072D5750D800AFC2E7 /* BeautyViewController.swift */; };
+		16E4C80A2D5750D800AFC2E7 /* VoiceChangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16E4C8082D5750D800AFC2E7 /* VoiceChangeViewController.swift */; };
+		16E4C8102D5753CC00AFC2E7 /* CRBeauty.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C80B2D5753C500AFC2E7 /* CRBeauty.framework */; };
+		16E4C8112D5753CC00AFC2E7 /* CRBeauty.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C80B2D5753C500AFC2E7 /* CRBeauty.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		16E4C8122D5753CC00AFC2E7 /* vnn_core_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C80C2D5753C500AFC2E7 /* vnn_core_ios.framework */; };
+		16E4C8132D5753CC00AFC2E7 /* vnn_core_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C80C2D5753C500AFC2E7 /* vnn_core_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		16E4C8142D5753CC00AFC2E7 /* vnn_face_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C80D2D5753C500AFC2E7 /* vnn_face_ios.framework */; };
+		16E4C8152D5753CC00AFC2E7 /* vnn_face_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C80D2D5753C500AFC2E7 /* vnn_face_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		16E4C8162D5753CC00AFC2E7 /* vnn_kit_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C80E2D5753C500AFC2E7 /* vnn_kit_ios.framework */; };
+		16E4C8172D5753CC00AFC2E7 /* vnn_kit_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 16E4C80E2D5753C500AFC2E7 /* vnn_kit_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		16EF5C0A278FBF1F007A3449 /* VideoWallContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EF5C09278FBF1F007A3449 /* VideoWallContentView.swift */; };
 		16F2BC9C278BE69C0082CCB0 /* UIView+SafeArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F2BC9B278BE69C0082CCB0 /* UIView+SafeArea.swift */; };
 		16F2BC9F278C04030082CCB0 /* ChatRemoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F2BC9D278C04030082CCB0 /* ChatRemoteTableViewCell.swift */; };
@@ -103,7 +114,6 @@
 		16F789E7278D559E000BD7C3 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F789E6278D559E000BD7C3 /* ReplayKit.framework */; };
 		16F789EA278D559E000BD7C3 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F789E9278D559E000BD7C3 /* SampleHandler.swift */; };
 		16F789EE278D559E000BD7C3 /* ScreenShareUpload.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 16F789E5278D559E000BD7C3 /* ScreenShareUpload.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		16F789F6278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F789F5278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework */; };
 		16F789FE278D6342000BD7C3 /* BaseNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F789FD278D6342000BD7C3 /* BaseNavigationController.swift */; };
 		16F78A00278D916B000BD7C3 /* CRCornerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F789FF278D916B000BD7C3 /* CRCornerButton.swift */; };
 		16F7E50E2796DF4300AEFA06 /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F7E50D2796DF4300AEFA06 /* Path.swift */; };
@@ -131,7 +141,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				16E4C8152D5753CC00AFC2E7 /* vnn_face_ios.framework in Embed Frameworks */,
 				16307FF42787D55C005AC76E /* CloudroomVideoSDK_IOS.framework in Embed Frameworks */,
+				16E4C8112D5753CC00AFC2E7 /* CRBeauty.framework in Embed Frameworks */,
+				16E4C8172D5753CC00AFC2E7 /* vnn_kit_ios.framework in Embed Frameworks */,
+				16E4C8132D5753CC00AFC2E7 /* vnn_core_ios.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -227,6 +241,13 @@
 		1685165727893E94008B7951 /* VideoConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoConfigViewController.swift; sourceTree = "<group>"; };
 		1685165B27897308008B7951 /* MenuContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuContainerView.swift; sourceTree = "<group>"; };
 		1685165D278975FC008B7951 /* UIColor+HexColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+HexColor.swift"; sourceTree = "<group>"; };
+		16E4C8032D57506100AFC2E7 /* CloudroomReplayKitExt.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudroomReplayKitExt.framework; path = ../../Framework/Plugins/ScreenShare/CloudroomReplayKitExt.framework; sourceTree = "<group>"; };
+		16E4C8072D5750D800AFC2E7 /* BeautyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeautyViewController.swift; sourceTree = "<group>"; };
+		16E4C8082D5750D800AFC2E7 /* VoiceChangeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceChangeViewController.swift; sourceTree = "<group>"; };
+		16E4C80B2D5753C500AFC2E7 /* CRBeauty.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CRBeauty.framework; sourceTree = "<group>"; };
+		16E4C80C2D5753C500AFC2E7 /* vnn_core_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = vnn_core_ios.framework; sourceTree = "<group>"; };
+		16E4C80D2D5753C500AFC2E7 /* vnn_face_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = vnn_face_ios.framework; sourceTree = "<group>"; };
+		16E4C80E2D5753C500AFC2E7 /* vnn_kit_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = vnn_kit_ios.framework; sourceTree = "<group>"; };
 		16EF5C09278FBF1F007A3449 /* VideoWallContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoWallContentView.swift; sourceTree = "<group>"; };
 		16F2BC9B278BE69C0082CCB0 /* UIView+SafeArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+SafeArea.swift"; sourceTree = "<group>"; };
 		16F2BC9D278C04030082CCB0 /* ChatRemoteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRemoteTableViewCell.swift; sourceTree = "<group>"; };
@@ -248,7 +269,6 @@
 		16F789EB278D559E000BD7C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		16F789F3278D5C34000BD7C3 /* APIDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = APIDemo.entitlements; sourceTree = "<group>"; };
 		16F789F4278D5C8C000BD7C3 /* ScreenShareUpload.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScreenShareUpload.entitlements; sourceTree = "<group>"; };
-		16F789F5278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudroomReplayKitExt.framework; path = ../../Framework/CloudroomReplayKitExt.framework; sourceTree = "<group>"; };
 		16F789F9278D5DA3000BD7C3 /* ScreenShareUpload-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ScreenShareUpload-Bridging-Header.h"; sourceTree = "<group>"; };
 		16F789FD278D6342000BD7C3 /* BaseNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNavigationController.swift; sourceTree = "<group>"; };
 		16F789FF278D916B000BD7C3 /* CRCornerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCornerButton.swift; sourceTree = "<group>"; };
@@ -270,7 +290,7 @@
 			files = (
 				1604E20D2955412D00822FE0 /* libc++.tbd in Frameworks */,
 				16F789E7278D559E000BD7C3 /* ReplayKit.framework in Frameworks */,
-				16F789F6278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework in Frameworks */,
+				16E4C8042D57506100AFC2E7 /* CloudroomReplayKitExt.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,13 +300,17 @@
 			files = (
 				165EDF752786BE3200A34CC9 /* AudioToolbox.framework in Frameworks */,
 				165EDF732786BE2900A34CC9 /* AVFoundation.framework in Frameworks */,
+				16E4C8122D5753CC00AFC2E7 /* vnn_core_ios.framework in Frameworks */,
 				165EDF712786BE2300A34CC9 /* ExternalAccessory.framework in Frameworks */,
+				16E4C8162D5753CC00AFC2E7 /* vnn_kit_ios.framework in Frameworks */,
 				165EDF6F2786BE1700A34CC9 /* CoreMedia.framework in Frameworks */,
 				165EDF6D2786BE0900A34CC9 /* CoreServices.framework in Frameworks */,
 				165EDF6B2786BDF600A34CC9 /* SystemConfiguration.framework in Frameworks */,
 				165EDF692786BDF000A34CC9 /* Security.framework in Frameworks */,
+				16E4C8142D5753CC00AFC2E7 /* vnn_face_ios.framework in Frameworks */,
 				165EDF672786BDE700A34CC9 /* libbz2.tbd in Frameworks */,
 				165EDF652786BDD600A34CC9 /* libiconv.tbd in Frameworks */,
+				16E4C8102D5753CC00AFC2E7 /* CRBeauty.framework in Frameworks */,
 				165EDF632786BDC700A34CC9 /* libz.tbd in Frameworks */,
 				16307FF32787D55B005AC76E /* CloudroomVideoSDK_IOS.framework in Frameworks */,
 				165EDF612786BDB800A34CC9 /* libc++.tbd in Frameworks */,
@@ -325,6 +349,8 @@
 				1685165327893E49008B7951 /* LocalRecordViewController.swift */,
 				1685165527893E6C008B7951 /* MixerRecordViewController.swift */,
 				1685165B27897308008B7951 /* MenuContainerView.swift */,
+				16E4C8072D5750D800AFC2E7 /* BeautyViewController.swift */,
+				16E4C8082D5750D800AFC2E7 /* VoiceChangeViewController.swift */,
 			);
 			path = Meeting;
 			sourceTree = "<group>";
@@ -445,6 +471,18 @@
 			path = SnapKit;
 			sourceTree = "<group>";
 		};
+		16E4C80F2D5753C500AFC2E7 /* CRBeauty */ = {
+			isa = PBXGroup;
+			children = (
+				16E4C80B2D5753C500AFC2E7 /* CRBeauty.framework */,
+				16E4C80C2D5753C500AFC2E7 /* vnn_core_ios.framework */,
+				16E4C80D2D5753C500AFC2E7 /* vnn_face_ios.framework */,
+				16E4C80E2D5753C500AFC2E7 /* vnn_kit_ios.framework */,
+			);
+			name = CRBeauty;
+			path = ../../Framework/Plugins/CRBeauty;
+			sourceTree = "<group>";
+		};
 		16F5E84427996A89009B7D6C /* DLProgressHUD */ = {
 			isa = PBXGroup;
 			children = (
@@ -546,7 +584,8 @@
 		16FC05A02786983C008735E5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				16F789F5278D5CF8000BD7C3 /* CloudroomReplayKitExt.framework */,
+				16E4C80F2D5753C500AFC2E7 /* CRBeauty */,
+				16E4C8032D57506100AFC2E7 /* CloudroomReplayKitExt.framework */,
 				165EDF762786BEB900A34CC9 /* CloudroomVideoSDK_IOS.framework */,
 				165EDF742786BE3200A34CC9 /* AudioToolbox.framework */,
 				165EDF722786BE2900A34CC9 /* AVFoundation.framework */,
@@ -740,6 +779,7 @@
 				1675A46827A27E2B0031351E /* ConstraintPriority.swift in Sources */,
 				16F5E85627996A8A009B7D6C /* HudContainerView.swift in Sources */,
 				160B520C278EE607003D78DC /* CustomCameraView.swift in Sources */,
+				16E4C8092D5750D800AFC2E7 /* BeautyViewController.swift in Sources */,
 				16F2BC9F278C04030082CCB0 /* ChatRemoteTableViewCell.swift in Sources */,
 				1675A45F27A27E2B0031351E /* ConstraintMakerPrioritizable.swift in Sources */,
 				166BB26A2786EC39003B8916 /* BaseViewController.swift in Sources */,
@@ -750,6 +790,7 @@
 				16F7E50E2796DF4300AEFA06 /* Path.swift in Sources */,
 				160B520A278EDB4B003D78DC /* VideoCallViewController.swift in Sources */,
 				163080312788500C005AC76E /* UIApplication+Extension.swift in Sources */,
+				16E4C80A2D5750D800AFC2E7 /* VoiceChangeViewController.swift in Sources */,
 				166BB2702786FC81003B8916 /* HomeFunctionHeader.swift in Sources */,
 				16F5E85427996A8A009B7D6C /* HudTextOnlyView.swift in Sources */,
 				1675A46927A27E2B0031351E /* ConstraintInsetTarget.swift in Sources */,
@@ -802,7 +843,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/Plugins/ScreenShare";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScreenShareUpload/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScreenShareUpload;
@@ -835,7 +876,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/Plugins/ScreenShare";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScreenShareUpload/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScreenShareUpload;
@@ -986,7 +1027,10 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../Framework",
+					"$(PROJECT_DIR)/../../Framework/Plugins/CRBeauty",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = APIDemo/Info.plist;
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -1007,7 +1051,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.5.0;
+				MARKETING_VERSION = 4.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cloudroom.APIDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1028,7 +1072,10 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 93XFE92JTW;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../Framework/";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../Framework",
+					"$(PROJECT_DIR)/../../Framework/Plugins/CRBeauty",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = APIDemo/Info.plist;
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -1049,7 +1096,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.5.0;
+				MARKETING_VERSION = 4.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cloudroom.APIDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

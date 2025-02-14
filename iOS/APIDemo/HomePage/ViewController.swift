@@ -17,6 +17,8 @@ enum APIFeature: String, CaseIterable {
     case mixerRecord = "云端录制"
     case playVideo = "视频播放"
     case chat = "聊天"
+    case beauty = "美颜"
+    case voiceChange = "变声"
 }
 
 

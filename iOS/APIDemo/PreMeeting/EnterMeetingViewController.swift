@@ -103,6 +103,14 @@ class EnterMeetingViewController: BaseViewController, CloudroomVideoMgrCallBack,
             viewController = storyboard.instantiateViewController(withIdentifier: "IMViewController") as! IMViewController
             break
             
+        case .beauty:
+            viewController = storyboard.instantiateViewController(withIdentifier: "BeautyViewController") as! BeautyViewController
+            break
+            
+        case .voiceChange:
+            viewController = storyboard.instantiateViewController(withIdentifier: "VoiceChangeViewController") as! VoiceChangeViewController
+            break
+            
         default:
             break
         }

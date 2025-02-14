@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="WzF-mc-upg">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="WzF-mc-upg">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -71,13 +71,13 @@
                                 <rect key="frame" x="0.0" y="104" width="414" height="317"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="服务器地址：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zzh-nm-3UA">
-                                        <rect key="frame" x="15" y="23" width="104" height="21"/>
+                                        <rect key="frame" x="15" y="23" width="95.5" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="APP ID：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LZh-7w-ZCL">
-                                        <rect key="frame" x="15" y="119" width="70" height="21"/>
+                                        <rect key="frame" x="15" y="119" width="61" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -88,7 +88,7 @@
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="APP Secret：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dXK-6m-4xl">
-                                        <rect key="frame" x="15" y="218" width="104" height="21"/>
+                                        <rect key="frame" x="15" y="218" width="95" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -190,7 +190,7 @@
                                 <rect key="frame" x="0.0" y="60" width="414" height="324"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="请输入房间号：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XNm-wk-d1Q">
-                                        <rect key="frame" x="15" y="18" width="107.5" height="18"/>
+                                        <rect key="frame" x="15" y="18" width="100" height="18"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -941,6 +941,145 @@
             </objects>
             <point key="canvasLocation" x="4531.884057971015" y="1465.8482142857142"/>
         </scene>
+        <!--Beauty View Controller-->
+        <scene sceneID="2JN-Me-4lx">
+            <objects>
+                <viewController storyboardIdentifier="BeautyViewController" id="bsV-P0-Pw8" customClass="BeautyViewController" customModule="APIDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Pl7-6b-KGr">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9QH-mp-irT">
+                                <rect key="frame" x="0.0" y="698" width="414" height="164"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="开启美颜" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KIz-MI-vK2">
+                                        <rect key="frame" x="15" y="25" width="61.5" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Fmg-3g-5DT">
+                                        <rect key="frame" x="91.5" y="18.5" width="51" height="31"/>
+                                        <color key="onTintColor" red="0.22352941179999999" green="0.50588235290000005" blue="0.98823529409999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="thumbTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <connections>
+                                            <action selector="startBeautyChanged:" destination="bsV-P0-Pw8" eventType="valueChanged" id="n3P-FH-Zwd"/>
+                                        </connections>
+                                    </switch>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="美颜类型" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="so7-05-P34">
+                                        <rect key="frame" x="15" y="73" width="61.5" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="等级" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ybM-TT-C1b">
+                                        <rect key="frame" x="15" y="121" width="31" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="61J-41-J7F">
+                                        <rect key="frame" x="89.5" y="115" width="296.5" height="31"/>
+                                        <connections>
+                                            <action selector="beautyLevelChanged:" destination="bsV-P0-Pw8" eventType="valueChanged" id="UNT-s1-sDz"/>
+                                        </connections>
+                                    </slider>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="clu-7C-YbO">
+                                        <rect key="frame" x="91.5" y="66.5" width="307.5" height="32"/>
+                                        <segments>
+                                            <segment title="磨皮"/>
+                                            <segment title="美白"/>
+                                            <segment title="红唇"/>
+                                            <segment title="腮红"/>
+                                            <segment title="瘦脸"/>
+                                            <segment title="大眼"/>
+                                        </segments>
+                                        <color key="selectedSegmentTintColor" red="0.22352941179999999" green="0.50588235290000005" blue="0.98823529409999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <connections>
+                                            <action selector="segmentValueChanged:" destination="bsV-P0-Pw8" eventType="valueChanged" id="FLu-JM-m2H"/>
+                                        </connections>
+                                    </segmentedControl>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.70064761938638243" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="clu-7C-YbO" secondAttribute="trailing" constant="15" id="1Rg-1S-ZOW"/>
+                                    <constraint firstItem="clu-7C-YbO" firstAttribute="leading" secondItem="Fmg-3g-5DT" secondAttribute="leading" id="2Ff-HX-NUu"/>
+                                    <constraint firstAttribute="trailing" secondItem="61J-41-J7F" secondAttribute="trailing" constant="30" id="3t5-Y7-qBg"/>
+                                    <constraint firstItem="KIz-MI-vK2" firstAttribute="top" secondItem="9QH-mp-irT" secondAttribute="top" constant="25" id="EE1-KK-8dH"/>
+                                    <constraint firstItem="ybM-TT-C1b" firstAttribute="leading" secondItem="KIz-MI-vK2" secondAttribute="leading" id="Gu6-6n-8Ve"/>
+                                    <constraint firstItem="KIz-MI-vK2" firstAttribute="leading" secondItem="9QH-mp-irT" secondAttribute="leading" constant="15" id="LY7-hJ-4hG"/>
+                                    <constraint firstItem="61J-41-J7F" firstAttribute="centerY" secondItem="ybM-TT-C1b" secondAttribute="centerY" id="OWZ-oQ-ciV"/>
+                                    <constraint firstItem="ybM-TT-C1b" firstAttribute="top" secondItem="so7-05-P34" secondAttribute="bottom" constant="30" id="R4E-QT-XST"/>
+                                    <constraint firstItem="61J-41-J7F" firstAttribute="leading" secondItem="Fmg-3g-5DT" secondAttribute="leading" id="X3J-T4-vRN"/>
+                                    <constraint firstItem="so7-05-P34" firstAttribute="top" secondItem="KIz-MI-vK2" secondAttribute="bottom" constant="30" id="Ym1-ww-W0L"/>
+                                    <constraint firstItem="clu-7C-YbO" firstAttribute="centerY" secondItem="so7-05-P34" secondAttribute="centerY" id="aTH-PP-BQa"/>
+                                    <constraint firstItem="Fmg-3g-5DT" firstAttribute="centerY" secondItem="KIz-MI-vK2" secondAttribute="centerY" id="b9z-Kk-HaL"/>
+                                    <constraint firstItem="so7-05-P34" firstAttribute="leading" secondItem="KIz-MI-vK2" secondAttribute="leading" id="fHy-o7-nKw"/>
+                                    <constraint firstAttribute="bottom" secondItem="ybM-TT-C1b" secondAttribute="bottom" constant="25" id="fL9-Hw-YW7"/>
+                                    <constraint firstItem="Fmg-3g-5DT" firstAttribute="leading" secondItem="KIz-MI-vK2" secondAttribute="trailing" constant="15" id="s3k-0p-5eQ"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="fUy-Qp-usb"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="9QH-mp-irT" firstAttribute="leading" secondItem="fUy-Qp-usb" secondAttribute="leading" id="Obf-1E-GuJ"/>
+                            <constraint firstItem="9QH-mp-irT" firstAttribute="trailing" secondItem="fUy-Qp-usb" secondAttribute="trailing" id="agi-3u-VJX"/>
+                            <constraint firstItem="9QH-mp-irT" firstAttribute="bottom" secondItem="fUy-Qp-usb" secondAttribute="bottom" id="kgL-dA-btj"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="beautySwitch" destination="Fmg-3g-5DT" id="EOJ-y6-EMT"/>
+                        <outlet property="configView" destination="9QH-mp-irT" id="Ssn-ck-uCf"/>
+                        <outlet property="levelLabel" destination="ybM-TT-C1b" id="Nm5-kr-dQH"/>
+                        <outlet property="segment" destination="clu-7C-YbO" id="TeN-dl-5uY"/>
+                        <outlet property="slider" destination="61J-41-J7F" id="Wd2-PX-HtZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xdJ-C3-OJl" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5334.7826086956529" y="1462.5"/>
+        </scene>
+        <!--Voice Change View Controller-->
+        <scene sceneID="oMf-1N-IcL">
+            <objects>
+                <viewController storyboardIdentifier="VoiceChangeViewController" id="zxx-QC-BGP" customClass="VoiceChangeViewController" customModule="APIDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="x9L-47-phu">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="cqA-et-SEc">
+                                <rect key="frame" x="15" y="785" width="384" height="32"/>
+                                <segments>
+                                    <segment title="原声"/>
+                                    <segment title="中性女"/>
+                                    <segment title="中性男"/>
+                                    <segment title="甜美"/>
+                                    <segment title="低沉"/>
+                                    <segment title="娃娃女"/>
+                                    <segment title="娃娃男"/>
+                                </segments>
+                                <connections>
+                                    <action selector="segmentValueChange:" destination="zxx-QC-BGP" eventType="valueChanged" id="qXl-Va-kku"/>
+                                </connections>
+                            </segmentedControl>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Jf4-ng-RhJ"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="cqA-et-SEc" firstAttribute="leading" secondItem="Jf4-ng-RhJ" secondAttribute="leading" constant="15" id="0CD-QV-MNK"/>
+                            <constraint firstItem="Jf4-ng-RhJ" firstAttribute="bottom" secondItem="cqA-et-SEc" secondAttribute="bottom" constant="46" id="2dW-6O-S63"/>
+                            <constraint firstItem="Jf4-ng-RhJ" firstAttribute="trailing" secondItem="cqA-et-SEc" secondAttribute="trailing" constant="15" id="H8Y-wj-ylc"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="segmentedControl" destination="cqA-et-SEc" id="I7N-80-7qt"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Lbf-Ld-BQT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6260.8695652173919" y="1462.5"/>
+        </scene>
         <!--Video Play View Controller-->
         <scene sceneID="uMi-Me-YTN">
             <objects>
@@ -1240,13 +1379,13 @@
         <image name="icon_setting" width="16" height="15.5"/>
         <image name="icon_voicetrans" width="375" height="76.5"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="tintColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -184,11 +184,8 @@ class MixerRecordViewController: VideoWallViewController {
     @IBAction func recordAction(_ sender: Any) {
 
         let cloudroomVideoMeeting = CloudroomVideoMeeting.shareInstance()
-        let svrState = cloudroomVideoMeeting.getSvrRecordState()
         
-        
-        
-        guard let title = recordButton.currentTitle, title == "开始录制", svrState == MIXER_STATE.NO_RECORD else {
+        guard let title = recordButton.currentTitle, title == "开始录制", mixerID.isEmpty else {
             cloudroomVideoMeeting.destroyCloudMixer(mixerID)
             recordButton.setTitle("开始录制", for: .normal)
             recordButton.backgroundColor = UIColor.init("3981FC")

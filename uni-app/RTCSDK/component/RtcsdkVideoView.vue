@@ -13,8 +13,8 @@
 		},
 		watch: {
 			usrVideoId(newValue, oldValue) {
-				const { userId, camId } = newValue;
-				this.setVideo(userId, camId);
+				const { userId, camId, qualityLv } = newValue;
+				this.setVideo(userId, camId, qualityLv);
 			},
 			scaleType(newValue, oldValue) {
 				this.setScaleType(newValue);
@@ -40,23 +40,24 @@
 			if (this.scaleType !== 0) {
 				this.setScaleType(this.scaleType);
 			}
-			
+
 			if (this.usrVideoId) {
-				const { userId, camId } = this.usrVideoId;
-				this.setVideo(userId, camId);
+				const { userId, camId, qualityLv } = this.usrVideoId;
+				this.setVideo(userId, camId, qualityLv);
 			}
 		},
 		methods: {
 			setScaleType(value) {
 				this.$refs.videoView.setScaleType(+value);
 			},
-			setVideo(userId, camId = -1) {
+			setVideo(userId, camId = -1, qualityLv = 1) {
 				if (this.userId !== userId && this.camId !== camId) {
 					this.userId = userId;
 					this.camId = camId;
 					this.$refs.videoView.setVideo({
 						userId,
-						videoID: this.camId
+						videoID: this.camId,
+						qualityLv
 					})
 				}
 			}

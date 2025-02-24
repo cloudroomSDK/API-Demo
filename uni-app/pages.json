@@ -49,6 +49,8 @@
 		}, {
 			"path": "pages/examples/cloudRecord"
 		}, {
+			"path": "pages/examples/streamObserve"
+		}, {
 			"path": "pages/outside/index"
 		}, {
 			"path": "pages/outside/videoCall"

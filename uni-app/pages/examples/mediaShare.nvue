@@ -51,6 +51,7 @@
 			};
 		},
 		onLoad() {
+			this.RTCSDK.setSpeakerOut(true);
 			const mediaInfo = this.RTCSDK.getMediaInfo();
 			if (mediaInfo.state !== this.MediaState.stop) {
 				this.mediaInfo = mediaInfo;

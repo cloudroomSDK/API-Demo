@@ -1,0 +1,93 @@
+<template>
+	<view class="container">
+		<view class="video">
+			<rtcsdk-video-view class="video-ui" v-if="userId" :usrVideoId="{ userId:userId }" />
+			<view class="video-text">
+				<text class="text">大流</text>
+			</view>
+		</view>
+		<view class="divider"></view>
+		<view class="video">
+			<rtcsdk-video-view class="video-ui" v-if="userId" :usrVideoId="{ userId:userId, qualityLv:2 }" />
+			<view class="video-text">
+				<text class="text">小流</text>
+			</view>
+		</view>
+		<view class="btn-group">
+			<button class="btn primary" @click="back">
+				<text class="btn-text">返回</text>
+			</button>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { RtcsdkVideoView } from '@/RTCSDK/component';
+	export default {
+		data() {
+			return {
+				userId: null
+			};
+		},
+		components: {
+			RtcsdkVideoView
+		},
+		onLoad({ userid, nickName }) {
+			uni.setNavigationBarTitle({ title: `${nickName}的大小流` });
+			this.userId = userid;
+		},
+		methods: {
+			back() {
+				uni.navigateBack()
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.container {
+		flex: 1;
+		background-color: #ccc;
+
+		.divider {
+			height: 100rpx;
+		}
+
+		.video {
+			flex: 1;
+			position: relative;
+
+			.video-ui {
+				width: 750rpx;
+				flex: 1;
+			}
+
+			.video-text {
+				position: absolute;
+				right: 30rpx;
+				top: 30rpx;
+
+				.text {
+					color: #fff;
+					font-size: 30rpx;
+				}
+			}
+		}
+
+		.btn-group {
+			padding: 30rpx;
+
+			align-items: center;
+
+			.btn {
+				width: 200rpx;
+				height: 70rpx;
+				border-radius: 4rpx;
+
+				.btn-text {
+					font-size: 30rpx;
+				}
+			}
+		}
+	}
+</style>

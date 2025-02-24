@@ -48,6 +48,7 @@
 			};
 		},
 		mounted() {
+			this.RTCSDK.setSpeakerOut(this.speakerOut);
 			if (this.curMicState) {
 				this.RTCSDK.openMic(this.userInfo.userId);
 			}

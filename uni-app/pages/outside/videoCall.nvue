@@ -81,6 +81,7 @@
 			});
 			this.roomId = roomId;
 			this.RTCSDK = getApp().globalData.RTCSDK.getInstance();
+			this.RTCSDK.setSpeakerOut(true);
 			this.userInfo = getApp().globalData.userInfo;
 			this.handleEventsPage(true);
 			this.memberList = this.RTCSDK.getAllMembers();

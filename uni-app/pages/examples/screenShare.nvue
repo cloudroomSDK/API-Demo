@@ -63,6 +63,7 @@
 			// 共享码率
 			cfg.maxBps = 2000 * 1000;
 			this.RTCSDK.setScreenShareCfg(cfg);
+			this.RTCSDK.setSpeakerOut(true);
 		},
 		mounted() {
 			if (this.curMicState) {

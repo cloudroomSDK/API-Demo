@@ -68,6 +68,7 @@
 			const devicePosition = this.RTCSDK.getMyVideoPosition();
 			//将前置摄像头设置为默认摄像头
 			this.RTCSDK.setDefaultVideo(this.userInfo.userId, devicePosition.front);
+			this.RTCSDK.setSpeakerOut(this.speakerOut);
 		},
 		mounted() {
 			if (this.curCamState) {

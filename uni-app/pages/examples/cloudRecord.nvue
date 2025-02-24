@@ -61,6 +61,8 @@
 		onLoad({ roomId }) {
 			this.roomId = roomId;
 			this.memberList = this.RTCSDK.getAllMembers();
+			
+			this.RTCSDK.setSpeakerOut(true);
 
 			//获取前后置摄像头
 			const devicePosition = this.RTCSDK.getMyVideoPosition();

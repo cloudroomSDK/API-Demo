@@ -2,7 +2,7 @@ import Observer from "./observer.js";
 
 const RtcPlugin = uni.requireNativePlugin("rtcsdk-plugin");
 const globalEvent = uni.requireNativePlugin("globalEvent");
-const version = "1.2.5";
+const version = "1.2.8";
 const eventBus = new Observer();
 
 const isAndroid = uni.getSystemInfoSync().platform == "android";
@@ -323,10 +323,6 @@ export default class RtcCloud {
 
 		RtcPlugin.setAudioCfg(obj);
 	}
-
-	getMicVolume() {
-		const volume = RtcPlugin.getMicVolume();
-	}
 	//获取声音是否从扬声器输出
 	getSpeakerOut() {
 		return RtcPlugin.getSpeakerOut();
@@ -386,6 +382,14 @@ export default class RtcCloud {
 	}
 	setVideoEffects(option) {
 		RtcPlugin.setVideoEffects(option);
+	}
+	// 设置某个摄像头私有参数
+	setLocVideoAttributes(videoID, attributes) {
+		RtcPlugin.setLocVideoAttributes(videoID, attributes);
+	}
+	// 获取某个摄像头私有参数
+	getLocVideoAttributes(videoID) {
+		return RtcPlugin.getLocVideoAttributes(videoID);
 	}
 	//获取房间内所有可观看的摄像头
 	getWatchableVideos() {

@@ -272,37 +272,37 @@ CRVSDK_EXPORT
 - (void)notifyCancelSend:(NSString *)sendId;
 
 //邀请
--(void)inviteSuccess:(NSString *)inviteID cookie:(NSString *)cookie;
+- (void)inviteSuccess:(NSString *)inviteID cookie:(NSString *)cookie;
 
--(void)inviteFail:(NSString *)inviteID sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
+- (void)inviteFail:(NSString *)inviteID sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
 
--(void)cancelInviteSuccess:(NSString *)inviteID cookie:(NSString *)cookie;
+- (void)cancelInviteSuccess:(NSString *)inviteID cookie:(NSString *)cookie;
 
--(void)cancelInviteFail:(NSString *)inviteID sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
+- (void)cancelInviteFail:(NSString *)inviteID sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
 
--(void)acceptInviteSuccess:(NSString *)inviteID cookie:(NSString *)cookie;
+- (void)acceptInviteSuccess:(NSString *)inviteID cookie:(NSString *)cookie;
 
--(void)acceptInviteFail:(NSString *)inviteID sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
+- (void)acceptInviteFail:(NSString *)inviteID sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
 
--(void)rejectInviteSuccess:(NSString *)inviteID cookie:(NSString *)cookie;
+- (void)rejectInviteSuccess:(NSString *)inviteID cookie:(NSString *)cookie;
 
--(void)rejectInviteFail:(NSString *)inviteID sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
+- (void)rejectInviteFail:(NSString *)inviteID sdkErr:(CRVIDEOSDK_ERR_DEF)sdkErr cookie:(NSString *)cookie;
 
--(void)notifyInviteIn:(NSString *)inviteID  inviterUsrID:(NSString*)inviterUsrID usrExtDat:(NSString *)usrExtDat;
+- (void)notifyInviteIn:(NSString *)inviteID  inviterUsrID:(NSString*)inviterUsrID usrExtDat:(NSString *)usrExtDat;
 
--(void)notifyInviteAccepted:(NSString *)inviteID usrExtDat:(NSString *)usrExtDat;
+- (void)notifyInviteAccepted:(NSString *)inviteID usrExtDat:(NSString *)usrExtDat;
 
--(void)notifyInviteRejected:(NSString *)inviteID reason:(CRVIDEOSDK_ERR_DEF)reason usrExtDat:(NSString *)usrExtDat;
+- (void)notifyInviteRejected:(NSString *)inviteID reason:(CRVIDEOSDK_ERR_DEF)reason usrExtDat:(NSString *)usrExtDat;
 
--(void)notifyInviteCanceled:(NSString *)inviteID reason:(CRVIDEOSDK_ERR_DEF)reason usrExtDat:(NSString *)usrExtDat;
+- (void)notifyInviteCanceled:(NSString *)inviteID reason:(CRVIDEOSDK_ERR_DEF)reason usrExtDat:(NSString *)usrExtDat;
 
 /********企业网盘回调通知*********/
-//-(void)notifyGetCompDiskSummary:(DiskSummary*)staRs;
-//-(void)notifyGetCompDiskFileList:(NSMutableArray<FileInfo*>*)list;
-//-(void)notifyCompDiskFileDeleteRslt:(NSString*)fileID isSucceed:(bool)isSucceed;
-//-(void)notifyCompDiskTransforProgress:(NSString*)fileID percent:(int)percent isUpload:(bool)isUpload;
+//- (void)notifyGetCompDiskSummary:(DiskSummary*)staRs;
+//- (void)notifyGetCompDiskFileList:(NSMutableArray<FileInfo*>*)list;
+//- (void)notifyCompDiskFileDeleteRslt:(NSString*)fileID isSucceed:(bool)isSucceed;
+//- (void)notifyCompDiskTransforProgress:(NSString*)fileID percent:(int)percent isUpload:(bool)isUpload;
 /********token鉴权回调通知*********/
--(void)notifyTokenNearTimeout;
+- (void)notifyTokenNearTimeout;
 @end
 
 CRVSDK_EXPORT
@@ -332,7 +332,7 @@ CRVSDK_EXPORT
  移除回调
  @param callBack 代理对象
  */
--(void) removeMgrCallback:(id<RTCMgrCallBack>)callBack;
+- (void)removeMgrCallback:(id<RTCMgrCallBack>)callBack;
 
 /********登录*********/
 
@@ -358,7 +358,7 @@ CRVSDK_EXPORT
  @param userAuthCode 用户鉴权码
  @param cookie 用户自定义数据
  */
--(void)loginByToken:(NSString*)token nickName:(NSString*)nickName userID:(NSString*)userID userAuthCode:(NSString*)userAuthCode cookie:(NSString *)cookie;
+- (void)loginByToken:(NSString*)token nickName:(NSString*)nickName userID:(NSString*)userID userAuthCode:(NSString*)userAuthCode cookie:(NSString *)cookie;
 
 /**
 @param appID 账号
@@ -368,12 +368,12 @@ CRVSDK_EXPORT
 @param userAuthCode 用户鉴权码
 @param cookie 用户自定义数据
 */
--(void)login:(NSString*)appID appSecret:(NSString*)md5_appSecret nickName:(NSString*)nickName userID:(NSString*)userID userAuthCode:(NSString*)userAuthCode cookie:(NSString *)cookie;
+- (void)login:(NSString*)appID appSecret:(NSString*)md5_appSecret nickName:(NSString*)nickName userID:(NSString*)userID userAuthCode:(NSString*)userAuthCode cookie:(NSString *)cookie;
 /**
 更新token
 @param token token
 */
--(void)updateToken:(NSString*)token;
+- (void)updateToken:(NSString*)token;
 
 
 /**
@@ -383,8 +383,8 @@ CRVSDK_EXPORT
 
 
 //第三方鉴权错误原因获取
--(int)getUserAuthErrCode;
--(NSString*)getUserAuthErrDesc;
+- (int)getUserAuthErrCode;
+- (NSString*)getUserAuthErrDesc;
 
 
 /********免打扰*********/
@@ -553,7 +553,7 @@ CRVSDK_EXPORT
  取消/结束呼叫
  @param callID 呼叫标识码
  */
-- (void)hungupCall:(NSString *)callID;
+- (void)hangupCall:(NSString *)callID;
 
 
 /**
@@ -561,7 +561,7 @@ CRVSDK_EXPORT
  @param callID 呼叫标识码
  @param usrExtDat 用户附带数据
  */
-- (void)hungupCall:(NSString *)callID usrExtDat:(NSString *)usrExtDat;
+- (void)hangupCall:(NSString *)callID usrExtDat:(NSString *)usrExtDat;
 
 
 /**
@@ -570,7 +570,7 @@ CRVSDK_EXPORT
  @param usrExtDat 用户附带数据
  @param cookie 用户自定义数据
  */
-- (void)hungupCall:(NSString *)callID usrExtDat:(NSString *)usrExtDat cookie:(NSString *)cookie;
+- (void)hangupCall:(NSString *)callID usrExtDat:(NSString *)usrExtDat cookie:(NSString *)cookie;
 
 // 呼叫第三方
 - (NSString *)callMoreParty:(NSString *)calledID
@@ -592,25 +592,25 @@ CRVSDK_EXPORT
 - (void)cancelSend:(NSString *)sendId;
 
 /********视频打点相关*********/
--(void)setMarkText:(NSString*)videoFilePathName timestamp:(int)timestamp markText:(NSString*)markText;
+- (void)setMarkText:(NSString*)videoFilePathName timestamp:(int)timestamp markText:(NSString*)markText;
 
 // 移除打点信息
-  -(void)removeMarkText:(NSString*)videoFilePathName timestamp:(int)timestamp;
+  - (void)removeMarkText:(NSString*)videoFilePathName timestamp:(int)timestamp;
 
 // 获取所有打点信息
--(NSString*)getAllMarks:(NSString*)videoFilePathName;
+- (NSString*)getAllMarks:(NSString*)videoFilePathName;
 
 // 获取打点文件的绝对文件路径名
--(NSString*)getVideoMarkFile:(NSString*)videoFilePathName;
+- (NSString*)getVideoMarkFile:(NSString*)videoFilePathName;
 
 #pragma mark ----------------------------------------------- 邀请功能
--(NSString*)invite:(NSString*)invitedUserID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
+- (NSString*)invite:(NSString*)invitedUserID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
 
--(void)acceptInvite:(NSString*)inviteID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
+- (void)acceptInvite:(NSString*)inviteID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
 
--(void)rejectInvite:(NSString*)inviteID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
+- (void)rejectInvite:(NSString*)inviteID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
 
--(void)cancelInvite:(NSString*)inviteID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
+- (void)cancelInvite:(NSString*)inviteID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
 @end
 
 #endif  // __RTC_MGR_H__

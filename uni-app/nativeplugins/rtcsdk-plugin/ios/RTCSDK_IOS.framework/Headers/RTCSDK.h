@@ -52,7 +52,7 @@ CRVSDK_EXPORT
  */
 - (CRVIDEOSDK_ERR_DEF)initSDK:(SdkInitDat *)dat;
 
--(void)setSDKParams:(NSMutableDictionary<NSString*,NSString*>*)params;
+- (void)setSDKParams:(NSMutableDictionary<NSString*,NSString*>*)params;
 /**
  初始化是否成功
  @return 初始化是否成功

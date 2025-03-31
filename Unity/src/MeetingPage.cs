@@ -485,7 +485,6 @@ public class MeetingPage
             tmpData._md5_appSecret = CommonTools.MakeMd5(AccountInfo.TEST_AppScret);
         }
         tmpData._userID = userId;
-        tmpData._nickName = userId;
         g_sdkMain.login(tmpData);
     }
 

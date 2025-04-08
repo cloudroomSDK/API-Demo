@@ -34,35 +34,12 @@ CustomVideoCaptureRender::~CustomVideoCaptureRender()
 
 ///////////////自定义采集///////////////////
 
-void CustomVideoCaptureRender::loadPicFrame()
-{
-	g_picFrm.clear();
-
-	QString fileName = QString(":/Resources/custom_video_1280x720.jpg");
-	CRByteArray jpgDat;
-	ReadDataFromFile(fileName, jpgDat);
-
-	CRVSDK_ERR_DEF err;
-	if ((err = g_sdkMain->coverToVideoFrame(jpgDat, "jpg", g_picFrm)) != 0)
-	{
-		qDebug("decode jpg failed: %d!", err);
-		return;
-	}
-
-	//420p内部效率最高
-	if (!g_sdkMain->videoFrameCover(g_picFrm, CRVSDK_VFMT_YUV420P, g_picFrm.getWidth(), g_picFrm.getHeight()))
-	{
-		qDebug("decode jpg failed!");
-		return;
-	}
-}
-
 void CustomVideoCaptureRender::slot_videoCap()
 {
 	bool bCap = !m_bVideoCap;
 	if (bCap)//开始视频采集
 	{
-		loadPicFrame();
+		g_picFrm = ::loadImgAsCRVideoFrame(":/Resources/custom_video_1280x720.jpg");
 
 		//添加一个自定义设备
 		m_capVideoDevID = g_sdkMain->getSDKMeeting().createCustomVideoDev(qStrToStdStr(makeUUID()).c_str(), g_picFrm.getFormat(), g_picFrm.getWidth(), g_picFrm.getHeight(), "");
@@ -83,6 +60,9 @@ void CustomVideoCaptureRender::slot_videoCap()
 	else//停止视频采集
 	{
 		m_customInputThrd.stop();
+		m_customInputThrd.wait();
+
+		g_picFrm.clear();
 
 		//恢复之前的默认设备
 		g_sdkMain->getSDKMeeting().setDefaultVideo(m_oldDefVideoID);

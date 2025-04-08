@@ -75,6 +75,8 @@ void DlgLocalRecord::slot_btnChoosePathClicked()
 
 void DlgLocalRecord::slot_btnStartRecordClicked()
 {
+	ui.lbOutputInfo->setText("");
+
 	//录制配置
 	const RecordParams &recParams = g_recordParams[ui.cbDefinition->currentIndex()];
 	QVariantMap mixerCfgMap;

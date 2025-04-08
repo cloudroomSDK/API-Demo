@@ -50,4 +50,6 @@ bool SetInifileString(const QString &grpName, const QString &keyName, const QStr
 
 void WidgetStyleUpdate(QWidget *pWnd);
 
+CRVideoFrame loadImgAsCRVideoFrame(const QString &fileName);
+
 #endif //__COMMON_H__

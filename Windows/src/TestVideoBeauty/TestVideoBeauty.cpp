@@ -37,15 +37,13 @@ TestVideoBeauty::TestVideoBeauty(QWidget *parent)
 	ui.cb_type->setCurrentIndex(0);
 	slot_filterTypeChanged(0);
 
-	ui.settingPage->hide();
+	bool bBeautyStarted = g_sdkMain->getSDKMeeting().isBeautyStarted();
+	ui.enableBeautyBtn->setChecked(bBeautyStarted);
+	ui.settingPage->setVisible(bBeautyStarted);
 
 	connect(ui.enableBeautyBtn, &QCheckBox::stateChanged, this, &TestVideoBeauty::slot_enableBeautyStateChanged, Qt::QueuedConnection);
 	connect(ui.sld_level, &QSlider::valueChanged, this, &TestVideoBeauty::slot_sliderValueChanged);
 	connect(ui.cb_type, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_filterTypeChanged(int)));
-
-	bool bBeautyStarted = g_sdkMain->getSDKMeeting().isBeautyStarted();
-	ui.enableBeautyBtn->setChecked(bBeautyStarted);
-
 	g_sdkMain->getSDKMeeting().AddCallBack(this);
 }
 
@@ -60,7 +58,7 @@ void TestVideoBeauty::notifyVideoStatusChanged(const char* userID, CRVSDK_VSTATU
 		return;
 	if ( newStatus== CRVSDK_VST_CLOSE )
 	{
-		ui.videoCanvas->clearVideoFrame();
+		ui.videoCanvas->clearFrame();
 	}
 }
 

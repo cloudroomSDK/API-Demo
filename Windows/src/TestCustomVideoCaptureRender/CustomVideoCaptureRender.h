@@ -62,7 +62,6 @@ protected:
 	void showEvent(QShowEvent *evt) override;
 	void hideEvent(QHideEvent *evt) override;
 
-	void loadPicFrame();
 	void updateVideoID();
 
 private:

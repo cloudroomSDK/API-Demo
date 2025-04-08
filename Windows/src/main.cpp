@@ -47,8 +47,8 @@ public:
 int main(int argc, char *argv[])
 {
 	QFileInfo qfinfo(QString::fromLocal8Bit(argv[0]));
-	QString strAppPath = qfinfo.absolutePath();
-	QDir::setCurrent(strAppPath);
+    QString strAppPath = qfinfo.absolutePath();
+    QDir::setCurrent(strAppPath);
 
     QApplication::addLibraryPath(strAppPath + "/plugins");
     QApplication::setAttribute(Qt::AA_UseOpenGLES);

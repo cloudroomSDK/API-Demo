@@ -56,4 +56,29 @@ void Struct_Cov(const QVariantMap &src, BeautyCfg &dst);
 void Struct_Cov(const BeautyCfg &src, QVariantMap &dst);
 
 
+enum VIRTUALBK_TYPE
+{
+	VBKTP_UNDEF = 0,	//未指定
+	VBKTP_COLORKEY,		//绿幕
+	VBKTP_HUMANSEG,		//人像
+};
+struct VirtualBkCfg
+{
+	VIRTUALBK_TYPE	_type{ VBKTP_UNDEF };
+	QString			_colorKey;		//绿幕模式下的颜色值#RRGGBB
+	QString			_bkImgFile;
+	QString			_bkImgFromResID;
+	bool operator==(const VirtualBkCfg &v)
+	{
+		return (_type == v._type && _colorKey == v._colorKey && _bkImgFile == v._bkImgFile && _bkImgFromResID == v._bkImgFromResID);
+	}
+	bool operator!=(const VirtualBkCfg &v)
+	{
+		return !(*this == v);
+	}
+};
+void Struct_Cov(const QVariantMap &src, VirtualBkCfg &dst);
+void Struct_Cov(const VirtualBkCfg &src, QVariantMap &dst);
+
+
 #endif	//_OBJSDEF_H_

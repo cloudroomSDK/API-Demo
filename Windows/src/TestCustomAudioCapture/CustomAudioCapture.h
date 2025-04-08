@@ -11,18 +11,27 @@ public:
 	CustomAudioCapture(QWidget *parent = 0);
 	~CustomAudioCapture();
 
-public slots:
+protected slots:
 	void slot_btnCustomCapClicked();
-	void slot_timeout();
+	void slot_btnCustomRenderClicked();
+	void slot_capTimeout();
+	void slot_renderTimeout();
+
+protected:
+	void saveOutputAudioData();
 
 private:
 	Ui::CustomAudioCapture ui;
-	bool	m_bEnableCapture;
-	QTimer	m_timer;
+	bool	m_bEnableCapture{ false };
+	bool	m_bEnableRender{ false };
 
-	qint64		m_startTime;
-	int			m_inputCount;
-	QByteArray	m_audioData;
+	QTimer		m_capTimer;
+	qint64		m_capStartTime{ 0 };
+	int			m_capInputCount{ 0 };
+	QByteArray	m_inputAudioData;
+
+	QTimer		m_renderTimer;
+	QByteArray	m_outputAudioData;
 
 };
 

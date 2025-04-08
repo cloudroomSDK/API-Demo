@@ -93,7 +93,7 @@ void DlgLogin::loginAndJoinMeeting(int meetid)
 
 	loginDat._serverAddr = qStrToCRStr(info.server);
 	loginDat._webProtocol = info.httpType;
-	loginDat._userID = loginDat._nickName = qStrToCRStr(m_userId);
+	loginDat._userID = qStrToCRStr(m_userId);
 
     m_state = STATE_LOGIN_ING;
     g_sdkMain->login(loginDat);

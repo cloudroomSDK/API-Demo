@@ -2,8 +2,8 @@
     "name" : "Api Demo",
     "appid" : "__UNI__0C4E355",
     "description" : "",
-    "versionName" : "1.1.7",
-    "versionCode" : 117,
+    "versionName" : "1.1.10",
+    "versionCode" : 10110,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -55,7 +55,8 @@
             },
             /* ios打包配置 */
             "ios" : {
-                "dSYMs" : false
+                "dSYMs" : false,
+                "UIBackgroundModes" : [ "audio" ]
             },
             /* SDK配置 */
             "sdkConfigs" : {

@@ -33,8 +33,8 @@ typedef NSMutableDictionary<NSString*, MeetingAttrs*> UsrMeetingAttrs;
 CRVSDK_EXPORT
 @interface AudioCfg : NSObject
 
-@property (nonatomic, copy) NSString *micName; // 麦克风设备(空代表默认设备)
-@property (nonatomic, copy) NSString *speakerName; // 喇叭设备(空代表默认设备)
+@property (nonatomic, copy) NSString *micDevID; // 麦克风设备(空代表默认设备)
+@property (nonatomic, copy) NSString *spkDevID; // 喇叭设备(空代表默认设备)
 @property (nonatomic, assign) int agc; // 是否开启声音增益，0：不开启；1：开启(默认值)
 @property (nonatomic, assign) int ans; // 是否开启降噪，0：不开启；1：开启（默认值）
 @property (nonatomic, assign) int aec; // 是否开启回声消除，0：不开启；1：开启（默认值）
@@ -1428,8 +1428,9 @@ CRVSDK_EXPORT
  进入会议
  (只有入会成功,才能进行后续操作)
  @param meetID 会议ID
+ @param nickname 昵称
  */
-- (void)enterMeeting:(int)meetID;
+- (void)enterMeeting:(int)meetID nickname:(NSString *)nickname;
 
 /**
  进入会议
@@ -1807,6 +1808,55 @@ CRVSDK_EXPORT
 - (bool)updateScreenCamDev:(int)devID tmonitor:(NSString *)monitor;
 
 - (void)destroyScreenCamDev:(int)devID;
+
+// 获取摄像头流信息
+- (StreamInfo *)getVideoStreamInfo:(UsrVideoId *)cam;
+
+#pragma mark - 美颜
+
+//美颜(初始化插件及资源）
+- (CRVIDEOSDK_ERR_DEF)startBeauty:(NSString *)initParams;
+- (BOOL)isBeautyStarted;
+//配置美颜效果
+- (CRVIDEOSDK_ERR_DEF)updateBeautyParams:(NSString *)params;
+- (NSString *)getBeautyParams;
+//停止美颜功能、释放美颜插件及资源
+- (void)stopBeauty;
+
+
+#pragma mark - 虚拟背景
+
+/**
+ 虚拟背景是否已开启
+ @return 是否已开启
+ */
+- (BOOL)isVirtualBackgroundStarted;
+
+/**
+ 开启虚拟背景
+ @param params 虚拟背景配置，json，详情见文档CRVirtualBkCfg
+ @return 错误码
+*/
+- (CRVIDEOSDK_ERR_DEF)startVirtualBackground:(NSString *)params;
+
+/**
+ 更新虚拟背景参数
+ @param params 虚拟背景配置，json，详情见文档CRVirtualBkCfg
+ @return 错误码
+*/
+- (CRVIDEOSDK_ERR_DEF)updateVirtualBackgroundParams:(NSString *)params;
+
+/**
+ 获取当前虚拟背景参数
+ @return 虚拟背景配置，json，详情见文档CRVirtualBkCfg
+*/
+- (NSString *)getVirtualBackgroundParams;
+
+/**
+ 停止虚拟背景
+*/
+- (void)stopVirtualBackground;
+
 #pragma mark ----------------------------------------------- 屏幕共享接口
 /**
  屏幕共享是否已开始

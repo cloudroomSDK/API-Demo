@@ -2,20 +2,15 @@
     "version" : "1.0",
     "configurations" : [
         {
-            "openVueDevtools" : true,
             "playground" : "custom",
             "type" : "uni-app:app-android"
         },
-        {
-            "app-plus" : {
-                "launchtype" : "local"
-            },
-            "type" : "uniCloud"
-        },
-        {
-            "openVueDevtools" : true,
-            "playground" : "custom",
-            "type" : "uni-app:app-ios"
-        }
+	{
+		"app-plus" : 
+		{
+			"launchtype" : "local"
+		},
+		"type" : "uniCloud"
+	}
     ]
 }

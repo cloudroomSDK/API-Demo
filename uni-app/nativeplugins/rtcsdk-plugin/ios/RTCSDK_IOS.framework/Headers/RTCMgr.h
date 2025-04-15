@@ -27,7 +27,6 @@ CRVSDK_EXPORT
 
 @property (nonatomic, copy) NSString *authAcnt; // 云屋鉴权帐号
 @property (nonatomic, copy) NSString *authPswd; // 云屋鉴权密码
-@property (nonatomic, copy) NSString *nickName; // 昵称
 @property (nonatomic, copy) NSString *privAcnt; // 自定义帐号,云屋服务器将会去配置的服务器进行认证(当不使用自定义帐号时,acnt,pswd应为NULL)
 @property (nonatomic, copy) NSString *privAuthCode; // 自定义验证码(有复杂要求的,可以使用json格式)
 @property (nonatomic, copy) NSString *param; // 用户扩展信息
@@ -358,7 +357,7 @@ CRVSDK_EXPORT
  @param userAuthCode 用户鉴权码
  @param cookie 用户自定义数据
  */
-- (void)loginByToken:(NSString*)token nickName:(NSString*)nickName userID:(NSString*)userID userAuthCode:(NSString*)userAuthCode cookie:(NSString *)cookie;
+- (void)loginByToken:(NSString*)token userID:(NSString*)userID userAuthCode:(NSString*)userAuthCode cookie:(NSString *)cookie;
 
 /**
 @param appID 账号
@@ -368,7 +367,7 @@ CRVSDK_EXPORT
 @param userAuthCode 用户鉴权码
 @param cookie 用户自定义数据
 */
-- (void)login:(NSString*)appID appSecret:(NSString*)md5_appSecret nickName:(NSString*)nickName userID:(NSString*)userID userAuthCode:(NSString*)userAuthCode cookie:(NSString *)cookie;
+- (void)login:(NSString*)appID appSecret:(NSString*)md5_appSecret userID:(NSString*)userID userAuthCode:(NSString*)userAuthCode cookie:(NSString *)cookie;
 /**
 更新token
 @param token token

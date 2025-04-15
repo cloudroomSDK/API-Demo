@@ -48,7 +48,9 @@
 				}
 				await this.permissionHandle();
 				showLoading(undefined, true);
-				this.RTCSDK.enterMeeting(this.roomId);
+
+				const { nickname } = getApp().globalData.userInfo;
+				this.RTCSDK.enterMeeting(this.roomId, nickname);
 			},
 			handleEvents(bool = true) {
 				const handle = this.RTCSDK[bool ? 'on' : 'off'];

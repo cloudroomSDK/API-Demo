@@ -16,6 +16,12 @@
     "dist",
     "screenOption"
   ],
+  "extraResources": [
+    {
+      "from": "project-public/",
+      "to": "project-public"
+    }
+  ],
   "artifactName": "${productName}_${version}_${arch}.${ext}",
   "mac": {
     "target": [

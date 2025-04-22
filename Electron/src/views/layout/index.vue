@@ -44,9 +44,12 @@ export default {
 
         this.appStore.memberList = this.$rtcsdk.getAllMembers().reduce((previousValue, currentValue) => {
             previousValue[currentValue._userId] = {
+                userId: currentValue._userId,
                 nickname: currentValue._nickName,
                 audioStatus: currentValue._audioStatus,
                 videoStatus: currentValue._videoStatus,
+                defaultCamId: this.$rtcsdk.getDefaultVideo(currentValue._userId),
+                multipleVideos: this.$rtcsdk.getMutiVideos(currentValue._userId),
             };
             return previousValue;
         }, {});
@@ -59,6 +62,8 @@ export default {
         callbackHanle(bool) {
             this.$rtcsdk[bool ? "on" : "off"]("notifyUserEnterMeeting", this.notifyUserEnterMeeting);
             this.$rtcsdk[bool ? "on" : "off"]("notifyUserLeftMeeting", this.notifyUserLeftMeeting);
+            this.$rtcsdk[bool ? "on" : "off"]("notifyVideoDevChanged", this.notifyUserVideoChanged);
+            this.$rtcsdk[bool ? "on" : "off"]("notifyDefaultVideoChanged", this.notifyUserVideoChanged);
             this.$rtcsdk[bool ? "on" : "off"]("notifyVideoStatusChanged", this.notifyVideoStatusChanged);
             this.$rtcsdk[bool ? "on" : "off"]("notifyMicStatusChanged", this.notifyMicStatusChanged);
             this.$rtcsdk[bool ? "on" : "off"]("notifyTokenWillExpire", this.notifyTokenWillExpire);
@@ -68,9 +73,12 @@ export default {
         notifyUserEnterMeeting(userId) {
             const userInfo = this.$rtcsdk.getMemberInfo(userId);
             this.appStore.memberList[userId] = {
+                userId: userId,
                 nickname: userInfo._nickName,
                 audioStatus: userInfo._audioStatus,
                 videoStatus: userInfo._videoStatus,
+                defaultCamId: this.$rtcsdk.getDefaultVideo(userId),
+                multipleVideos: this.$rtcsdk.getMutiVideos(userId),
             };
         },
         //通知有人离会
@@ -84,6 +92,11 @@ export default {
         //通知用户麦克风状态变化
         notifyMicStatusChanged(userId, oldStatus, newStatus, oprUserId) {
             this.appStore.memberList[userId].audioStatus = newStatus;
+        },
+        //通知用户视频设备变化
+        notifyUserVideoChanged(userId) {
+            this.appStore.memberList[userId].defaultCamId = this.$rtcsdk.getDefaultVideo(userId);
+            this.appStore.memberList[userId].multipleVideos = this.$rtcsdk.getMutiVideos(userId);
         },
         // 掉线通知
         notifyLineOff(sdkErr) {

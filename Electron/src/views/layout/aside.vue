@@ -34,16 +34,6 @@
                     影音播放
                     <MediaShare />
                 </el-menu-item>
-                <!-- <el-menu-item index="2-3">自定义音频采集和渲染 <el-button
-            class="btn"
-            plain
-          >开始</el-button>
-        </el-menu-item>
-        <el-menu-item index="2-4">自定义视频采集和渲染 <el-button
-            class="btn"
-            plain
-          >开始</el-button>
-        </el-menu-item> -->
                 <el-menu-item index="2-5">
                     房间消息
                     <MeetingMsg />
@@ -54,14 +44,22 @@
                 </el-menu-item>
                 <el-menu-item index="2-7">成员属性 <el-button @click="openMemberAttr" class="btn" plain>设置</el-button></el-menu-item>
                 <el-menu-item index="2-8">
+                    多摄像头
+                    <MultipleVideos />
+                </el-menu-item>
+                <el-menu-item index="2-9">
                     虚拟摄像头
                     <el-button @click="openVirtualCam" class="btn" plain>设置</el-button>
                 </el-menu-item>
-                <el-menu-item index="2-9">
+                <el-menu-item index="2-10" v-if="appStore.platform === 'win32'">
+                    美颜和虚拟背景
+                    <el-button @click="openEffectsSetting" class="btn" plain>设置</el-button>
+                </el-menu-item>
+                <el-menu-item index="2-11">
                     变声
                     <el-button class="btn" plain @click="openVoiceChange">设置</el-button>
                 </el-menu-item>
-                <el-menu-item index="2-10">
+                <el-menu-item index="2-12">
                     声音环回测试
                     <el-button class="btn" plain @click="openEchoTest">测试</el-button>
                 </el-menu-item>
@@ -81,7 +79,7 @@
     </el-scrollbar>
 
     <el-dialog class="dialog" v-model="dialogVisible" :title="dialogTitle" :width="dialogWidth" append-to-body draggable>
-        <el-scrollbar max-height="400px" :style="{ padding: dialogTitle === '屏幕共享' ? '0' : '20px' }">
+        <el-scrollbar max-height="500px" :style="{ padding: dialogTitle === '屏幕共享' ? '0' : '20px' }">
             <component :is="component" v-if="!permanent && dialogVisible" :extend="dialogExtend" @close="dialogClose" @openMamberAttr="openAttr" />
 
             <!-- 云端录制、本地录制模块为常驻模，为了保持窗口关闭后能持续更新录制内容 -->
@@ -106,9 +104,11 @@ import LocalMixer from "./components/localMixer";
 import CloudMixer from "./components/cloudMixer";
 import MediaShare from "./components/mediaShare";
 import ScreenShare from "./components/screenShare";
+import MultipleVideos from "./components/multipleVideos";
 import MeetingMsg from "./components/meetingMsg";
 import VirtualCam from "./components/virtualCam";
 import EchoTest from "./components/echoTest";
+import EffectsSetting from "./components/effectsSetting.vue";
 import VoiceChange from "./components/voiceChange";
 import { ipcRenderer } from "electron";
 
@@ -117,6 +117,7 @@ export default {
         MediaShare,
         ScreenShare,
         MeetingMsg,
+        MultipleVideos,
         LocalMixer,
         CloudMixer,
         VirtualCam,
@@ -138,6 +139,7 @@ export default {
         exitMeeting() {
             this.$rtcsdk.exitMeeting();
             this.appStore.meetId = null;
+            this.appStore.enableMutiVideos = false;
             this.appStore.isMyScreenShare = false;
             ipcRenderer.send("common", { method: "exitMeeting" });
             this.$router.replace("/");
@@ -200,6 +202,13 @@ export default {
             this.permanent = "virtualCam";
             this.dialogWidth = "500px";
             this.dialogTitle = "虚拟摄像头";
+            this.dialogVisible = true;
+        },
+        openEffectsSetting() {
+            this.component = markRaw(EffectsSetting);
+            this.dialogWidth = "1200px";
+            this.dialogTitle = "美颜和虚拟背景";
+            this.permanent = false;
             this.dialogVisible = true;
         },
         openVoiceChange() {

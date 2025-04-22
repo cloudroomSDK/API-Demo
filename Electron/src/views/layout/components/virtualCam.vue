@@ -52,26 +52,39 @@ export default {
     },
     methods: {
         add() {
+            let videoId = 0;
             if (this.select === "screen") {
-                this.addScreenCam();
+                videoId = this.addScreenCam();
             } else if (this.select === "canvas") {
-                this.addCanvasCam();
+                videoId = this.addCanvasCam();
             } else {
-                this.addIpCam();
+                videoId = this.addIpCam();
+            }
+
+            if (videoId < 0) {
+                //添加失败，则是错误码
+                return ElMessage.error(`添加失败，错误码: ${videoId},${errDesc[videoId]}`);
+            }
+
+            // 如果开启多摄像头时，把摄像头添加到多摄像头列表中
+            // 未开启多摄像头时，把虚拟摄像头设置为默认摄像头
+            if (this.appStore.enableMutiVideos) {
+                const camList = this.$rtcsdk.getMutiVideos(this.appStore.myUserId);
+                camList.push(videoId);
+                this.$rtcsdk.setMutiVideos(camList);
+            } else {
+                this.$rtcsdk.setDefaultVideo(videoId); //设置为摄像头
             }
         },
         addScreenCam() {
             const videoId = this.$rtcsdk.createScreenCamDev("桌面摄像头", -1);
-            if (videoId < 0) {
-                //添加失败，则是错误码
-                ElMessage.error(`添加失败，错误码: ${videoId},${errDesc[videoId]}`);
-            } else {
+            if (videoId >= 0) {
                 this.appStore.networkCam = {
                     videoId: videoId,
                     type: "screen",
                 };
-                this.$rtcsdk.setDefaultVideo(videoId); //设置为摄像头
             }
+            return videoId;
         },
         addCanvasCam() {
             const canvas = this.$refs.canvas;
@@ -81,10 +94,8 @@ export default {
                     videoId: videoId,
                     type: "canvas",
                 };
-                this.$rtcsdk.setDefaultVideo(videoId); //设置为摄像头
-            } else {
-                ElMessage.error(`添加失败，错误码: ${videoId},${errDesc[videoId]}`);
             }
+            return videoId;
         },
         addIpCam() {
             let url, type;
@@ -100,17 +111,14 @@ export default {
             }
             console.log(url);
             const videoId = this.$rtcsdk.addIPCam(`${type}://${url}`);
-            if (videoId < 0) {
-                //添加失败，则是错误码
-                ElMessage.error(`添加失败，错误码: ${videoId},${errDesc[videoId]}`);
-            } else {
+            if (videoId >= 0) {
                 this.appStore.networkCam = {
                     videoId: videoId,
                     type: type,
                     url: url,
                 };
-                this.$rtcsdk.setDefaultVideo(videoId); //设置为摄像头
             }
+            return videoId;
         },
         del() {
             const { type, videoId } = this.appStore.networkCam;

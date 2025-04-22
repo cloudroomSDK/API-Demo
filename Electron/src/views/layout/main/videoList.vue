@@ -1,30 +1,32 @@
 <template>
     <div class="videoList clearfix">
-        <div v-for="(member, key) in watchList" class="videoBox" :key="member">
+        <div v-for="member in appStore.watchList" class="videoBox" :key="member.key">
             <div class="scale">
                 <div class="video">
-                    <div v-if="member.videoStatus === 3" v-setVideo="{ userId: key }"></div>
+                    <div v-if="member.videoStatus === 3" v-setVideo="{ userId: member.userId, camId: member.camId }"></div>
                     <div v-else>
                         <img src="@/assets/videoList/video_close.jpg" alt="" />
                     </div>
                     <div class="box">
-                        <div class="uid">{{ key }}</div>
+                        <div class="uid">
+                            {{ member.nickname }}<template v-if="appStore.watchList.filter((item) => item.userId === member.userId).length > 1">-{{ member.camId }}号摄像头</template>
+                        </div>
                         <div class="ctrl">
                             <i
                                 :class="[
                                     'icon',
                                     member.audioStatus === 3 ? 'icon-mic-open' : 'icon-mic-close',
                                     {
-                                        'icon-mic-small': 1 < memberMicEnergy[key] && 3 <= memberMicEnergy[key],
-                                        'icon-mic-middle': 3 < memberMicEnergy[key] && 6 <= memberMicEnergy[key],
-                                        'icon-mic-big': 6 < memberMicEnergy[key],
+                                        'icon-mic-small': 1 < memberMicEnergy[member.userId] && 3 <= memberMicEnergy[member.userId],
+                                        'icon-mic-middle': 3 < memberMicEnergy[member.userId] && 6 <= memberMicEnergy[member.userId],
+                                        'icon-mic-big': 6 < memberMicEnergy[member.userId],
                                     },
                                 ]"
-                                @click="toggleMic(key, member)"
+                                @click="toggleMic(member)"
                             ></i>
-                            <i :class="['icon', member.videoStatus === 3 ? 'icon-video-open' : 'icon-video-close']" @click="toggleVideo(key, member)"></i>
+                            <i :class="['icon', member.videoStatus === 3 ? 'icon-video-open' : 'icon-video-close']" @click="toggleVideo(member)"></i>
                         </div>
-                        <div v-if="appStore.myUserId === key" class="title">
+                        <div v-if="appStore.myUserId === member.userId" class="title">
                             <div class="signal">
                                 <i
                                     v-for="num in 5"
@@ -36,13 +38,21 @@
                                 ></i>
                             </div>
                             <div class="fnbtn">
-                                <button @click="setUpsideDown">
-                                    <svg t="1698893928810" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1116" width="200" height="200"><path d="M759.56906666 235.487232l0 156.03029333-503.922688 0 0-156.03029333 503.922688 0Z" fill="#ffffff" p-id="1117"></path><path d="M988.43170133 475.17969067l0 75.595776-944.85981867 1e-8 0-75.59577601 944.85981867 0Z" fill="#ffffff" p-id="1118"></path><path d="M775.68 637.65435733l0 33.06837334-536.40669867 1e-8 0-33.06837336L775.68 637.65435733zM775.68 794.05602133l0 33.06837334-536.40669867 0 0-33.06837334L775.68 794.05602133zM742.61162666 666.763264l33.06837334 0 0 131.252224-33.06837334 0L742.61162666 666.763264zM239.31153066 666.959872l33.06837334 0 0 131.252224-33.06837334 0L239.31153066 666.959872z" fill="#ffffff" p-id="1119"></path></svg>
+                                <button @click="setUpsideDown(member.camId)">
+                                    <svg t="1698893928810" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1116" width="200" height="200">
+                                        <path d="M759.56906666 235.487232l0 156.03029333-503.922688 0 0-156.03029333 503.922688 0Z" fill="#ffffff" p-id="1117"></path>
+                                        <path d="M988.43170133 475.17969067l0 75.595776-944.85981867 1e-8 0-75.59577601 944.85981867 0Z" fill="#ffffff" p-id="1118"></path>
+                                        <path d="M775.68 637.65435733l0 33.06837334-536.40669867 1e-8 0-33.06837336L775.68 637.65435733zM775.68 794.05602133l0 33.06837334-536.40669867 0 0-33.06837334L775.68 794.05602133zM742.61162666 666.763264l33.06837334 0 0 131.252224-33.06837334 0L742.61162666 666.763264zM239.31153066 666.959872l33.06837334 0 0 131.252224-33.06837334 0L239.31153066 666.959872z" fill="#ffffff" p-id="1119"></path>
+                                    </svg>
                                 </button>
-                                <button @click="setMirror">
-                                    <svg t="1698893970309" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1407" width="200" height="200"><path d="M235.487232 264.43093334l156.03029333 0 0 503.922688-156.03029333 0 0-503.922688Z" fill="#ffffff" p-id="1408"></path><path d="M475.17969067 35.56829867l75.595776 0 0 944.85981867-75.595776 0 0-944.85981867Z" fill="#ffffff" p-id="1409"></path><path d="M637.65435733 248.32l33.06837334 0 0 536.40669867-33.06837334 0L637.65435733 248.32zM794.05602133 248.32l33.06837334 0 0 536.40669867-33.06837334 0L794.05602133 248.32zM666.763264 281.38837334l0-33.06837334 131.252224 0 0 33.06837334L666.763264 281.38837334zM666.959872 784.68846934l0-33.06837334 131.252224 0 0 33.06837334L666.959872 784.68846934z" fill="#ffffff" p-id="1410"></path></svg>
+                                <button @click="setMirror(member.camId)">
+                                    <svg t="1698893970309" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1407" width="200" height="200">
+                                        <path d="M235.487232 264.43093334l156.03029333 0 0 503.922688-156.03029333 0 0-503.922688Z" fill="#ffffff" p-id="1408"></path>
+                                        <path d="M475.17969067 35.56829867l75.595776 0 0 944.85981867-75.595776 0 0-944.85981867Z" fill="#ffffff" p-id="1409"></path>
+                                        <path d="M637.65435733 248.32l33.06837334 0 0 536.40669867-33.06837334 0L637.65435733 248.32zM794.05602133 248.32l33.06837334 0 0 536.40669867-33.06837334 0L794.05602133 248.32zM666.763264 281.38837334l0-33.06837334 131.252224 0 0 33.06837334L666.763264 281.38837334zM666.959872 784.68846934l0-33.06837334 131.252224 0 0 33.06837334L666.959872 784.68846934z" fill="#ffffff" p-id="1410"></path>
+                                    </svg>
                                 </button>
-                                <button @click="setDegree">
+                                <button @click="setDegree(member.camId)">
                                     <svg t="1698892248371" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1019" width="200" height="200">
                                         <path d="M934.08 416.448h-220.352a46.4 46.4 0 0 1-47.232-47.232c0-26.752 20.48-47.232 47.232-47.232h173.184V148.8c0-26.752 20.48-47.168 47.168-47.168 26.816 0 47.232 20.48 47.232 47.168V369.28a47.36 47.36 0 0 1-47.232 47.232z" fill="#ffffff" p-id="1020"></path>
                                         <path d="M509.056 978.432A470.976 470.976 0 0 1 38.4 507.712 470.976 470.976 0 0 1 509.056 37.12a472.32 472.32 0 0 1 434.56 288.064c9.408 23.68-1.6 51.968-25.216 61.44-23.68 9.408-51.968-1.6-61.44-25.216a377.92 377.92 0 0 0-347.904-229.824 376.192 376.192 0 1 0 0 752.448c190.528 0 351.104-141.696 373.12-328.96a47.36 47.36 0 0 1 51.904-40.96 47.36 47.36 0 0 1 40.96 51.904 469.504 469.504 0 0 1-465.92 412.48z" fill="#ffffff" p-id="1021"></path>
@@ -70,27 +80,6 @@ export default {
     },
     computed: {
         ...mapStores(store), //使用选项试api，该方法会在vue实例里添加appStore属性
-        watchList() {
-            // 因为elecrton渲染视图性能有限，仅渲染包括自己在内9名成员
-            const { memberList, myUserId } = this.appStore;
-            const obj = {};
-            let i = 0;
-            if (memberList[myUserId]) {
-                obj[myUserId] = memberList[myUserId];
-                i = 1;
-            }
-
-            Object.keys(memberList).some((userId) => {
-                if (userId !== myUserId) {
-                    obj[userId] = memberList[userId];
-                    i++;
-
-                    //最多只渲染9名成员
-                    if (i >= 9) return true;
-                }
-            });
-            return obj;
-        },
     },
     created() {
         this.callbackHanle(true);
@@ -123,11 +112,11 @@ export default {
             curConfig.qp_max = 22;
             this.$rtcsdk.setVideoCfg(JSON.stringify(curConfig));
         },
-        toggleMic(userId, userInfo) {
-            userInfo.audioStatus === 3 ? this.$rtcsdk.closeMic(userId) : this.$rtcsdk.openMic(userId);
+        toggleMic(userInfo) {
+            userInfo.audioStatus === 3 ? this.$rtcsdk.closeMic(userInfo.userId) : this.$rtcsdk.openMic(userInfo.userId);
         },
-        toggleVideo(userId, userInfo) {
-            userInfo.videoStatus === 3 ? this.$rtcsdk.closeVideo(userId) : this.$rtcsdk.openVideo(userId);
+        toggleVideo(userInfo) {
+            userInfo.videoStatus === 3 ? this.$rtcsdk.closeVideo(userInfo.userId) : this.$rtcsdk.openVideo(userInfo.userId);
         },
         openVideoDevRslt(videoID, isSucceed) {
             if (!isSucceed) {
@@ -141,27 +130,22 @@ export default {
             console.log("netStateLevel", level);
             this.netStateLevel = level;
         },
-        setUpsideDown() {
-            const videoEffects = JSON.parse(this.$rtcsdk.getVideoEffects());
-            videoEffects.upsideDown = videoEffects.upsideDown === 1 ? 0 : 1;
-            this.$rtcsdk.setVideoEffects(JSON.stringify(videoEffects));
+        setUpsideDown(camId) {
+            const config = this.$rtcsdk.getLocVideoAttributes(camId);
+            config.effects.upsideDown = config.effects.upsideDown === 1 ? 0 : 1;
+            this.$rtcsdk.setLocVideoAttributes(camId, config);
         },
-        setMirror() {
-            const videoEffects = JSON.parse(this.$rtcsdk.getVideoEffects());
-            videoEffects.mirror = videoEffects.mirror === 1 ? 0 : 1;
-            this.$rtcsdk.setVideoEffects(JSON.stringify(videoEffects));
+        setMirror(camId) {
+            const config = this.$rtcsdk.getLocVideoAttributes(camId);
+            config.effects.mirror = config.effects.mirror === 1 ? 0 : 1;
+            this.$rtcsdk.setLocVideoAttributes(camId, config);
         },
-        setDegree() {
-            const videoEffects = JSON.parse(this.$rtcsdk.getVideoEffects());
-            const newCfg = Object.assign(
-                {
-                    degree: 0, //默认值是0
-                },
-                videoEffects
-            );
+        setDegree(camId) {
+            const config = this.$rtcsdk.getLocVideoAttributes(camId);
+            const degree = config.effects.degree || 0;
 
-            newCfg.degree = newCfg.degree === 270 ? 0 : newCfg.degree + 90;
-            this.$rtcsdk.setVideoEffects(JSON.stringify(newCfg));
+            config.effects.degree = degree === 270 ? 0 : degree + 90;
+            this.$rtcsdk.setLocVideoAttributes(camId, config);
         },
     },
 };

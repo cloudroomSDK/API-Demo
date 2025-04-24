@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:focus_detector/focus_detector.dart';
 
+import 'resources/styles.dart';
 import 'routes/pages.dart';
 import 'routes/router.dart';
 import 'utils/logger_util.dart';
@@ -46,8 +47,28 @@ class App extends StatelessWidget {
                     shadowColor: Colors.transparent,
                     iconTheme: IconThemeData(color: Colors.black),
                   ),
+                  textSelectionTheme: const TextSelectionThemeData(
+                    cursorColor: PageStyle.mainColor,
+                    selectionColor: PageStyle.mainColor,
+                    selectionHandleColor: PageStyle.mainColor,
+                  ),
+                  checkboxTheme: CheckboxThemeData(
+                    checkColor: MaterialStateProperty.all(Colors.white),
+                    fillColor: MaterialStateProperty.resolveWith<Color?>(
+                        (Set<MaterialState> states) {
+                      return states.contains(MaterialState.selected)
+                          ? PageStyle.mainColor
+                          : Colors.transparent;
+                    }),
+                    side: const BorderSide(color: PageStyle.mainColor),
+                  ),
+                  inputDecorationTheme: const InputDecorationTheme(),
                 ),
                 logWriterCallback: Logger.print,
+                routingCallback: (Routing? route) {
+                  Logger.log(
+                      'previous: ${route?.previous} ____ current: ${route?.current} ____ args: ${route?.args}');
+                },
                 getPages: AppPages.routes,
                 initialBinding: InitialBinding(),
                 initialRoute: AppRoutes.FUNCTIONS,

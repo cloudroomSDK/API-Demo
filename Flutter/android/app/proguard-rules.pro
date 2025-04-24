@@ -8,4 +8,3 @@
 -keep class com.cloudroom.**  { *; }
 -keep class com.rtc.**  { *; }
 -keep class org.crmedia.**  { *; }
--keep class com.example.rtcsdk.** { *; }

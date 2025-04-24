@@ -3,8 +3,17 @@ import 'package:flutter/material.dart';
 
 class VideoComponent extends StatefulWidget {
   final UsrVideoId usrVideoId;
+  final Function()? onTap;
+  final Function(int viewID)? onViewID;
+  final int? qualityLv; // 大流1，小流2
 
-  const VideoComponent({Key? key, required this.usrVideoId}) : super(key: key);
+  const VideoComponent({
+    Key? key,
+    required this.usrVideoId,
+    this.onTap,
+    this.onViewID,
+    this.qualityLv,
+  }) : super(key: key);
 
   @override
   State<VideoComponent> createState() => VideoComponentState();
@@ -28,17 +37,21 @@ class VideoComponentState extends State<VideoComponent> {
 
   void createComponent() {
     setState(() {
-      videoComponent = RtcSDK.videoManager.createView((int vid) {
+      videoComponent = RtcSDK.videoManager.createView((int vid) async {
         viewID = vid;
-        RtcSDK.videoManager.setUsrVideoId(vid, widget.usrVideoId);
+        await RtcSDK.videoManager.setUsrVideoId(vid, widget.usrVideoId,
+            qualityLv: widget.qualityLv ?? 1);
+        widget.onViewID?.call(vid);
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: videoComponent,
-    );
+    // return GestureDetector(
+    //   onTap: widget.onTap,
+    //   child: Container(child: videoComponent),
+    // );
+    return Container(child: videoComponent);
   }
 }

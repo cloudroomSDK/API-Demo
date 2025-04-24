@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rtcsdk_demo/src/controller/rtc_controller.dart';
 import 'package:rtcsdk_demo/src/resources/styles.dart';
 import 'package:get/get.dart';
-import 'package:rtcsdk_demo/src/routes/navigator.dart';
 import 'package:rtcsdk_demo/src/routes/router.dart';
 import 'functions_logic.dart';
 
@@ -13,11 +12,7 @@ class Functions extends StatelessWidget {
   final logic = Get.find<FunctionsLogic>();
   final rtcLogic = Get.find<RTCController>();
 
-  Widget btn(
-    String text,
-    String target, {
-    Function? onPressed,
-  }) {
+  Widget btn(String text, String target) {
     return Container(
       margin: EdgeInsets.only(bottom: 8.5.w),
       width: 300.w,
@@ -26,11 +21,7 @@ class Functions extends StatelessWidget {
           style: PageStyle.getButtonStyle(),
           onPressed: rtcLogic.isLogined.value
               ? () {
-                  if (onPressed != null) {
-                    onPressed.call();
-                  } else {
-                    logic.toJoinRoomPage(target);
-                  }
+                  logic.toJoinRoomPage(target);
                 }
               : null,
           child: Text(
@@ -56,6 +47,10 @@ class Functions extends StatelessWidget {
             )));
   }
 
+  Widget funSpacer() {
+    return SizedBox(height: 25.h);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,25 +69,19 @@ class Functions extends StatelessWidget {
       body: SingleChildScrollView(
         child: Obx(() => Column(children: [
               funTitle("基础功能"),
-              25.verticalSpace,
+              funSpacer(),
               btn("语音通话", AppRoutes.AUDIOCHANNEL),
               btn("视频通话", AppRoutes.VIDEOCHANNEL),
               btn("视频设置", AppRoutes.VIDEOCONFIG),
               btn("屏幕共享", AppRoutes.SCREENSHARING),
-              25.verticalSpace,
+              funSpacer(),
               funTitle("高级功能"),
-              25.verticalSpace,
+              funSpacer(),
               btn("本地录制", AppRoutes.LOCALRECORED),
               btn("云端录制", AppRoutes.REMOTERECORD),
               btn("视频播放", AppRoutes.MEDIA),
               btn("聊天", AppRoutes.CHAT),
-              btn(
-                "更多",
-                AppRoutes.TESTING,
-                onPressed: () {
-                  AppNavigator.toTest();
-                },
-              ),
+              // btn("测试", AppRoutes.TESTING),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10.h),
                 child: Text(logic.version.value,

@@ -13,47 +13,23 @@ class Logger {
   static String _writeingText = '';
 
   static Future<File> createFile() async {
-    String dirPath = '${await Utils.storeDirectory()}/Log';
-    Directory dir = Directory(dirPath);
-    String logBak = "_apidemo.log.bak";
-    if (dir.existsSync()) {
-      List<FileSystemEntity> list = dir.listSync();
-      for (FileSystemEntity entity in list) {
-        if (entity is File) {
-          String name = entity.path.split('/').last;
-          if (name.endsWith(logBak)) {
-            String dateStr = name.replaceAll(logBak, "");
-            // 删了超过7天的备份文件
-            if (DateTime.now()
-                    .difference(DateUtil.getDateTime(dateStr)!)
-                    .inDays >
-                7) {
-              entity.deleteSync();
-            }
-          }
-        }
-      }
-    } else {
-      dir.createSync();
-    }
-
-    String path = '$dirPath/apidemo.log';
+    String path = '${(await Utils.storeDirectory())}/apidemo.log';
     File file = File(path);
-    bool exists = file.existsSync();
-
-    if (exists) {
-      FileStat stat = file.statSync();
-      int maxFileSize = 1024 * 1024 * 5; // 超过5M的文件备份一个
-      if (stat.size > maxFileSize) {
-        // 备份当前
-        String now = DateUtil.formatDate(DateTime.now(), format: 'yyyy-MM-dd');
-        file.copySync('$dirPath/$now$logBak');
-        file.writeAsBytesSync([], mode: FileMode.write);
-      }
-    } else {
-      file.createSync();
+    if (!await file.exists()) {
+      await file.create();
     }
     return file;
+  }
+
+  static Future<void> checkFileSize() async {
+    if (_file != null) {
+      FileStat stat = await _file!.stat();
+      int maxFileSize = 1024 * 1024 * 5; // 文件最大5M
+      if (stat.size > maxFileSize) {
+        // 备份当前
+        // 创建一个新的文件
+      }
+    }
   }
 
   static void log(String text) {
@@ -62,7 +38,8 @@ class Logger {
     }
     String now = DateUtil.getNowDateStr();
     _text += '[$now] $text \n';
-    _write();
+    // _write();
+    _writeInIso();
   }
 
   static void debug(String text) {
@@ -83,9 +60,9 @@ class Logger {
     }
   }
 
-  static final Function _write = Utils.debounce(
-    _writeText,
-    // _writeInIsolate,
+  static final Function _writeInIso = Utils.debounce(
+    // _writeText
+    _writeInIsolate,
     duration: const Duration(seconds: 2),
   );
 
@@ -115,6 +92,7 @@ class Logger {
     Isolate? _isolate;
     final ReceivePort receivePort = ReceivePort();
     receivePort.listen((message) {
+      print('receivePort close');
       receivePort.close();
       _isolate?.kill(priority: Isolate.immediate);
       _writeing = false;
@@ -140,7 +118,7 @@ class Logger {
       await raf.writeString(content);
       await raf.close();
     } catch (e) {
-      debugPrint('writeFileInIsolate error：$e');
+      print('writeFileInIsolate error：$e');
     }
   }
 }

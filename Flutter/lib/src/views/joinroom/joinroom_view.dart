@@ -46,7 +46,6 @@ class JoinRoom extends StatelessWidget {
                             height: 40.h,
                             child: CustomTextFormField(
                               controller: logic.confIdController,
-                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
                                     RegExp('[0-9]'))

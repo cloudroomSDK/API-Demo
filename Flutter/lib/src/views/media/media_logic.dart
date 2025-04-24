@@ -5,6 +5,7 @@ import 'package:rtcsdk_demo/src/controller/app_controller.dart';
 import 'package:rtcsdk_demo/src/controller/permission_controller.dart';
 import 'package:rtcsdk_demo/src/controller/rtc_controller.dart';
 import 'package:rtcsdk_demo/src/models/media_notify.dart';
+import 'package:rtcsdk_demo/src/routes/navigator.dart';
 import 'package:rtcsdk_demo/src/utils/logger_util.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
@@ -16,7 +17,7 @@ class MediaLogic extends GetxController {
   final permissionLogic = Get.find<PermissionController>();
   final String confId = Get.arguments['confId'];
 
-  // final bool playLocRecordFile = false; // 是否播放本地录制文件
+  final bool playLocRecordFile = false; // 是否播放本地录制文件
   Rx<MEDIA_STATE> mediaState = MEDIA_STATE.MEDIA_STOP.obs;
   bool get isPlay => (mediaState.value != MEDIA_STATE.MEDIA_STOP);
   RxBool isShowBtn = false.obs;
@@ -67,12 +68,11 @@ class MediaLogic extends GetxController {
 
   // 开启影音共享
   void startPlayMedia() {
-    // if (playLocRecordFile) {
-    //   RtcSDK.recordManager.playbackRecordFile(filePath);
-    // } else {
-    //   RtcSDK.mediaManager.startPlayMedia(filePath);
-    // }
-    RtcSDK.mediaManager.startPlayMedia(filePath);
+    if (playLocRecordFile) {
+      RtcSDK.recordManager.playbackRecordFile(filePath);
+    } else {
+      RtcSDK.mediaManager.startPlayMedia(filePath);
+    }
   }
 
   // 暂停影音共享
@@ -136,15 +136,15 @@ class MediaLogic extends GetxController {
   //   Logger.log('files: $files');
   // }
 
-  // 选本地录制文件 SDKV2.0.4废弃
-  // selRecordFile() async {
-  //   dynamic dfile = await AppNavigator.toSelLocRecord(confId: confId);
-  //   if (dfile != null) {
-  //     RecordFileShow file = dfile as RecordFileShow;
-  //     filePath = file.fileName;
-  //     fileName.value = file.fileName;
-  //   }
-  // }
+  // 选本地录制文件
+  selRecordFile() async {
+    dynamic dfile = await AppNavigator.toSelLocRecord(confId: confId);
+    if (dfile != null) {
+      RecordFileShow file = dfile as RecordFileShow;
+      filePath = file.fileName;
+      fileName.value = file.fileName;
+    }
+  }
 
   // 选文件
   filePicker() async {
@@ -164,12 +164,11 @@ class MediaLogic extends GetxController {
   // 选文件
   pickFile() async {
     permissionLogic.storage(() async {
-      // if (playLocRecordFile) {
-      //   selRecordFile();
-      // } else {
-      //   filePicker();
-      // }
-      filePicker();
+      if (playLocRecordFile) {
+        selRecordFile();
+      } else {
+        filePicker();
+      }
     }, () {
       EasyLoading.showToast('请打开存储权限');
     });

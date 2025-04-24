@@ -27,17 +27,6 @@ import 'package:rtcsdk_demo/src/views/chat/chat_view.dart';
 import 'package:rtcsdk_demo/src/views/chat/chat_binding.dart';
 import 'package:rtcsdk_demo/src/views/testing/testing_view.dart';
 import 'package:rtcsdk_demo/src/views/testing/testing_binding.dart';
-import 'package:rtcsdk_demo/src/views/testing/test_room/test_room_view.dart';
-import 'package:rtcsdk_demo/src/views/testing/test_room/test_room_binding.dart';
-import 'package:rtcsdk_demo/src/views/testing/members/members_view.dart';
-import 'package:rtcsdk_demo/src/views/testing/members/members_binding.dart';
-import 'package:rtcsdk_demo/src/views/testing/video_stream/video_stream_view.dart';
-import 'package:rtcsdk_demo/src/views/testing/video_stream/video_stream_binding.dart';
-import 'package:rtcsdk_demo/src/views/testing/video_call/video_call_view.dart';
-import 'package:rtcsdk_demo/src/views/testing/video_call/video_call_binding.dart';
-import 'package:rtcsdk_demo/src/views/testing/queue_list/queue_list_view.dart';
-import 'package:rtcsdk_demo/src/views/testing/queue_list/queue_list_binding.dart';
-
 import 'router.dart';
 
 class AppPages {
@@ -77,14 +66,6 @@ class AppPages {
       name: AppRoutes.VIDEOCONFIG,
       page: () => VideoConfig(),
       binding: VideoConfigBinding(),
-      // middlewares: [
-      //   InterceptorMiddleware(),
-      // ],
-    ),
-    GetPage(
-      name: AppRoutes.VIDEOSTREAM,
-      page: () => VideoStreamView(),
-      binding: VideoStreamBinding(),
       // middlewares: [
       //   InterceptorMiddleware(),
       // ],
@@ -144,26 +125,6 @@ class AppPages {
       // middlewares: [
       //   InterceptorMiddleware(),
       // ],
-    ),
-    GetPage(
-      name: AppRoutes.MEMBERS,
-      page: () => MembersView(),
-      binding: MembersBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.VIDEOCALL,
-      page: () => VideoCallPage(),
-      binding: VideoCallBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.TESTROOM,
-      page: () => TestRoomView(),
-      binding: TestRoomBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.QUEUELIST,
-      page: () => QueueListView(),
-      binding: QueueListBinding(),
-    ),
+    )
   ];
 }

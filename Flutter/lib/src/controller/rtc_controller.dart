@@ -24,10 +24,8 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:rtcsdk/rtcsdk.dart';
-import 'package:rtcsdk_demo/src/widgets/loading_view.dart';
 import 'package:rxdart/rxdart.dart' hide Rx;
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:connectivity_plus/connectivity_plus.dart'; // android：修改插件的compileOptions JavaVersion.VERSION_17 -> JavaVersion.VERSION_1_8
 
 class RTCController extends GetxController {
   final permissionLogic = Get.find<PermissionController>();
@@ -41,13 +39,13 @@ class RTCController extends GetxController {
   String get confID => _confID != null ? '$_confID' : '';
   UsrVideoId get selfUsrVideoId => UsrVideoId(userId: userID, videoID: -1);
 
+  // PublishSubject<bool> isLogined = PublishSubject<bool>();
   RxBool isLogined = false.obs;
   RxBool isOpenMyMic = false.obs;
   RxBool isOpenMySpeaker = false.obs;
   RxBool isOpenMyCamera = false.obs;
   Rx<CAMERA_POSITION> myCameraPosition = CAMERA_POSITION.FRONT.obs;
   Rx<AudioCfg>? audioCfg;
-  StreamSubscription<List<ConnectivityResult>>? connectivityResultSub;
 
   @override
   void onInit() {
@@ -115,23 +113,18 @@ class RTCController extends GetxController {
       onNotifyMediaPause: notifyMediaPause,
       onNotifyMediaStop: notifyMediaStop,
     ));
-    // RtcSDK.inviteManager.setListener(InviteListener(
-    //   onNotifyInviteIn: notifyInviteIn,
-    //   onNotifyInviteAccepted: notifyInviteAccept,
-    //   onNotifyInviteRejected: notifyInviteReject,
-    //   onNotifyInviteCanceled: notifyInviteCancel,
-    // ));
     SdkInitDat sdkInitDat = SdkInitDat(
       sdkDatSavePath: "${(await Utils.storeDirectory())}/",
-      noCall: false, // 需要用到呼叫模块，则传false
-      noQueue: false, // 需要用到队列模块，则传false
+      noCall: true,
+      noQueue: true,
     );
     RtcSDK.sdkManager.setChannelListener((String method, dynamic arguments) {
       Logger.log('主调: $method, 参数: $arguments');
     });
     RtcSDK.sdkManager.setCallbackListener((String method, dynamic arguments) {
-      if (method == 'micEnergyUpdate' || method == 'netStateChanged') return;
-      Logger.log('通知: $method, 参数: $arguments');
+      if (method != 'micEnergyUpdate' && method != 'netStateChanged') {
+        Logger.log('通知: $method, 参数: $arguments');
+      }
     });
     final sdkErr = await RtcSDK.sdkManager.init(
         sdkInitDat,
@@ -142,7 +135,6 @@ class RTCController extends GetxController {
       AppConfig? appConfig = RTCStorage.getAppConfig();
       if (appConfig != null) await setServerAddr(appConfig.serverAddr);
       await login();
-      initConnectivity();
     }
   }
 
@@ -150,63 +142,35 @@ class RTCController extends GetxController {
     await RtcSDK.sdkManager.setServerAddr(serverAddr);
   }
 
-  initConnectivity() async {
-    connectivityResultSub ??= Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> result) {
-      Logger.log('connectivityResult by listener: $result');
-      // ConnectivityResult.ethernet 以太网
-      // ConnectivityResult.vpn
-      // ConnectivityResult.bluetooth
-      if (result.contains(ConnectivityResult.mobile) ||
-          result.contains(ConnectivityResult.wifi)) {
-        if (isLogined.value == false) {
-          login();
-        }
-      } else if (result.contains(ConnectivityResult.none)) {
-        Logger.log('网络连接失败，请检查网络！');
-      }
-    });
-  }
-
   Future<void> login() async {
-    LoadingView.singleton.wrap(
-        text: '登录中...',
-        asyncFunction: () async {
-          AppConfig appConfig = RTCStorage.getAppConfig()!;
-          String appSecret =
-              md5.convert(utf8.encode(appConfig.appSecret)).toString();
-          LoginDat config = LoginDat(
-              privAcnt: nickName, //'uid_$nickName', // userID, 唯一标识
-              // nickName: nickName,
-              appID: appConfig.appId,
-              appSecret: appSecret);
-          LoginResult result = await RtcSDK.sdkManager.login(config);
-          Logger.log("LoginResult: ${result.toJson()}");
-          try {
-            isLogined.value = result.sdkErr == 0;
-            if (result.sdkErr == 0) {
-              // 登录成功
-              _userID = result.userID;
-              EasyLoading.showToast("登录成功: $_userID");
-            } else if (result.sdkErr == 9) {
-              reLogin();
-            } else if (result.sdkErr == 202) {
-              // 服务器没响应
-              Future.delayed(const Duration(seconds: 3), login);
-            } else if (result.sdkErr == 205) {
-              // 网络超时 205
-              EasyLoading.showToast(
-                  '${ErrorDef.getMessage(result.sdkErr)} 10秒后重新登录');
-              Future.delayed(const Duration(seconds: 10), reLogin);
-            } else {
-              // 登录失败
-              EasyLoading.showToast(ErrorDef.getMessage(result.sdkErr));
-            }
-          } catch (e) {
-            Logger.log("LoginResult: $e");
-          }
-        });
+    AppConfig appConfig = RTCStorage.getAppConfig()!;
+    String appSecret = md5.convert(utf8.encode(appConfig.appSecret)).toString();
+    LoginDat config = LoginDat(
+        nickName: nickName,
+        privAcnt: nickName,
+        appID: appConfig.appId,
+        appSecret: appSecret);
+    LoginResult result = await RtcSDK.sdkManager.login(config);
+    Logger.log("LoginResult: ${result.toJson()}");
+    try {
+      isLogined.value = result.sdkErr == 0;
+      if (result.sdkErr == 0) {
+        // 登录成功
+        _userID = result.userID;
+        EasyLoading.showToast("登录成功: $_userID");
+      } else if (result.sdkErr == 9) {
+        reLogin();
+      } else if (result.sdkErr == 205) {
+        // 网络超时
+        EasyLoading.showToast('${ErrorDef.getMessage(result.sdkErr)} 10秒后重新登录');
+        Future.delayed(const Duration(seconds: 10), reLogin);
+      } else {
+        // 登录失败
+        EasyLoading.showToast(ErrorDef.getMessage(result.sdkErr));
+      }
+    } catch (e) {
+      Logger.log("LoginResult: $e");
+    }
   }
 
   logout() async {
@@ -221,7 +185,7 @@ class RTCController extends GetxController {
   }
 
   Future<int> enterMeeting(int id) async {
-    int sdkErr = await RtcSDK.roomManager.enterMeeting(id, nickName);
+    int sdkErr = await RtcSDK.roomManager.enterMeeting(id);
     Logger.log('enterMeeting sdkErr: $sdkErr');
     if (sdkErr == 0) {
       _confID = id;
@@ -230,7 +194,6 @@ class RTCController extends GetxController {
     } else {
       EasyLoading.showToast(ErrorDef.getMessage(sdkErr));
     }
-    onEnterRoom.sink.add(sdkErr);
     return sdkErr;
   }
 
@@ -358,7 +321,6 @@ class RTCController extends GetxController {
         : CAMERA_POSITION.BACK);
   }
 
-  PublishSubject<int> onEnterRoom = PublishSubject<int>();
   PublishSubject<int> onLineOff = PublishSubject<int>();
   PublishSubject<String> onUserEnterMeeting = PublishSubject<String>();
   PublishSubject<String> onUserLeftMeeting = PublishSubject<String>();
@@ -412,7 +374,6 @@ class RTCController extends GetxController {
 
   @override
   void onClose() async {
-    onEnterRoom.close();
     onLineOff.close();
     onUserEnterMeeting.close();
     onUserLeftMeeting.close();
@@ -442,15 +403,11 @@ class RTCController extends GetxController {
     onCloudMixerOutputInfoChanged.close();
     // 房间内消息
     onNotifyMeetingCustomMsg.close();
-
-    connectivityResultSub?.cancel();
     super.onClose();
   }
 
   // 通知用户掉线
-  void lineOff(int sdkErr) async {
-    onLineOff.sink.add(sdkErr);
-    isLogined.value = false;
+  void lineOff(int sdkErr) {
     EasyLoading.showToast('掉线中...');
   }
 
@@ -549,12 +506,12 @@ class RTCController extends GetxController {
   }
 
   // 通知开启屏幕共享
-  void notifyScreenShareStarted(String sharerID) {
+  void notifyScreenShareStarted() {
     onNotifyScreenShareStarted.sink.add(null);
   }
 
   // 通知停止屏幕共享
-  void notifyScreenShareStopped(String oprUserID) {
+  void notifyScreenShareStopped() {
     onNotifyScreenShareStopped.sink.add(null);
   }
 

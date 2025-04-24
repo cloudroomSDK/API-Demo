@@ -39,7 +39,7 @@ class RecordList extends StatelessWidget {
                     onPressed: file.state == RECORD_FILE_STATE.RFS_NoUpload ||
                             file.state == RECORD_FILE_STATE.RFS_UploadFail
                         ? () {
-                            // logic.uploadRecordFile(file);
+                            logic.uploadRecordFile(file);
                           }
                         : null,
                     child: Text(

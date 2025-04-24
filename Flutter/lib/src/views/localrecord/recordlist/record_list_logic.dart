@@ -4,7 +4,7 @@ import 'package:rtcsdk_demo/src/controller/rtc_controller.dart';
 import 'package:rtcsdk/rtcsdk.dart';
 import 'package:get/get.dart';
 import 'package:rtcsdk_demo/src/models/record_file_state.dart';
-// import 'package:rtcsdk_demo/src/utils/logger_util.dart';
+import 'package:rtcsdk_demo/src/utils/logger_util.dart';
 
 class RecordListLogic extends GetxController {
   final rtcLogic = Get.find<RTCController>();
@@ -14,7 +14,7 @@ class RecordListLogic extends GetxController {
 
   @override
   onInit() {
-    // getAllRecordFiles();
+    getAllRecordFiles();
     subs.addAll([
       rtcLogic.onNotifyRecordFileStateChanged
           .listen((RecordFileState fileState) {
@@ -37,17 +37,17 @@ class RecordListLogic extends GetxController {
     super.onClose();
   }
 
-  // void getAllRecordFiles() async {
-  //   List<RecordFileShow> recordFiles =
-  //       await RtcSDK.recordManager.getAllRecordFiles();
-  //   files.value = recordFiles;
-  // }
+  void getAllRecordFiles() async {
+    List<RecordFileShow> recordFiles =
+        await RtcSDK.recordManager.getAllRecordFiles();
+    files.value = recordFiles;
+  }
 
-  // uploadRecordFile(RecordFileShow file) async {
-  //   UploadRecordFileResult result =
-  //       await RtcSDK.recordManager.uploadRecordFile(file.fileName);
-  //   Logger.log('UploadRecordFileResult :${result.toJson()}');
-  // }
+  uploadRecordFile(RecordFileShow file) async {
+    UploadRecordFileResult result =
+        await RtcSDK.recordManager.uploadRecordFile(file.fileName);
+    Logger.log('UploadRecordFileResult :${result.toJson()}');
+  }
 
   void selFile(RecordFileShow file) {
     Get.back(result: file);

@@ -17,6 +17,7 @@
 #include "./TestEchoTest/DlgEchoTest.h"
 #include "./TestSubscribeAudio/DlgSubscribeAudio.h"
 #include "./TestVideoBeauty/TestVideoBeauty.h"
+#include "./TestVirtualBackground/TestVirtualBackground.h"
 
 
 MainDialog *g_mainDialog = NULL;
@@ -39,6 +40,13 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	m_mediaPlayUI = NULL;
 	m_screeShareUI = NULL;
 	m_videoWallPage = NULL;
+
+#if defined(LINUX) 
+	ui->beautyWidget->hide();
+#endif
+#if defined(LINUX) || defined(MAC)
+	ui->vbkWidget->hide();
+#endif
 
 	//入会就开始收消息
 	m_dlgRoomMsg = new DlgRoomMsg(this);
@@ -63,6 +71,7 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	connect(ui->btnStopScreenShare, &QPushButton::clicked, this, &MainDialog::slot_btnStopScreenClicked);
 	connect(ui->btnSubAudio, &QPushButton::clicked, this, &MainDialog::slot_btnSubAudioClicked);
 	connect(ui->btnBeauty, &QPushButton::clicked, this, &MainDialog::slot_btnBeautyClicked);
+	connect(ui->btnVBK, &QPushButton::clicked, this, &MainDialog::slot_btnVirtualBKClicked);
 
 	QLayout *pLayout = ui->mainFuncWidget->layout();
 	pLayout->setSpacing(VIDEO_WALL_SPACE);
@@ -221,14 +230,14 @@ void MainDialog::slot_btnAudioSetClicked()
 {
 	DlgAudioSet *dlgAudioSet = new DlgAudioSet(this);
 	dlgAudioSet->setAttribute(Qt::WA_DeleteOnClose);
-	dlgAudioSet->exec();
+	dlgAudioSet->show();
 }
 
 void MainDialog::slot_btnVideoSetClicked()
 {
 	DlgVideoSet *dlgVideoSet = new DlgVideoSet(this);
 	dlgVideoSet->setAttribute(Qt::WA_DeleteOnClose);
-	dlgVideoSet->exec();
+	dlgVideoSet->show();
 }
 
 void MainDialog::slot_btnLocRecordClicked()
@@ -401,6 +410,13 @@ void MainDialog::slot_btnSubAudioClicked()
 void MainDialog::slot_btnBeautyClicked()
 {
 	TestVideoBeauty *dlg = new TestVideoBeauty(this);
+	dlg->setAttribute(Qt::WA_DeleteOnClose);
+	dlg->show();
+}
+
+void MainDialog::slot_btnVirtualBKClicked()
+{
+	TestVirtualBackground *dlg = new TestVirtualBackground(this);
 	dlg->setAttribute(Qt::WA_DeleteOnClose);
 	dlg->show();
 }

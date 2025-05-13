@@ -11,6 +11,7 @@ mingw {
 error("unsupported mingw")
 }
 msvc {
+DEFINES += WIN32
 contains(QT_ARCH, i386): ARCHITECTURE = x86
 else: ARCHITECTURE = $$QT_ARCH
 QMAKE_LFLAGS_RELEASE += /MAP
@@ -21,6 +22,7 @@ LIBS += -L$$PWD/CRVideoSDK/lib/$$ARCHITECTURE/ -lCRBase -lCRVideoSDKCpp
 }
 # Linux
 linux {
+DEFINES += LINUX
 ARCHITECTURE=$$QMAKE_HOST.arch
 contains(QMAKE_HOST.arch, aarch64) || linux-aarch64-gnu-g++{
 ARCHITECTURE=aarch64
@@ -35,6 +37,27 @@ DEFINES += LINUX
 }
 # MacOS
 macx {
+    DEFINES += MAC
+    LIBS += -F$$PWD/CRVideoSDK/lib/CRBeauty
+    LIBS += -framework CRBeauty
+    LIBS += -F$$PWD/CRVideoSDK/lib/CRBeauty/vnn
+    LIBS += -framework vnn_core_osx
+    LIBS += -framework vnn_face_osx
+    LIBS += -framework vnn_kit_osx
+
+    # 定义所有 Framework 路径
+    FRAMEWORK_PATHS = $$PWD/CRVideoSDK/lib/CRBeauty $$PWD/CRVideoSDK/lib/CRBeauty/vnn
+    # 遍历路径并添加到 Bundle
+    for(path, FRAMEWORK_PATHS) {
+        FRAMEWORK_FILES = $$files($${path}/*.framework)
+        for(fw, FRAMEWORK_FILES) {
+            MY_FRAMEWORK_$${fw}.files = $${fw}
+            MY_FRAMEWORK_$${fw}.path = /Contents/Frameworks
+            QMAKE_BUNDLE_DATA += MY_FRAMEWORK_$${fw}
+        }
+    }
+    QMAKE_LFLAGS += -Wl,-rpath,@loader_path/Frameworks
+
     INCLUDEPATH += $$PWD/CRVideoSDK/lib/libCRVideoSDKCpp.xcframework/macos-x86_64/Headers
     LIBS += -L$$PWD/CRVideoSDK/lib/libCRVideoSDKCpp.xcframework/macos-x86_64  -lCRVideoSDKCpp
     QMAKE_INFO_PLIST = Info.plist
@@ -61,8 +84,9 @@ INCLUDEPATH += \
     $$PWD/src/TestNetCamera \
     $$PWD/src/TestVoiceChange \
     $$PWD/src/TestTestScreenShare \
-    $$PWD/src/TestSubscribeAudio
-    $$PWD/src/TestVideoBeauty
+    $$PWD/src/TestSubscribeAudio \
+    $$PWD/src/TestVideoBeauty \
+    $$PWD/src/TestVirtualBackground \
 
 SOURCES += \
     src/stdafx.cpp \
@@ -101,12 +125,13 @@ SOURCES += \
     src/TestVoiceChange/DlgVoiceChange.cpp \
     src/TestScreenShare/ScreenShareUI.cpp \
     src/TestScreenShare/ScreenMarkView.cpp \
-	src/TestScreenShare/CThumbnailItem.cpp \
-	src/TestScreenShare/ShareSourceSelectDlg.cpp \
+    src/TestScreenShare/CThumbnailItem.cpp \
+    src/TestScreenShare/ShareSourceSelectDlg.cpp \
     src/TestScreenShare/DlgScreenMark.cpp \
     src/TestSubscribeAudio/DlgSubscribeAudio.cpp \
     src/TestVoiceChange/CustomVoiceChgDlg.cpp \
-    src/TestVideoBeauty/TestVideoBeauty.cpp
+    src/TestVideoBeauty/TestVideoBeauty.cpp \
+    src/TestVirtualBackground/TestVirtualBackground.cpp \
 
 HEADERS += \
     src/stdafx.h \
@@ -146,11 +171,12 @@ HEADERS += \
     src/TestScreenShare/ScreenShareUI.h \
     src/TestScreenShare/ScreenMarkView.h \
     src/TestScreenShare/DlgScreenMark.h \
-	src/TestScreenShare/CThumbnailItem.h \
-	src/TestScreenShare/ShareSourceSelectDlg.h \
+    src/TestScreenShare/CThumbnailItem.h \
+    src/TestScreenShare/ShareSourceSelectDlg.h \
     src/TestSubscribeAudio/DlgSubscribeAudio.h \
     src/TestVoiceChange/CustomVoiceChgDlg.h \
-    src/TestVideoBeauty/TestVideoBeauty.h
+    src/TestVideoBeauty/TestVideoBeauty.h \
+    src/TestVirtualBackground/TestVirtualBackground.h \
 
 FORMS += \
     src/DlgLogin.ui \
@@ -179,12 +205,13 @@ FORMS += \
     src/TestVoiceChange/VoiceChangeItem.ui \
     src/TestScreenShare/ScreenShareUI.ui \
     src/TestScreenShare/ScreenSharerToolBar.ui \
-	src/TestScreenShare/CThumbnailItem.ui \
-	src/TestScreenShare/ShareSourceSelectDlg.ui \
+    src/TestScreenShare/CThumbnailItem.ui \
+    src/TestScreenShare/ShareSourceSelectDlg.ui \
     src/TestSubscribeAudio/DlgSubscribeAudio.ui \
     src/TestVoiceChange/CustomVoiceChgDlg.ui \
     src/TestVoiceChange/VoiceCustomSetting.ui \
-    src/TestVideoBeauty/TestVideoBeauty.ui
+    src/TestVideoBeauty/TestVideoBeauty.ui \
+    src/TestVirtualBackground/TestVirtualBackground.ui \
 
 RESOURCES += \
     src/APIDemo.qrc

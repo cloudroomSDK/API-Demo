@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>304</width>
-    <height>70</height>
+    <height>107</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>自定义音频采集</string>
+   <string>自定义音频采集渲染</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#CustomAudioCapture {
@@ -29,10 +29,7 @@ QPushButton:hover, QPushButton:pressed {
 	background: rgb(5,117,197);
 }</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="spacing">
-    <number>10</number>
-   </property>
+  <layout class="QFormLayout" name="formLayout">
    <property name="leftMargin">
     <number>20</number>
    </property>
@@ -45,17 +42,31 @@ QPushButton:hover, QPushButton:pressed {
    <property name="bottomMargin">
     <number>20</number>
    </property>
-   <item>
+   <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>音频采集</string>
      </property>
     </widget>
    </item>
-   <item>
+   <item row="0" column="1">
     <widget class="QPushButton" name="btnCustomCap">
      <property name="text">
       <string>开始音频自定义采集</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>音频渲染</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="btnCustomRender">
+     <property name="text">
+      <string>开始音频自定义渲染</string>
      </property>
     </widget>
    </item>

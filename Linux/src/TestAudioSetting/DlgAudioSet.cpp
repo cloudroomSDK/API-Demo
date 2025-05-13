@@ -42,7 +42,7 @@ void DlgAudioSet::slot_micSelChanged(int idx)
 {
 	QString micId = ui.cbBx_micSel->itemData(idx).toString();
 	CRAudioCfg aCfg = g_sdkMain->getSDKMeeting().getAudioCfg();
-	aCfg._micGuid = qStrToCRStr(micId);
+	aCfg._micID = qStrToCRStr(micId);
 	g_sdkMain->getSDKMeeting().setAudioCfg(aCfg);
 }
 
@@ -50,7 +50,7 @@ void DlgAudioSet::slot_spkSelChanged(int idx)
 {
 	QString spkId = ui.cbBx_spkSel->itemData(idx).toString();
 	CRAudioCfg aCfg = g_sdkMain->getSDKMeeting().getAudioCfg();
-    aCfg._spkGuid = qStrToCRStr(spkId);
+    aCfg._spkID = qStrToCRStr(spkId);
 	g_sdkMain->getSDKMeeting().setAudioCfg(aCfg);
 }
 
@@ -112,8 +112,8 @@ void DlgAudioSet::initAudioDevs()
 
 	//显示当前配置
 	CRAudioCfg aCfg = g_sdkMain->getSDKMeeting().getAudioCfg();
-	QString curMic = crStrToQStr(aCfg._micGuid);
-	QString curSpk = crStrToQStr(aCfg._spkGuid);
+	QString curMic = crStrToQStr(aCfg._micID);
+	QString curSpk = crStrToQStr(aCfg._spkID);
 	if(!curMic.isEmpty() && ui.cbBx_micSel->count() > 0)
 	{
 		int micIdx = ui.cbBx_micSel->findData(curMic);

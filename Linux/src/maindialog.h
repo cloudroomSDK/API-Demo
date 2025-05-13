@@ -58,7 +58,8 @@ protected:
 	void slot_btnEchoTestClicked();
 	void slot_btnSubAudioClicked();
 	void slot_btnBeautyClicked();
-	
+	void slot_btnVirtualBKClicked();
+
 
 	void slot_mediaPlaying(bool bPlaying);
 	void slot_screenShareStateChanged(bool bShare);

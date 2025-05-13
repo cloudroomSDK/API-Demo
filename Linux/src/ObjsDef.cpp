@@ -90,3 +90,19 @@ void Struct_Cov(const BeautyCfg &src, QVariantMap &dst)
 		dst["filters"] = filters;
 	}
 }
+
+void Struct_Cov(const QVariantMap &src, VirtualBkCfg &dst)
+{
+	dst._type = VIRTUALBK_TYPE(src.value("type").toInt());
+	dst._colorKey = src.value("colorKey").toString();
+	dst._bkImgFile = src.value("bkImgFile").toString();
+	dst._bkImgFromResID = src.value("bkImgFromResID").toString();
+}
+
+void Struct_Cov(const VirtualBkCfg &src, QVariantMap &dst)
+{
+	dst["type"] = src._type;
+	dst["colorKey"] = src._colorKey;
+	dst["bkImgFile"] = src._bkImgFile;
+	dst["bkImgFromResID"] = src._bkImgFromResID;
+}

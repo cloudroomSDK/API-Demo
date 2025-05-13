@@ -217,3 +217,32 @@ void WidgetStyleUpdate(QWidget *pWnd)
 	pWnd->style()->polish(pWnd);
 }
 
+CRVideoFrame loadImgAsCRVideoFrame(const QString &fileName)
+{
+	CRVideoFrame rslt;
+	CRByteArray jpgDat;
+	if (!ReadDataFromFile(fileName, jpgDat))
+	{
+		qDebug("read file failed!");
+		return rslt;
+	}
+
+	QFileInfo qfInfo(fileName);
+	QString fileSuffix = qfInfo.suffix();
+
+	CRVSDK_ERR_DEF err;
+	if ((err = g_sdkMain->coverToVideoFrame(jpgDat, fileSuffix.toUtf8().constData(), rslt)) != 0)
+	{
+		qDebug("decode jpg failed: %d!", err);
+		return rslt;
+	}
+
+	//420p内部效率最高
+	if (!g_sdkMain->videoFrameCover(rslt, CRVSDK_VFMT_YUV420P, rslt.getWidth(), rslt.getHeight()))
+	{
+		qDebug("decode jpg failed!");
+		rslt.clear();
+		return rslt;
+	}
+	return rslt;
+}

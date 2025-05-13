@@ -51,5 +51,11 @@ bool SetInifileString(const QString &grpName, const QString &keyName, const QStr
 void WidgetStyleUpdate(QWidget *pWnd);
 
 CRVideoFrame loadImgAsCRVideoFrame(const QString &fileName);
+QString getFileSizeStr(int64_t fsize);
+
+//frm必须是RGB格式， image数据将引用frm中数据， 需要确保frm生命周期足够
+QImage makeRefrenceImgFromCRAVFrame(const CRVideoFrame &frm);
+//内部将copy图像数据，image不再依赖frm，开销较大
+QImage makeImageFromCRAVFrame(const CRVideoFrame &frm);
 
 #endif //__COMMON_H__

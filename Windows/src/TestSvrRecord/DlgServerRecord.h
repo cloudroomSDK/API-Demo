@@ -2,7 +2,6 @@
 #define DLGSERVERRECORD_H
 
 #include "ui_DlgServerRecord.h"
-#include "ui_DlgServerRecordResult.h"
 
 class DlgServerRecord : public QDialog, public CRVideoSDKMeetingCallBack
 {
@@ -14,8 +13,6 @@ public:
 
 protected:
 	QString getMyCloudMixerID();
-	void updateUI();
-	void showResultDlg();
 	CRVSDK_MIXER_STATE getSvrRecordState();
 
 protected:
@@ -27,6 +24,7 @@ protected:
 	virtual void notifyCloudMixerOutputInfoChanged(const char* mixerID, const char* jsonStr);
 
 public slots:
+	void slot_uiParamsChanged();
 	void slot_mainViewChanged();
 	void slot_btnStartRecordClicked();
 	void slot_btnStopRecordClicked();
@@ -36,19 +34,7 @@ private:
 	QString m_mixerID;
 	QSize m_recordSize;
 	QTimer m_delayUpdateContent;
-};
-
-class ServerRecordResultDlg : public QDialog
-{
-	Q_OBJECT
-public:
-	ServerRecordResultDlg(QWidget *parent);
-
-public slots:
-	void slot_copyUrl();
-
-protected:
-	Ui::DlgServerRecordResult ui;
+	QStringList m_outputs;
 };
 
 #endif // DLGSERVERRECORD_H

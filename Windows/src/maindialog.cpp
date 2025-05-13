@@ -18,6 +18,9 @@
 #include "./TestSubscribeAudio/DlgSubscribeAudio.h"
 #include "./TestVideoBeauty/TestVideoBeauty.h"
 #include "./TestVirtualBackground/TestVirtualBackground.h"
+#include "./TestRoomUsrAttrs/DlgRoomAttrs.h"
+#include "./TestNetCamera/DlgNetCamera.h"
+#include "./TestRoomUsrAttrs/DlgUserSelect.h"
 
 
 MainDialog *g_mainDialog = NULL;
@@ -34,13 +37,6 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 	ui->setupUi(this);
 	setWindowTitle(tr("房间号：%1").arg(meetId));
 
-	m_dlgSvrRecord = NULL;
-	m_customAudioCapture = NULL;
-	m_customVideoCaptureRender = NULL;
-	m_mediaPlayUI = NULL;
-	m_screeShareUI = NULL;
-	m_videoWallPage = NULL;
-
 #if defined(LINUX) 
 	ui->beautyWidget->hide();
 #endif
@@ -50,7 +46,6 @@ MainDialog::MainDialog(QWidget *parent, int meetId, const QString &userId)
 
 	//入会就开始收消息
 	m_dlgRoomMsg = new DlgRoomMsg(this);
-	m_dlgSvrRecord = new DlgServerRecord(this);
 
 	connect(ui->btnBaseFunc, &QPushButton::clicked, this, &MainDialog::slot_btnBaseFuncClicked);
 	connect(ui->btnHigherFunc, &QPushButton::clicked, this, &MainDialog::slot_btnHigherFuncClicked);
@@ -119,6 +114,14 @@ MainDialog::~MainDialog()
 {
 	g_mainDialog = NULL;
     delete ui;
+}
+
+void MainDialog::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Escape)
+	{
+		event->ignore();
+	}
 }
 
 QVariant MainDialog::getRecordContents(const QSize &recSize)
@@ -226,18 +229,31 @@ void MainDialog::slot_btnHigherFuncClicked()
 	ui->btnHigherFunc->setIcon(QIcon(funcShow ? ":/Resources/arrowDown.png" : ":/Resources/arrowUp.png"));
 }
 
+void MainDialog::showDlg(QDialog *p)
+{
+	p->show();
+	p->raise();
+	p->activateWindow();
+}
+
 void MainDialog::slot_btnAudioSetClicked()
 {
-	DlgAudioSet *dlgAudioSet = new DlgAudioSet(this);
-	dlgAudioSet->setAttribute(Qt::WA_DeleteOnClose);
-	dlgAudioSet->show();
+	if (m_dlgAudioSet.isNull())
+	{
+		m_dlgAudioSet = new DlgAudioSet(this);
+		m_dlgAudioSet->setAttribute(Qt::WA_DeleteOnClose);
+	}
+	showDlg(m_dlgAudioSet);
 }
 
 void MainDialog::slot_btnVideoSetClicked()
 {
-	DlgVideoSet *dlgVideoSet = new DlgVideoSet(this);
-	dlgVideoSet->setAttribute(Qt::WA_DeleteOnClose);
-	dlgVideoSet->show();
+	if (m_dlgVideoSet.isNull())
+	{
+		m_dlgVideoSet = new DlgVideoSet(this);
+		m_dlgVideoSet->setAttribute(Qt::WA_DeleteOnClose);
+	}
+	showDlg(m_dlgVideoSet);
 }
 
 void MainDialog::slot_btnLocRecordClicked()
@@ -246,7 +262,7 @@ void MainDialog::slot_btnLocRecordClicked()
 	{
 		m_dlgLocRecord = new DlgLocalRecord(this);
 	}
-	m_dlgLocRecord->show();
+	showDlg(m_dlgLocRecord);
 }
 
 void MainDialog::slot_btnSvrRecordClicked()
@@ -255,7 +271,7 @@ void MainDialog::slot_btnSvrRecordClicked()
 	{
 		m_dlgSvrRecord = new DlgServerRecord(this);
 	}
-	m_dlgSvrRecord->show();
+	showDlg(m_dlgSvrRecord);
 }
 
 void MainDialog::slot_btnMediaClicked()
@@ -340,7 +356,7 @@ void MainDialog::slot_btnCustomAudioClicked()
 	{
 		m_customAudioCapture = new CustomAudioCapture(this);
 	}
-	m_customAudioCapture->show();
+	showDlg(m_customAudioCapture);
 }
 void MainDialog::slot_btnCustomVideoClicked()
 {
@@ -348,12 +364,12 @@ void MainDialog::slot_btnCustomVideoClicked()
 	{
 		m_customVideoCaptureRender = new CustomVideoCaptureRender(this);
 	}
-	m_customVideoCaptureRender->show();
+	showDlg(m_customVideoCaptureRender);
 }
 
 void MainDialog::slot_btnRoomMsgClicked()
 {
-	m_dlgRoomMsg->show();
+	showDlg(m_dlgRoomMsg);
 }
 void MainDialog::slot_btnRoomSetClicked()
 {
@@ -362,7 +378,7 @@ void MainDialog::slot_btnRoomSetClicked()
 		m_dlgRoomAttrs = new DlgRoomAttrs(this);
 		m_dlgRoomAttrs->setAttribute(Qt::WA_DeleteOnClose);
 	}
-	m_dlgRoomAttrs->show();
+	showDlg(m_dlgRoomAttrs);
 }
 
 void MainDialog::slot_btnMemberSetClicked()
@@ -372,7 +388,7 @@ void MainDialog::slot_btnMemberSetClicked()
 		m_dlgUserSelect = new DlgUserSelect(this);
 		m_dlgUserSelect->setAttribute(Qt::WA_DeleteOnClose);
 	}
-	m_dlgUserSelect->show();
+	showDlg(m_dlgUserSelect);
 }
 
 void MainDialog::slot_btnNetCameraClicked()
@@ -382,7 +398,7 @@ void MainDialog::slot_btnNetCameraClicked()
 		m_dlgNetCamera = new DlgNetCamera(this);
 		m_dlgNetCamera->setAttribute(Qt::WA_DeleteOnClose);
 	}
-	m_dlgNetCamera->show();
+	showDlg(m_dlgNetCamera);
 }
 
 void MainDialog::slot_btnVoiceChangeClicked()
@@ -394,29 +410,41 @@ void MainDialog::slot_btnVoiceChangeClicked()
 
 void MainDialog::slot_btnEchoTestClicked()
 {
-	DlgEchoTest *dlgEchoTest = new DlgEchoTest(this);
-	dlgEchoTest->setAttribute(Qt::WA_DeleteOnClose);
-	dlgEchoTest->show();
+	if (m_dlgEchoTest.isNull())
+	{
+		m_dlgEchoTest = new DlgEchoTest(this);
+		m_dlgEchoTest->setAttribute(Qt::WA_DeleteOnClose);
+	}
+	showDlg(m_dlgEchoTest);
 }
 
 void MainDialog::slot_btnSubAudioClicked()
 {
-	DlgSubscribeAudio *dlgSubscribeAudio = new DlgSubscribeAudio(this);
-	dlgSubscribeAudio->setAttribute(Qt::WA_DeleteOnClose);
-	dlgSubscribeAudio->show();
+	if (m_dlgSubscribeAudio.isNull())
+	{
+		m_dlgSubscribeAudio = new DlgSubscribeAudio(this);
+		m_dlgSubscribeAudio->setAttribute(Qt::WA_DeleteOnClose);
+	}
+	showDlg(m_dlgSubscribeAudio);
 }
 
 void MainDialog::slot_btnBeautyClicked()
 {
-	TestVideoBeauty *dlg = new TestVideoBeauty(this);
-	dlg->setAttribute(Qt::WA_DeleteOnClose);
-	dlg->show();
+	if (m_testVideoBeauty.isNull())
+	{
+		m_testVideoBeauty = new TestVideoBeauty(this);
+		m_testVideoBeauty->setAttribute(Qt::WA_DeleteOnClose);
+	}
+	showDlg(m_testVideoBeauty);
 }
 
 void MainDialog::slot_btnVirtualBKClicked()
 {
-	TestVirtualBackground *dlg = new TestVirtualBackground(this);
-	dlg->setAttribute(Qt::WA_DeleteOnClose);
-	dlg->show();
+	if (m_testVirtualBackground.isNull())
+	{
+		m_testVirtualBackground = new TestVirtualBackground(this);
+		m_testVirtualBackground->setAttribute(Qt::WA_DeleteOnClose);
+	}
+	showDlg(m_testVirtualBackground);
 }
 

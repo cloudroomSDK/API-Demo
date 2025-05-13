@@ -282,6 +282,10 @@ void KVideoUI::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	QWidget::mouseDoubleClickEvent(event);
 
+	CRUserVideoID vid = getVideoID();
+	if (vid._userID.isEmpty())
+		return;
+
 	QDialog *pFullDlg = this->property("FullDlg").value<QDialog*>();
 	if (pFullDlg == nullptr)
 	{
@@ -310,5 +314,64 @@ void KVideoUI::mouseDoubleClickEvent(QMouseEvent *event)
 	{
 		pFullDlg->close();
 		pFullDlg->deleteLater();
+	}
+}
+
+void KVideoUI::contextMenuEvent(QContextMenuEvent *event)
+{
+	CRUserVideoID vid = getVideoID();
+	if (vid._userID.isEmpty())
+		return;
+
+	QMenu *mu = new QMenu(this);
+	mu->setObjectName("VideoUiPopMenu");
+	mu->setAttribute(Qt::WA_DeleteOnClose, true);
+
+	QAction *pSaveAsPic = mu->addAction(tr("拍照"));
+	connect(pSaveAsPic, &QAction::triggered, this, &KVideoUI::slot_savePic);
+
+	CRVideoFrame frm = getFrame();
+	bool bFrmValide = !frm.getFrameSize().isEmpty();
+
+	//帧转换成图片保存
+	QImage img;
+	if (bFrmValide)
+	{
+		img = makeImageFromCRAVFrame(frm);
+	}
+	else
+	{
+		img = QImage(640, 360, QImage::Format_RGB32);
+		img.fill(Qt::black);
+	}
+	pSaveAsPic->setProperty("img", img);
+
+	//生成文件名
+	QString defaultFileName = QString("%1_cam%2_%3.jpg").arg(crStrToQStr(vid._userID)).arg(vid._videoID).arg(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
+	pSaveAsPic->setProperty("fileName", defaultFileName);
+
+	mu->exec(QCursor::pos());
+}
+
+void KVideoUI::slot_savePic()
+{
+	QAction *pAct = dynamic_cast<QAction*>(sender());
+	if (pAct == nullptr)
+		return;
+
+	QImage img = pAct->property("img").value<QImage>();
+	if (img.isNull())
+		return;
+
+	QString defaultFileName = pAct->property("fileName").toString();
+	QString filters = tr("JPG (*.jpg);;PNG (*.png);;BMP (*.bmp)");
+	QString fileName = QFileDialog::getSaveFileName(this, tr("拍照"), defaultFileName, filters);
+	if (fileName.isEmpty())
+		return;
+
+	if (!img.save(fileName))
+	{
+		QMessageBox::information(this, tr("错误"), tr("保存文件失败！"));
+		return;
 	}
 }

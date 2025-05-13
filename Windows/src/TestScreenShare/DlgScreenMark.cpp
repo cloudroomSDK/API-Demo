@@ -33,23 +33,7 @@ void DlgScreenMark::SetScreenPixmap(const CRVideoFrame &frm)
     if (frm.getWidth() <= 0 || frm.getHeight() <= 0)
         return;
 
-    CRVideoFrame tmpFrm(frm);
-	if (!g_sdkMain->videoFrameCover(tmpFrm, CRVSDK_VFMT_0RGB32, tmpFrm.getWidth(), tmpFrm.getHeight()))
-    {
-        return;
-    }
-    //CRVideoFrame转换成QImage
-    //写法一
-    uint8_t* rgb[1];
-    int      linesize[1];
-    tmpFrm.getRawDatPtr(rgb, linesize, 1);
-    QImage img = QImage(rgb[0], tmpFrm.getWidth(), tmpFrm.getHeight(), linesize[0], QImage::Format_RGB32);
-    img = img.copy();
-
-    //写法二
-// 	QImage img = QImage(tmpFrm.getWidth(), tmpFrm.getHeight(), QImage::Format_RGB32);
-// 	tmpFrm.copyDatToBuf((unsigned char*)img.constBits(), tmpFrm.getDatSize());
-
+	QImage img = makeImageFromCRAVFrame(frm);
     m_markView->SetScreenPixmap(img);
     updateView();
 }

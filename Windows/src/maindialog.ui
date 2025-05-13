@@ -163,7 +163,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>音频设置</string>
+              <string>进入</string>
              </property>
             </widget>
            </item>
@@ -193,7 +193,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>视频设置</string>
+              <string>进入</string>
              </property>
             </widget>
            </item>
@@ -210,7 +210,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>本地录制</string>
+              <string>本地录制/推流</string>
              </property>
             </widget>
            </item>
@@ -223,7 +223,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>开始/停止录制</string>
+              <string>进入</string>
              </property>
             </widget>
            </item>
@@ -240,7 +240,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>云端录制</string>
+              <string>云端录制/推流</string>
              </property>
             </widget>
            </item>
@@ -253,7 +253,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>开始/停止录制</string>
+              <string>进入</string>
              </property>
             </widget>
            </item>

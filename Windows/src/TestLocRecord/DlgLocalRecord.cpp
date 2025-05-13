@@ -9,14 +9,13 @@ struct RecordParams
 	int frameRate;//帧率
 	int bitRate;//码率
 	int defaultQP;//质量
-	int gop;//I帧周期
 };
 static RecordParams g_recordParams[3] =
 {
-	// 大小					帧率     码率            质量     I帧周期
-	{ QSize(640, 360),		15,		350 * 1000,		18,		15*15 },	//标清
-	{ QSize(848, 480),		15,		500 * 1000,		18,		15*15 },	//高清
-	{ QSize(1280, 720),		15,		1000 * 1000,	18,		15*15 },	//超清
+	// 大小					帧率     码率           质量
+	{ QSize(640, 360),		15,		350 * 1000,		18},	//标清
+	{ QSize(856, 480),		15,		500 * 1000,		18},	//高清
+	{ QSize(1280, 720),		15,		1000 * 1000,	18},	//超清
 };
 
 DlgLocalRecord::DlgLocalRecord(QWidget *parent)
@@ -39,12 +38,16 @@ DlgLocalRecord::DlgLocalRecord(QWidget *parent)
 	connect(ui.btnChoosePath, &QPushButton::clicked, this, &DlgLocalRecord::slot_btnChoosePathClicked);
 	connect(ui.btnStartRecord, &QPushButton::clicked, this, &DlgLocalRecord::slot_btnStartRecordClicked);
 	connect(ui.btnStopRecord, &QPushButton::clicked, this, &DlgLocalRecord::slot_btnStopRecordClicked);
+	connect(ui.btnRecordPlay, &QPushButton::clicked, this, &DlgLocalRecord::slot_btnRecordPlayClicked);
+	connect(ui.btnMark, &QPushButton::clicked, this, &DlgLocalRecord::slot_btnMarkClicked);
+	connect(ui.ckOutputFile, &QCheckBox::stateChanged, this, &DlgLocalRecord::slot_uiParamsChanged);
+	connect(ui.ckOutputUrl, &QCheckBox::stateChanged, this, &DlgLocalRecord::slot_uiParamsChanged);
 
 	g_sdkMain->getSDKMeeting().AddCallBack(this);
-    QString defPath = QCoreApplication::applicationDirPath() + "/record";
-    m_recordPath = GetInifileString("UserCfg", "recordPath", g_cfgFile, defPath);
-	ui.editPath->setText(m_recordPath);
-	updateUI();
+	QString recordPath = QCoreApplication::applicationDirPath() + "/record";
+	recordPath = GetInifileString("UserCfg", "recordPath", g_cfgFile, recordPath);
+	ui.editPath->setText(recordPath);
+	slot_uiParamsChanged();
 }
 
 DlgLocalRecord::~DlgLocalRecord()
@@ -52,19 +55,33 @@ DlgLocalRecord::~DlgLocalRecord()
 	g_sdkMain->getSDKMeeting().RmCallBack(this);
 }
 
-void DlgLocalRecord::updateUI()
+void DlgLocalRecord::slot_uiParamsChanged()
 {
 	CRVSDK_MIXER_STATE state = g_sdkMain->getSDKMeeting().getLocMixerState(LOCREC_MIXER_ID);
-	ui.btnStartRecord->setVisible(state != CRVSDK_MIXER_RUNNING);
-	ui.btnStopRecord->setVisible(state == CRVSDK_MIXER_RUNNING);
 
-	ui.btnStartRecord->setDisabled(state == CRVSDK_MIXER_STARTING || state == CRVSDK_MIXER_STOPPING);
-	ui.btnStopRecord->setDisabled(state == CRVSDK_MIXER_STARTING || state == CRVSDK_MIXER_STOPPING);
+	ui.cbDefinition->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.cbFormat->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.ckOutputFile->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.ckOutputUrl->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.btnChoosePath->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.editUrl->setEnabled(state == CRVSDK_MIXER_NULL && ui.ckOutputUrl->isChecked());
+	ui.outputFileWidget->setEnabled(ui.ckOutputFile->isChecked());
+
+	ui.btnStartRecord->setVisible(state == CRVSDK_MIXER_NULL || state == CRVSDK_MIXER_STARTING);
+	ui.btnStopRecord->setVisible(state == CRVSDK_MIXER_RUNNING || state == CRVSDK_MIXER_STOPPING);
+	ui.btnStartRecord->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.btnStopRecord->setEnabled(state == CRVSDK_MIXER_RUNNING);
+
+	ui.btnMark->setVisible(state == CRVSDK_MIXER_RUNNING);
+	ui.editMarkDesc->setVisible(state == CRVSDK_MIXER_RUNNING);
+
+	ui.btnRecordPlay->setVisible(state == CRVSDK_MIXER_NULL);
+	ui.btnRecordPlay->setEnabled(!m_curRecordFile.isEmpty());
 }
 
 void DlgLocalRecord::slot_btnChoosePathClicked()
 {
-	QString path = QFileDialog::getExistingDirectory(this, "", m_recordPath);
+	QString path = QFileDialog::getExistingDirectory(this, tr("选择录像存储目录"), ui.editPath->text());
 	if (path.isEmpty())
 	{
 		return;
@@ -75,7 +92,24 @@ void DlgLocalRecord::slot_btnChoosePathClicked()
 
 void DlgLocalRecord::slot_btnStartRecordClicked()
 {
-	ui.lbOutputInfo->setText("");
+	bool bHavePushUrl = ui.ckOutputUrl->isChecked();
+	bool bHaveRecrodFile = ui.ckOutputFile->isChecked();
+	QString pushUrl;
+	if (bHavePushUrl)
+	{
+		pushUrl = ui.editUrl->text();
+		if (!pushUrl.startsWith("rtmp:", Qt::CaseInsensitive) && !pushUrl.startsWith("rtsp:", Qt::CaseInsensitive))
+		{
+			QMessageBox::information(this, tr("错误"), tr("请输入有效的推流地址！"));
+			ui.editUrl->setFocus();
+			return;
+		}
+	}
+	if (!bHavePushUrl && !bHaveRecrodFile)
+	{
+		QMessageBox::information(this, tr("错误"), tr("未配置输出目标！"));
+		return;
+	}
 
 	//录制配置
 	const RecordParams &recParams = g_recordParams[ui.cbDefinition->currentIndex()];
@@ -85,8 +119,9 @@ void DlgLocalRecord::slot_btnStartRecordClicked()
 	mixerCfgMap["frameRate"] = recParams.frameRate;
 	mixerCfgMap["bitRate"] = recParams.bitRate;
 	mixerCfgMap["defaultQP"] = recParams.defaultQP;
-	mixerCfgMap["gop"] = recParams.gop;
+	mixerCfgMap["gop"] = bHavePushUrl ? 4 * recParams.frameRate : 15 * recParams.frameRate;
 	QByteArray mixerCfg = CoverJsonToString(mixerCfgMap);
+	m_recordSize = recParams.sz;
 
 	//录制内容
 	QByteArray mixerContents = CoverJsonToString(g_mainDialog->getRecordContents(recParams.sz));
@@ -95,27 +130,37 @@ void DlgLocalRecord::slot_btnStartRecordClicked()
 	CRVSDK_ERR_DEF err = g_sdkMain->getSDKMeeting().createLocMixer(LOCREC_MIXER_ID, mixerCfg.constData(), mixerContents.constData());
 	if (err != CRVSDKERR_NOERR)
 	{
-		QMessageBox::information(this, tr("本地录制"), tr("录制失败（%1） ").arg(getErrDesc(err)));
+		QMessageBox::information(this, tr("错误"), tr("录制失败: %1（%2） ").arg(err).arg(getErrDesc(err)));
 		return;
 	}
 
-	//录制输出
-	QString recordFileBaseName = QString("%1_%2_%3").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss")).arg(GetPlatFormName()).arg(MainDialog::getMeetID());
-	m_curRecordFile = QString("%1/%2.%3").arg(ui.editPath->text()).arg(recordFileBaseName).arg(ui.cbFormat->currentText());
+	m_curRecordFile.clear();
+	m_outputs.clear();
+
 	QVariantList mixerOutputList;
-	QVariantMap mixerOutputObj;
-	mixerOutputObj["type"] = CRVSDK_MIXER_OUTPUT_FILE;//录制文件
-	mixerOutputObj["filename"] = m_curRecordFile;//文件名称
-	mixerOutputList.append(mixerOutputObj);
-	QByteArray mixerOutput = CoverJsonToString(mixerOutputList);
-	err = g_sdkMain->getSDKMeeting().addLocMixerOutput(LOCREC_MIXER_ID, mixerOutput.constData());
-	if (err != CRVSDKERR_NOERR)
+	//输出到文件
+	if (bHaveRecrodFile)
 	{
-		QMessageBox::information(this, tr("本地录制"), tr("录制失败（%1） ").arg(err));
-		g_sdkMain->getSDKMeeting().destroyLocMixer(LOCREC_MIXER_ID);
-		return;
+		QString recordFileBaseName = QString("%1_%2_%3").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss")).arg(GetPlatFormName()).arg(MainDialog::getMeetID());
+		m_curRecordFile = QString("%1/%2.%3").arg(ui.editPath->text()).arg(recordFileBaseName).arg(ui.cbFormat->currentText());
+		QVariantMap mixerOutputObj;
+		mixerOutputObj["type"] = CRVSDK_MIXER_OUTPUT_FILE;
+		mixerOutputObj["filename"] = m_curRecordFile;
+		mixerOutputList.append(mixerOutputObj);
+		m_outputs.push_back(m_curRecordFile);
 	}
-	m_recordSize = recParams.sz;
+	//推流到url
+	if (bHavePushUrl)
+	{
+		QVariantMap mixerOutputObj;
+		mixerOutputObj["type"] = CRVSDK_MIXER_OUTPUT_LIVE;
+		mixerOutputObj["liveUrl"] = pushUrl;
+		mixerOutputList.append(mixerOutputObj);
+		m_outputs.push_back(pushUrl);
+	}
+	QByteArray mixerOutput = CoverJsonToString(mixerOutputList);
+	g_sdkMain->getSDKMeeting().addLocMixerOutput(LOCREC_MIXER_ID, mixerOutput.constData());
+
 }
 
 void DlgLocalRecord::slot_btnStopRecordClicked()
@@ -128,6 +173,25 @@ void DlgLocalRecord::slot_btnStopRecordClicked()
 	g_sdkMain->getSDKMeeting().destroyLocMixer(LOCREC_MIXER_ID);
 }
 
+void DlgLocalRecord::slot_btnRecordPlayClicked()
+{
+	g_sdkMain->getSDKMeeting().stopPlayMedia();
+	g_sdkMain->getSDKMeeting().startPlayMedia(m_curRecordFile.toUtf8().constData());
+}
+
+void DlgLocalRecord::slot_btnMarkClicked()
+{
+	QString str = ui.editMarkDesc->text();
+	if (str.isEmpty())
+	{
+		QMessageBox::information(this, tr("提示"), tr("请输入有效内容!"));
+		return;
+	}
+
+	g_sdkMain->getSDKMeeting().setMarkText(m_curRecordFile.toUtf8().constData(), str.toUtf8().constData());
+}
+
+
 void DlgLocalRecord::slot_mainViewChanged()
 {
 	if (g_sdkMain->getSDKMeeting().getLocMixerState(LOCREC_MIXER_ID) == CRVSDK_MIXER_NULL)
@@ -139,7 +203,7 @@ void DlgLocalRecord::slot_mainViewChanged()
 	CRVSDK_ERR_DEF err = g_sdkMain->getSDKMeeting().updateLocMixerContent(LOCREC_MIXER_ID, mixerContents.constData());
 	if (err != CRVSDKERR_NOERR)
 	{
-		QMessageBox::information(this, tr("本地录制"), tr("更新本地录制内容失败（%1） ").arg(getErrDesc(err)));
+		QMessageBox::information(this, tr("提示"), tr("更新本地录制内容失败:%1（%2） ").arg(err).arg(getErrDesc(err)));
 		return;
 	}
 }
@@ -150,7 +214,7 @@ void DlgLocalRecord::notifyLocMixerStateChanged(const char* mixerID, CRVSDK_MIXE
 	{
 		return;
 	}
-	updateUI();
+	slot_uiParamsChanged();
 }
 
 void DlgLocalRecord::notifyLocMixerOutputInfo(const char* mixerID, const char* nameOrUrl, const char* outputInfo)
@@ -162,16 +226,18 @@ void DlgLocalRecord::notifyLocMixerOutputInfo(const char* mixerID, const char* n
 
 	QVariantMap mixerOutputMap = QJsonDocument::fromJson(outputInfo).toVariant().toMap();
 	int state = mixerOutputMap["state"].toInt();
-	if (state == 2)
+	if (state == CRVSDK_LOCMO_FAIL)
 	{
-		QFileInfo fi(nameOrUrl);
-		QString strInfo = tr("文件名：%1\n时长：\t%2秒\n大小：\t%3字节").arg(fi.fileName()).arg(mixerOutputMap["duration"].toInt() / 1000).arg(mixerOutputMap["fileSize"].toInt());
-		ui.lbOutputInfo->setText(strInfo);
-	}
-	else if (state == 3)
-	{
-		QFileInfo fi(nameOrUrl);
-		QString strInfo = tr("文件名：%1\n发生异常（%2） ").arg(fi.fileName()).arg(mixerOutputMap["errCode"].toInt());
-		ui.lbOutputInfo->setText(strInfo);
+		m_outputs.removeAll(QString::fromUtf8(nameOrUrl));
+		//全部输出都失败时，停止Mix
+		if (m_outputs.size() <= 0)
+		{
+			g_sdkMain->getSDKMeeting().destroyLocMixer(LOCREC_MIXER_ID);
+		}
+
+		CRVSDK_ERR_DEF err = (CRVSDK_ERR_DEF)mixerOutputMap["errCode"].toInt();
+		QString strInfo = tr("输出到：%1\n发生异常:%2（%3） ").arg(nameOrUrl).arg(err).arg(getErrDesc(err));
+		QMessageBox::information(this, tr("错误"), strInfo);
+
 	}
 }

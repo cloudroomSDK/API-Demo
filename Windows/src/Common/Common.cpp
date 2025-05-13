@@ -246,3 +246,40 @@ CRVideoFrame loadImgAsCRVideoFrame(const QString &fileName)
 	}
 	return rslt;
 }
+
+QImage makeRefrenceImgFromCRAVFrame(const CRVideoFrame &frm)
+{
+	if (frm.getFormat() != CRVSDK_VFMT_0RGB32 && frm.getFormat() != CRVSDK_VFMT_ARGB32)
+		return QImage();
+
+	uint8_t* rgb[1];
+	int      linesize[1];
+	frm.getRawDatPtr(rgb, linesize, 1);
+	QImage img = QImage(rgb[0], frm.getWidth(), frm.getHeight(), linesize[0], QImage::Format_RGB32);
+	return img;
+}
+
+QImage makeImageFromCRAVFrame(const CRVideoFrame &frm)
+{
+	CRVideoFrame tmpFrm(frm);
+	if (!g_sdkMain->videoFrameCover(tmpFrm, CRVSDK_VFMT_0RGB32, tmpFrm.getWidth(), tmpFrm.getHeight()))
+	{
+		return QImage();
+	}
+
+	QImage img = makeRefrenceImgFromCRAVFrame(tmpFrm);
+	return img.copy();
+}
+
+QString getFileSizeStr(int64_t fsize)
+{
+	if (fsize > 1024 * 1024)
+	{
+		return QString::number(fsize / 1024 * 1024.0, 'f', 1) + "MB";
+	}
+	if (fsize > 1024)
+	{
+		return QString::number(fsize / 1024.0, 'f', 1) + "KB";
+	}
+	return QString::number(fsize) + "B";
+}

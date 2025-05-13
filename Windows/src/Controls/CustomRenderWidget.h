@@ -13,6 +13,7 @@ public:
 	void setVideoID(const CRUserVideoID &id, CRVSDK_VSTEAMLV_TYPE lv = CRVSDK_VSTP_LV0);
 
 	CRVideoFrame getFrame();
+	QSize getFrameSize();
 	int64_t getFrameTimestamp();
 	
 	//清除缓存的图片

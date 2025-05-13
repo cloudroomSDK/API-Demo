@@ -43,6 +43,7 @@ public:
 
 protected:
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
+	void contextMenuEvent(QContextMenuEvent *event) override;
 
 private slots:
 	void slot_btnMicClicked();
@@ -50,6 +51,7 @@ private slots:
 	void slot_btnMirrorClicked();
 	void slot_btnRotateClicked();
 	void slot_upNetInfo();
+	void slot_savePic();
 
 private:
 	void initAllPics();

@@ -14,7 +14,7 @@ DlgVideoSet::DlgVideoSet(QWidget *parent)
 	}
 
 	ui.cbBx_resolution->insertItem(0, QString("360P"), QSize(640, 360));
-	ui.cbBx_resolution->insertItem(1, QString("480P"), QSize(848, 480));
+	ui.cbBx_resolution->insertItem(1, QString("480P"), QSize(856, 480));
 	ui.cbBx_resolution->insertItem(2, QString("720P"), QSize(1280, 720));
 	ui.cbBx_resolution->insertItem(3, QString("1080P"), QSize(1920, 1080));
 	ui.cbBx_resolution->insertItem(4, QString("4K"), QSize(3840, 2160));
@@ -220,7 +220,7 @@ void DlgVideoSet::initVideoParams()
 	}
 	else if(m_vCfg._size.height() >= 480)
 	{
-		findSz = QSize(848, 480);
+		findSz = QSize(856, 480);
 		defKBps = 500;
 	}
 	ui.cbBx_resolution->setCurrentIndex(ui.cbBx_resolution->findData(findSz));

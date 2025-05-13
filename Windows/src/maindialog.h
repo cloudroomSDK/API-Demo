@@ -8,6 +8,8 @@ namespace Ui { class MainDialog; }
 QT_END_NAMESPACE
 
 class DlgLogin;
+class DlgAudioSet;
+class DlgVideoSet;
 class DlgLocalRecord;
 class DlgServerRecord;
 class VideoWallPage;
@@ -16,10 +18,13 @@ class CustomVideoCaptureRender;
 class MediaPlayUI;
 class ScreenShareUI;
 class DlgRoomMsg;
-
-#include "./TestRoomUsrAttrs/DlgRoomAttrs.h"
-#include "./TestNetCamera/DlgNetCamera.h"
-#include "./TestRoomUsrAttrs/DlgUserSelect.h"
+class DlgEchoTest;
+class DlgSubscribeAudio;
+class TestVideoBeauty;
+class TestVirtualBackground;
+class DlgRoomAttrs;
+class DlgNetCamera;
+class DlgUserSelect;
 
 
 class MainDialog : public QDialog
@@ -60,28 +65,37 @@ protected:
 	void slot_btnBeautyClicked();
 	void slot_btnVirtualBKClicked();
 
-
 	void slot_mediaPlaying(bool bPlaying);
 	void slot_screenShareStateChanged(bool bShare);
 
+protected:
+	void keyPressEvent(QKeyEvent *event) override;
+
+	void showDlg(QDialog *p);
 private:
-	Ui::MainDialog *ui;
+	Ui::MainDialog *ui{ nullptr };
 	static CRString m_myUserId;
 	static int m_meetId;
 	
-	VideoWallPage *m_videoWallPage;
-	MediaPlayUI	*m_mediaPlayUI;
-	ScreenShareUI *m_screeShareUI;
+	VideoWallPage *m_videoWallPage{ nullptr };
+	MediaPlayUI	*m_mediaPlayUI{ nullptr };
+	ScreenShareUI *m_screeShareUI{ nullptr };
 
-	DlgServerRecord *m_dlgSvrRecord;
-	CustomAudioCapture *m_customAudioCapture;
-	CustomVideoCaptureRender *m_customVideoCaptureRender;
-	DlgRoomMsg *m_dlgRoomMsg;
+	QPointer<DlgAudioSet> m_dlgAudioSet;
+	QPointer<DlgVideoSet> m_dlgVideoSet;
+	QPointer<CustomAudioCapture> m_customAudioCapture;
+	QPointer<CustomVideoCaptureRender> m_customVideoCaptureRender;
+	QPointer<DlgRoomMsg> m_dlgRoomMsg;
 
 	QPointer<DlgLocalRecord> m_dlgLocRecord;
+	QPointer<DlgServerRecord> m_dlgSvrRecord;
 	QPointer<DlgUserSelect> m_dlgUserSelect;
 	QPointer<DlgRoomAttrs> m_dlgRoomAttrs;
 	QPointer<DlgNetCamera> m_dlgNetCamera;
+	QPointer<DlgEchoTest> m_dlgEchoTest;
+	QPointer<DlgSubscribeAudio> m_dlgSubscribeAudio;
+	QPointer<TestVideoBeauty> m_testVideoBeauty;
+	QPointer<TestVirtualBackground> m_testVirtualBackground;
 };
 
 extern MainDialog *g_mainDialog;

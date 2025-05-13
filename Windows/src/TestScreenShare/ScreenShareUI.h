@@ -4,6 +4,7 @@
 #include "ui_ScreenShareUI.h"
 #include "CustomRenderWidget.h"
 #include "ui_ScreenSharerToolBar.h"
+#include "KeyBoardCatcher.h"
 
 class DlgScreenMark;
 class ScreenShareUI : public CustomRenderWidget, public CRVideoSDKMeetingCallBack
@@ -34,24 +35,47 @@ protected:
 	//通知屏幕共享标注停止
 	void notifyScreenMarkStopped() override;
 
+	//通知给予某人控制权限
+	void notifyGiveCtrlRight(const char* operUserId, const char* targetUserId) override;
+	//通知释放了控制权限
+	void notifyReleaseCtrlRight(const char* operUserId, const char* targetUserId) override;
+
 protected:
 	void resizeEvent(QResizeEvent *event) override;
 	void paintEvent(QPaintEvent *event) override;
 
+	bool focusNextPrevChild(bool next) override;
+
+	void mousePressEvent(QMouseEvent *) override;
+	void mouseReleaseEvent(QMouseEvent *) override;
+	void mouseMoveEvent(QMouseEvent *) override;
+	void mouseDoubleClickEvent(QMouseEvent *) override;
+	void wheelEvent(QWheelEvent *) override;
+
+protected:
+	void setCtrlState(bool bCtrling);
+	QPoint mapToRemote(const QPoint &pos);
+	void sendMousePressMsg(QMouseEvent *e);
+
 protected slots:
 	void slot_recvFrame(qint64 ts);
-	void showMarkDlg();
 	void slot_startMarkClicked();
 	void slot_stopMarkClicked();
 	void slot_openMarkDlgClicked();
+
+	void slot_remoteCtrlBtnClicked();
+	void slot_remoteCtrlTriggered(QAction *pAct);
+	void showMarkDlg();
 	void updateToolbar();
 
 private:
-	Ui::ScreenShareUI		ui;
+	Ui::ScreenShareUI			ui;
 	Ui::ScreenSharerToolBar		uiToolbar;
-	QWidget *m_toolbar;
-	DlgScreenMark *m_dlgMark;
-	bool m_bForSharer;
+	QWidget*					m_toolbar{ nullptr };
+	DlgScreenMark*				m_dlgMark{ nullptr };
+	bool						m_bForSharer{ false };
+	bool						m_bCtrling{ false };
+	KeyBoardCatcher*			m_keyCatcher{ nullptr };
 };
 
 #endif // ScreenShareUI_H

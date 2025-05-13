@@ -23,6 +23,12 @@ CRVideoFrame CustomRenderWidget::getFrame()
 	return m_frame;
 }
 
+QSize CustomRenderWidget::getFrameSize()
+{
+	QMutexLocker locker(&m_frameLock);
+	return QSize(m_frame.getWidth(), m_frame.getHeight());
+}
+
 void CustomRenderWidget::setVideoID(const CRUserVideoID &id, CRVSDK_VSTEAMLV_TYPE lv)
 {
 	if (id == getVideoID() && lv == getVideoStreamLv())

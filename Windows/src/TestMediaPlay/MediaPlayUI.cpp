@@ -47,10 +47,29 @@ void MediaPlayUI::slot_checkMeetingPlayMedia()
 
 void MediaPlayUI::notifyMediaOpened(int totalTime, int w, int h)
 {
+	m_lastMyPlayMedia = g_sdkMain->getSDKMeeting().getMediaInfo();
+
+	QMap<int, QString> texts;
+	CRBase::CRString marks = g_sdkMain->getSDKMeeting().getAllMarks(m_lastMyPlayMedia._mediaName.constData());
+	if (marks.length() > 0)
+	{
+		//{"markTexts":[{"timestamp":x, "text" : "string value"}]}
+		QByteArray strMarks = crStrToByteArray(marks);
+		QVariantMap varMap = CoverStringToJson(strMarks).toMap();
+		QVariantList markTexts = varMap["markTexts"].toList();
+
+		for (auto &it : markTexts)
+		{
+			varMap = it.toMap();
+			int timestamp = varMap["timestamp"].toInt();
+			QString text = varMap["text"].toString();
+			texts[timestamp] = text;
+		}
+	}
+	ui.mediaToolBar->setMarks(texts);
 	ui.mediaToolBar->setMediaTotalTime(totalTime);
 	ui.mediaToolBar->updatePlayPos(0);
 
-	m_lastMyPlayMedia = g_sdkMain->getSDKMeeting().getMediaInfo();
 	m_hideBarTimer.start();
 }
 

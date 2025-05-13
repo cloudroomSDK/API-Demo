@@ -34,6 +34,10 @@ void MediaToolBar::setToolBarSize(int size)
 	ui.volumeLabel->setFixedSize(bt_value, bt_value);
 }
 
+void MediaToolBar::setMarks(const QMap<int, QString> &strs)
+{
+	ui.PlayProgressBar->setPoints(strs);
+}
 
 MediaToolBar::~MediaToolBar()
 {

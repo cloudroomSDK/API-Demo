@@ -80,5 +80,4 @@ struct VirtualBkCfg
 void Struct_Cov(const QVariantMap &src, VirtualBkCfg &dst);
 void Struct_Cov(const VirtualBkCfg &src, QVariantMap &dst);
 
-
 #endif	//_OBJSDEF_H_

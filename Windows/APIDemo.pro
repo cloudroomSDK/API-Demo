@@ -19,6 +19,7 @@ QMAKE_CFLAGS_RELEASE += /Zi
 QMAKE_LFLAGS_RELEASE += /debug /opt:ref
 INCLUDEPATH += $$PWD/CRVideoSDK/include
 LIBS += -L$$PWD/CRVideoSDK/lib/$$ARCHITECTURE/ -lCRBase -lCRVideoSDKCpp
+LIBS += -luser32
 }
 # Linux
 linux {
@@ -128,6 +129,7 @@ SOURCES += \
     src/TestScreenShare/CThumbnailItem.cpp \
     src/TestScreenShare/ShareSourceSelectDlg.cpp \
     src/TestScreenShare/DlgScreenMark.cpp \
+    src/TestScreenShare/KeyBoardCatcher.cpp \
     src/TestSubscribeAudio/DlgSubscribeAudio.cpp \
     src/TestVoiceChange/CustomVoiceChgDlg.cpp \
     src/TestVideoBeauty/TestVideoBeauty.cpp \
@@ -173,6 +175,8 @@ HEADERS += \
     src/TestScreenShare/DlgScreenMark.h \
     src/TestScreenShare/CThumbnailItem.h \
     src/TestScreenShare/ShareSourceSelectDlg.h \
+    src/TestScreenShare/KeyBoardCatcher.h \
+    src/TestScreenShare/VirtualKey_Def.h \
     src/TestSubscribeAudio/DlgSubscribeAudio.h \
     src/TestVoiceChange/CustomVoiceChgDlg.h \
     src/TestVideoBeauty/TestVideoBeauty.h \

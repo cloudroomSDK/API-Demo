@@ -22,10 +22,11 @@ DlgServerRecord::DlgServerRecord(QWidget *parent)
 
 	connect(ui.btnStartRecord, &QPushButton::clicked, this, &DlgServerRecord::slot_btnStartRecordClicked);
 	connect(ui.btnStopRecord, &QPushButton::clicked, this, &DlgServerRecord::slot_btnStopRecordClicked);
+	connect(ui.ckOutputUrl, &QCheckBox::stateChanged, this, &DlgServerRecord::slot_uiParamsChanged);
 
 	m_mixerID = getMyCloudMixerID();
 	g_sdkMain->getSDKMeeting().AddCallBack(this);
-	updateUI();
+	slot_uiParamsChanged();
 }
 
 DlgServerRecord::~DlgServerRecord()
@@ -65,17 +66,43 @@ CRVSDK_MIXER_STATE DlgServerRecord::getSvrRecordState()
 	return state;
 }
 
-void DlgServerRecord::updateUI()
+void DlgServerRecord::slot_uiParamsChanged()
 {
 	CRVSDK_MIXER_STATE state = getSvrRecordState();
- 	ui.btnStartRecord->setVisible(state != CRVSDK_MIXER_RUNNING);
- 	ui.btnStopRecord->setVisible(state == CRVSDK_MIXER_RUNNING);
- 	ui.btnStartRecord->setDisabled(state == CRVSDK_MIXER_STARTING || state == CRVSDK_MIXER_STOPPING);
- 	ui.btnStopRecord->setDisabled(state == CRVSDK_MIXER_STARTING || state == CRVSDK_MIXER_STOPPING);
+
+	ui.cbDefinition->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.cbFormat->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.ckOutputFile->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.ckOutputUrl->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.editUrl->setEnabled(state == CRVSDK_MIXER_NULL && ui.ckOutputUrl->isChecked());
+
+	ui.btnStartRecord->setVisible(state == CRVSDK_MIXER_NULL || state == CRVSDK_MIXER_STARTING);
+	ui.btnStopRecord->setVisible(state == CRVSDK_MIXER_RUNNING || state == CRVSDK_MIXER_STOPPING);
+	ui.btnStartRecord->setEnabled(state == CRVSDK_MIXER_NULL);
+	ui.btnStopRecord->setEnabled(state == CRVSDK_MIXER_RUNNING);
 }
 
 void DlgServerRecord::slot_btnStartRecordClicked()
 {
+	bool bHavePushUrl = ui.ckOutputUrl->isChecked();
+	bool bHaveRecrodFile = ui.ckOutputFile->isChecked();
+	QString pushUrl;
+	if (bHavePushUrl)
+	{
+		pushUrl = ui.editUrl->text();
+		if (!pushUrl.startsWith("rtmp:", Qt::CaseInsensitive) && !pushUrl.startsWith("rtsp:", Qt::CaseInsensitive))
+		{
+			QMessageBox::information(this, tr("错误"), tr("请输入有效的推流地址！"));
+			ui.editUrl->setFocus();
+			return;
+		}
+	}
+	if (!bHavePushUrl && !bHaveRecrodFile)
+	{
+		QMessageBox::information(this, tr("错误"), tr("未配置输出目标！"));
+		return;
+	}
+
 	QSize recordSize;
 	if (ui.cbDefinition->currentIndex() == 0)
 	{
@@ -83,18 +110,32 @@ void DlgServerRecord::slot_btnStartRecordClicked()
 	}
 	else if (ui.cbDefinition->currentIndex() == 1)
 	{
-		recordSize = QSize(848, 480);
+		recordSize = QSize(856, 480);
 	}
 	else
 	{
 		recordSize = QSize(1280, 720);
 	}
 
+	QString svrPathName;
+	if (bHaveRecrodFile)
+	{
+		QDateTime curTime = QDateTime::currentDateTime();
+		QString recordFileBaseName = QString("%1_%2_%3").arg(curTime.toString("yyyy-MM-dd_hh-mm-ss")).arg(GetPlatFormName()).arg(MainDialog::getMeetID());
+		QString recordFile = QString("/%1/%2.%3").arg(curTime.toString("yyyy-MM-dd")).arg(recordFileBaseName).arg(ui.cbFormat->currentText());
+		svrPathName += recordFile + ";";
+		m_outputs.push_back(recordFile);
+	}
+	if (!pushUrl.isEmpty())
+	{
+		svrPathName += pushUrl + ";";
+		m_outputs.push_back(pushUrl);
+	}
+
 	QVariantMap mixerCfgMap;
 	mixerCfgMap["mode"] = 0;//合流模式
-	QString recordFileBaseName = QString("%1_%2_%3").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss")).arg(GetPlatFormName()).arg(MainDialog::getMeetID());
 	QVariantMap videoFileCfgMap;
-	videoFileCfgMap["svrPathName"] = QString("/%1/%2.%3").arg(QDate::currentDate().toString("yyyy-MM-dd")).arg(recordFileBaseName).arg(ui.cbFormat->currentText());
+	videoFileCfgMap["svrPathName"] = svrPathName;
 	videoFileCfgMap["vWidth"] = recordSize.width();//视频宽
 	videoFileCfgMap["vHeight"] = recordSize.height();//视频高
 	videoFileCfgMap["mixedLayout"] = 1;//自定义布局
@@ -106,13 +147,13 @@ void DlgServerRecord::slot_btnStartRecordClicked()
 	
 	m_recordSize = recordSize;
     m_mixerID = rsltMixerID.constData();
-	this->setWindowTitle(tr("云端录制：%1").arg(m_mixerID));
+	this->setWindowTitle(tr("mixerID：%1").arg(m_mixerID));
 }
 
 void DlgServerRecord::slot_btnStopRecordClicked()
 {
 	g_sdkMain->getSDKMeeting().destroyCloudMixer(m_mixerID.toUtf8().constData());
-	this->setWindowTitle(tr("云端录制"));
+	this->setWindowTitle(tr("云端录制/推流"));
 }
 
 void DlgServerRecord::slot_mainViewChanged()
@@ -129,7 +170,7 @@ void DlgServerRecord::slot_mainViewChanged()
 	CRVSDK_ERR_DEF err = g_sdkMain->getSDKMeeting().updateCloudMixerContent(m_mixerID.toUtf8().constData(), cfg.constData());
 	if (err != CRVSDKERR_NOERR)
 	{
-		QMessageBox::information(this, tr("云端录制"), tr("更新云端录制内容失败（%1） ").arg(getErrDesc(err)));
+		QMessageBox::information(this, tr("错误"), tr("更新云端录制内容失败: %1（%2）").arg(err).arg(getErrDesc(err)));
 		return;
 	}
 }
@@ -141,10 +182,10 @@ void DlgServerRecord::createCloudMixerFailed(const char* mixerID, CRVSDK_ERR_DEF
 	{
 		return;
 	}
-	updateUI();
+	slot_uiParamsChanged();
 	if (sdkErr != CRVSDKERR_NOERR)
 	{
-		QMessageBox::information(this, tr("云端录制"), tr("开始录制失败（%1）").arg(getErrDesc(sdkErr)));
+		QMessageBox::information(this, tr("错误"), tr("开始录制/推流失败: %1（%2）").arg(sdkErr).arg(getErrDesc(sdkErr)));
 		return;
 	}
 }
@@ -156,14 +197,14 @@ void DlgServerRecord::notifyCloudMixerStateChanged(const char* mixerID, CRVSDK_M
 	{
 		return;
 	}
-	updateUI();
+	slot_uiParamsChanged();
 	if (state == CRVSDK_MIXER_NULL)
 	{
 		QVariantMap exParams = QJsonDocument::fromJson(exParam).toVariant().toMap();
 		//录制异常
 		if (exParams["err"].toInt() != 0)
 		{
-			QMessageBox::information(this, tr("云端录制"), tr("录制失败（错误码:%1, 描述：%2）").arg(exParams["err"].toInt()).arg(exParams["errDesc"].toString()));
+			QMessageBox::information(this, tr("错误"), tr("录制/推流失败: %1(%2）").arg(exParams["err"].toInt()).arg(exParams["errDesc"].toString()));
 			return;
 		}
 	}
@@ -188,46 +229,18 @@ void DlgServerRecord::notifyCloudMixerOutputInfoChanged(const char* mixerID, con
 	case CRVSDK::CRVSDK_CLOUDMO_STOPPED:
 		break;
 	case CRVSDK::CRVSDK_CLOUDMO_FAIL:
-		QMessageBox::information(this, tr("云端录制"), tr("录制文件失败（%1） ").arg(outputInfoMap["errDesc"].toString()));	
+		{
+			QMessageBox::information(this, tr("错误"), tr("录制/推流失败：%1（%2）").arg(outputInfoMap["errCode"].toInt()).arg(outputInfoMap["errDesc"].toString()));
+		}
 		break;
 	case CRVSDK::CRVSDK_CLOUDMO_UPLOADING:
 		break;
 	case CRVSDK::CRVSDK_CLOUDMO_UPLOADED:
-		//上传完成
-		showResultDlg();
 		break;
 	case CRVSDK::CRVSDK_CLOUDMO_UPLOADFAIL:
-		QMessageBox::information(this, tr("云端录制"), tr("上传文件失败（%1） ").arg(outputInfoMap["errDesc"].toString()));
+		QMessageBox::information(this, tr("错误"), tr("上传文件失败：%1（%2）").arg(outputInfoMap["errCode"].toInt()).arg(outputInfoMap["errDesc"].toString()));
 		break;
 	default:
 		break;
 	}
-}
-
-void DlgServerRecord::showResultDlg()
-{
-	ServerRecordResultDlg *pDlg = new ServerRecordResultDlg(this);
-	pDlg->show();
-}
-
-//////////////////////////////////////////////////////////////////////////
-ServerRecordResultDlg::ServerRecordResultDlg(QWidget *parent) : QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint)
-{
-	ui.setupUi(this);
-	ui.recordPath->setReadOnly(true);
-	this->setAttribute(Qt::WA_DeleteOnClose);
-
-	QString protocol = (DlgLoginSet::getSettingInfo().httpType == CRVSDK_WEBPTC_HTTP) ? "http://" : "https://";
-	QString url = protocol + DlgLoginSet::getSettingInfo().server + QString("/mgr_sdk/");
-	ui.recordPath->setText(url);
-
-	connect(ui.btnCopy, &QPushButton::clicked, this, &ServerRecordResultDlg::slot_copyUrl);
-}
-
-void ServerRecordResultDlg::slot_copyUrl()
-{
-	QClipboard *clip = QApplication::clipboard();
-	clip->setText(ui.recordPath->text());
-
-	QToolTip::showText(ui.btnCopy->mapToGlobal(QPoint()), tr("已复制到剪切板！"), ui.btnCopy);
 }

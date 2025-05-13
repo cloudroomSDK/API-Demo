@@ -23,6 +23,8 @@ public:
 	void setVolume(int level);		//0~255
 
 	void setToolBarSize(int size);
+	void setMarks(const QMap<int, QString> &strs);
+
 
 public slots:
 	void updatePlayPos(qint64 ms);

@@ -10,8 +10,8 @@ export default defineConfig({
 			vueOptions: {
 				template: {
 					compilerOptions: {
-						// 将所有my-开头的标签作为自定义元素处理    
-						isCustomElement: tag => tag.startsWith('rtcsdk-')
+						// 将所有my-开头的标签作为自定义元素处理
+						isCustomElement: tag => ['rtcsdk-videoView', 'rtcsdk-screenView', 'rtcsdk-mediaView'].indexOf(tag) > -1
 					}
 				}
 			}

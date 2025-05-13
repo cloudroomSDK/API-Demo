@@ -116,7 +116,7 @@
 		},
 		onLoad() {
 			uni.setKeepScreenOn({ keepScreenOn: true }); // 保持屏幕常亮
-			
+
 			this.RTCSDK = app.globalData.RTCSDK.getInstance();
 			this.userInfo = app.globalData.userInfo;
 			this.msgPush(`我的userId: ${this.userInfo.userId}`)
@@ -263,10 +263,11 @@
 					this.msgPush(`正在进入房间...`);
 					await this.permissionHandle();
 					this.roomId = ID;
-					this.RTCSDK.enterMeeting(ID);
+					const { nickname } = getApp().globalData.userInfo;
+					this.RTCSDK.enterMeeting(ID, nickname);
 				}
 			},
-			_createMeetingFail({sdkErr}) {
+			_createMeetingFail({ sdkErr }) {
 				this.msgPush(`创建房间失败，错误码:${sdkErr},${constantDesc[sdkErr]}`)
 			},
 			_enterMeetingRslt({ sdkErr }) {
@@ -300,7 +301,8 @@
 						confirm: async (res) => {
 							await this.permissionHandle()
 							this.roomId = sessionInfo.meetingID;
-							this.RTCSDK.enterMeeting(sessionInfo.meetingID);
+							const { nickname } = getApp().globalData.userInfo;
+							this.RTCSDK.enterMeeting(sessionInfo.meetingID, nickname);
 						},
 						cancel: (res) => {
 							this.msgPush(`挂断呼叫，呼叫ID: ${sessionInfo.callID}`)

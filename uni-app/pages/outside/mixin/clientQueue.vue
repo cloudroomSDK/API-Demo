@@ -145,7 +145,8 @@
 					this.RTCSDK.acceptCall(callID, ID)
 					await this.permissionHandle()
 					this.roomId = ID;
-					this.RTCSDK.enterMeeting(ID);
+					const { nickname } = getApp().globalData.userInfo;
+					this.RTCSDK.enterMeeting(ID, nickname);
 				})
 			},
 		}

@@ -61,10 +61,10 @@ async function createWindow() {
     win = new BrowserWindow({
         title: "Api Demo",
         icon: join(process.env.VITE_PUBLIC, "favicon.ico"),
-        width: 1080,
-        height: 720,
-        minWidth: 1080,
-        minHeight: 720,
+        width: 1400,
+        height: 900,
+        minWidth: 1400,
+        minHeight: 900,
         webPreferences: {
             preload,
             // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
@@ -229,6 +229,12 @@ ipcMain.handle("common", (event, { module, method, data }) => {
                 });
 
                 return path && path[0];
+            }
+            case "getVBPath": {
+                const imagePath = app.isPackaged
+                    ? join(process.resourcesPath, "project-public/custom_video_1280x720.jpg") // 生产环境
+                    : join(app.getAppPath(), "project-public/custom_video_1280x720.jpg"); // 开发环境
+                return imagePath;
             }
 
             default:

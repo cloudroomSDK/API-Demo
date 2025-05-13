@@ -60,7 +60,6 @@ export default {
         return {
             folderInput: "",
             definition: 2,
-            share: 0, // 共享状态: 0未开启，1影音共享，2屏幕共享
             format: 0,
             state: 0, //录制状态: 0未开始，1启动中，2正在录制 ,4停止中
             mixerId: "1", //当前混图器ID
@@ -70,6 +69,14 @@ export default {
     computed: {
         ...mapStores(store), //使用选项试api，该方法会在vue实例里添加appStore属性
     },
+    watch: {
+        "appStore.watchList"(val) {
+            this.updateMixerContent();
+        },
+        "appStore.shareType"(val) {
+            this.updateMixerContent();
+        },
+    },
     created() {
         const path = require("path");
         const os = require("os");
@@ -77,17 +84,6 @@ export default {
         this.folderInput = folderInput;
 
         this.callbackHanle(true);
-
-        const { _state: mediaState } = this.$rtcsdk.getMediaInfo();
-        //当前有影音在共享,添加到录制内容里面
-        if (mediaState !== 2) {
-            this.share = 1;
-        }
-
-        const { _state: screenState } = this.$rtcsdk.getScreenShareInfo();
-        if (screenState === 1) {
-            this.share = 2;
-        }
     },
     unmounted() {
         this.callbackHanle(false);
@@ -97,14 +93,6 @@ export default {
         callbackHanle(bool) {
             this.$rtcsdk[bool ? "on" : "off"]("notifyLocMixerStateChanged", this.notifyLocMixerStateChanged);
             this.$rtcsdk[bool ? "on" : "off"]("notifyLocMixerOutputInfo", this.notifyLocMixerOutputInfo);
-            this.$rtcsdk[bool ? "on" : "off"]("notifyUserEnterMeeting", this.updateMixerContent);
-            this.$rtcsdk[bool ? "on" : "off"]("notifyUserLeftMeeting", this.updateMixerContent);
-            this.$rtcsdk[bool ? "on" : "off"]("notifyMediaStart", this.notifyMediaStart);
-            this.$rtcsdk[bool ? "on" : "off"]("notifyMediaStop", this.notifyShareStopped);
-            this.$rtcsdk[bool ? "on" : "off"]("startScreenShareRslt", this.startScreenShareRslt);
-            this.$rtcsdk[bool ? "on" : "off"]("stopScreenShareRslt", this.notifyShareStopped);
-            this.$rtcsdk[bool ? "on" : "off"]("notifyScreenShareStarted", this.notifyScreenShareStarted);
-            this.$rtcsdk[bool ? "on" : "off"]("notifyScreenShareStopped", this.notifyShareStopped);
         },
         async folderSelect() {
             //通知主进程弹出文件选择框
@@ -159,25 +147,8 @@ export default {
             this.$rtcsdk.destroyLocMixer(this.mixerId);
             this.state = 0;
         },
-        notifyMediaStart() {
-            this.share = 1;
-            this.updateMixerContent();
-        },
-        startScreenShareRslt(sdkErr) {
-            if (sdkErr === 0) {
-                this.notifyScreenShareStarted();
-            }
-        },
-        notifyScreenShareStarted() {
-            this.share = 2;
-            this.updateMixerContent();
-        },
-        notifyShareStopped() {
-            this.share = 0;
-            this.updateMixerContent();
-        },
         generateLayout() {
-            const userIds = Object.keys(this.appStore.memberList);
+            const { watchList, shareType } = this.appStore;
             const videoList = [];
             const [VW, VH] = [
                 [640, 360],
@@ -185,7 +156,7 @@ export default {
                 [1280, 720],
             ][this.definition];
 
-            if (this.share) {
+            if (shareType) {
                 //共享布局，录制一大3小
 
                 // 按16:9 计算3小的宽高
@@ -197,7 +168,7 @@ export default {
                 const mw = VW;
 
                 videoList.push({
-                    type: this.share === 1 ? 3 : 5, //添加影音共享或者影音共享
+                    type: shareType === 1 ? 3 : 5, //添加影音共享或者影音共享
                     top: 0,
                     left: 0,
                     width: mw,
@@ -205,8 +176,8 @@ export default {
                     keepAspectRatio: 1,
                 });
 
-                if (userIds.length > 3) userIds.length = 3; //只录制前3位
-                userIds.forEach((userId, i) => {
+                //共享模式只录制共享画面+前3个成员摄像头
+                watchList.slice(0, 3).forEach((member, i) => {
                     const top = mh;
                     const left = i * w;
                     videoList.push({
@@ -216,7 +187,7 @@ export default {
                         width: w,
                         height: h,
                         keepAspectRatio: 1,
-                        param: { camid: `${userId}.-1` },
+                        param: { camid: `${member.userId}.${member.camId}` },
                     });
 
                     const offset = parseInt(w / 42);
@@ -224,38 +195,35 @@ export default {
                         type: 10,
                         top: top + offset,
                         left: left + offset,
-                        param: { text: userId, "font-size": parseInt(w / 35.5) },
+                        param: { text: member.nickname, "font-size": parseInt(w / 35.5) },
                     });
                 });
             } else {
                 //非共享布局，录制1、2、4、9等分屏幕
                 let w, h, col;
                 // 一个人时录制一个大屏
-                if (userIds.length <= 1) {
+                if (watchList.length <= 1) {
                     col = 1;
                     w = VW;
                     h = VH;
-                } else if (userIds.length <= 2) {
+                } else if (watchList.length <= 2) {
                     // 两个时录制两等分屏
                     col = 2;
                     w = VW / 2;
                     h = VH;
-                } else if (userIds.length <= 4) {
+                } else if (watchList.length <= 4) {
                     // 小于4个人时录制四等分屏
                     col = 2;
                     w = VW / 2;
                     h = VH / 2;
                 } else {
-                    // 如果超过9人，只录制前9人，录制9等分屏
-                    if (userIds.length > 9) {
-                        userIds.length = 9;
-                    }
                     col = 3;
                     w = VW / 3;
                     h = VH / 3;
                 }
 
-                userIds.forEach((userId, idx) => {
+                //这里最大值只会录制9个摄像头，因为在计算属性中过滤了9个之后的摄像头
+                watchList.forEach((member, idx) => {
                     const top = Math.floor(idx / col) * h;
                     const left = (idx % col) * w;
                     videoList.push({
@@ -265,14 +233,14 @@ export default {
                         width: w,
                         height: h,
                         keepAspectRatio: 1,
-                        param: { camid: `${userId}.-1` },
+                        param: { camid: `${member.userId}.${member.camId}` },
                     });
                     const offset = parseInt(w / 42);
                     videoList.push({
                         type: 10,
                         top: top + offset,
                         left: left + offset,
-                        param: { text: userId, "font-size": parseInt(w / 35.5) },
+                        param: { text: watchList.filter((item) => item.userId === member.userId).length > 1 ? `${member.nickname}-${member.camId}号摄像头` : member.nickname, "font-size": parseInt(w / 35.5) },
                     });
                 });
             }

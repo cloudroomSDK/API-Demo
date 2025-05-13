@@ -2,7 +2,7 @@ import Observer from "./observer.js";
 
 const RtcPlugin = uni.requireNativePlugin("rtcsdk-plugin");
 const globalEvent = uni.requireNativePlugin("globalEvent");
-const version = "1.2.8";
+const version = "1.3.5";
 const eventBus = new Observer();
 
 const isAndroid = uni.getSystemInfoSync().platform == "android";
@@ -89,13 +89,12 @@ export default class RtcCloud {
 		RtcPlugin.setServerAddr(addr);
 	}
 	//登录
-	login({ appId, appSecret, token, nickName, userId, userAuthCode }, cookie) {
+	login({ appId, appSecret, token, userId, userAuthCode }, cookie) {
 		if (token) {
-			RtcPlugin.loginByToken(token, nickName, userId, userAuthCode, cookie)
+			RtcPlugin.loginByToken(token, userId, userAuthCode, cookie)
 		} else {
 			const obj = {
 				token: token,
-				nickName: nickName,
 				privAcnt: userId,
 				authAcnt: appId,
 				authPswd: appSecret,
@@ -266,8 +265,8 @@ export default class RtcCloud {
 		RtcPlugin.createMeeting(cookie);
 	}
 	// 进入会议
-	enterMeeting(ID) {
-		RtcPlugin.enterMeeting(ID);
+	enterMeeting(ID, nikeName) {
+		RtcPlugin.enterMeeting(ID, nikeName);
 	}
 	//销毁房间
 	destroyMeeting(meetID, cookie) {

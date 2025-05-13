@@ -35,7 +35,8 @@
 							this.RTCSDK.acceptInvite(this.inviteID)
 							await this.permissionHandle()
 							this.roomId = ID;
-							this.RTCSDK.enterMeeting(ID);
+							const { nickname } = getApp().globalData.userInfo;
+							this.RTCSDK.enterMeeting(ID, nickname);
 						},
 						cancel: (res) => {
 							this.msgPush(`已拒绝，邀请ID: ${this.inviteID}`)

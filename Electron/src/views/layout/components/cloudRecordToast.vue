@@ -11,28 +11,17 @@
             <span v-if="info.state === 6">上传出错...</span>
         </p>
         <p v-if="info.state === 6">错误码: {{ info.errCode }},{{ info.errDesc }}</p>
-        <p v-if="info.state === 5 && webUrl">您可以<a target="_blank" :href="webUrl">登录后台</a>查看录像</p>
+        <p v-if="info.state === 5">您可以登录SDK后台查看录像</p>
     </div>
 </template>
 
 <script>
-import electronStore from "@/store/electron";
 export default {
-    data() {
-        return {
-            webUrl: null,
-        };
-    },
     props: {
         info: {
             type: Object,
             required: true,
         },
-    },
-    created() {
-        const [addr, protocol] = electronStore.get(["addr", "protocol"]);
-        this.webUrl = protocol === 0 ? "http://" : "https://" + `${addr}/mgr_sdk/`;
-        console.log(addr, protocol);
     },
     methods: {
         // 四舍五入保留两位小数

@@ -38,11 +38,7 @@ const store = (function () {
       userId: {
         type: "string",
         default: userId,
-      },
-      nickname: {
-        type: "string",
-        default: userId,
-      },
+      }
     },
     clearInvalidConfig: true, // 发生 SyntaxError  则清空配置,
   };

@@ -60,8 +60,8 @@ export default {
         this.SdkVersion = this.$rtcsdk.getVersion();
         this.AppVersion = version;
 
-        const [meetId, nickname] = electronStore.get(["meetId", "nickname"]);
-        this.nickname = nickname;
+        const [meetId, userId] = electronStore.get(["meetId", "userId"]);
+        this.nickname = userId;
         this.meetId = meetId;
 
         this.callbackHanle(true);
@@ -87,7 +87,6 @@ export default {
             this.appStore.myUserId = json.data.userId;
 
             electronStore.set("userId", json.data.userId);
-            electronStore.set("nickname", json.data.nickname);
             this.appStore.isLogin = true;
 
             if (json.cmd === "enterMeeting") {
@@ -108,7 +107,7 @@ export default {
             this.$router.push("/layout");
         },
         enterMeeting() {
-            this.$rtcsdk.enterMeeting(this.meetId);
+            this.$rtcsdk.enterMeeting(this.meetId, this.appStore.myUserId);
         },
         createMeeting() {
             this.$rtcsdk.createMeeting();
@@ -158,7 +157,6 @@ export default {
                     _serverAddr: addr,
                     _sdkAuthType: Number(!isTokenAuth), //0：token鉴权方式,	1：appID + appSecret鉴权方式
                     _userID: this.nickname,
-                    _nickName: this.nickname,
                     _webProtocol: protocol, // 0：http 1：标准https 2:不验证服务器SSL证书，支持自签证书
                 },
                 isTokenAuth ? { _token: token } : { _appID: appId, _md5_appSecret: MD5(appSecret) }
@@ -167,7 +165,6 @@ export default {
             const cookie = JSON.stringify({
                 data: {
                     userId: this.nickname,
-                    nickname: this.nickname,
                 },
                 cmd,
             });

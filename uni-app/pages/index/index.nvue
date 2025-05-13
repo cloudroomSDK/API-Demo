@@ -137,14 +137,13 @@
 						await this.init(useHttps);
 					}
 
-					const { userId, nickname } = app.globalData.userInfo;
+					const { userId } = app.globalData.userInfo;
 					this.RTCSDK.setServerAddr(addr);
 					this.RTCSDK.login({
 						appId: useToken ? undefined : appId,
 						appSecret: useToken ? undefined : md5(appSecret),
 						token: useToken ? token : undefined,
-						userId,
-						nickName: nickname,
+						userId
 					});
 					clearTimeout(this.loginTimer);
 					this.loginTimer = setTimeout(this.startLogin, 1e4);

@@ -77,7 +77,8 @@
 				this.msgPush(`被呼端已接受，正在进入房间...`);
 				await this.permissionHandle()
 				this.roomId = ID;
-				this.RTCSDK.enterMeeting(ID);
+				const { nickname } = getApp().globalData.userInfo;
+				this.RTCSDK.enterMeeting(ID, nickname);
 			},
 			_notifyCallRejected({ sdkErr }) {
 				this.msgPush(`呼叫失败，错误码:${sdkErr},${constantDesc[sdkErr]}`)
@@ -105,7 +106,8 @@
 							this.RTCSDK.acceptCall(callID, ID)
 							await this.permissionHandle()
 							this.roomId = ID;
-							this.RTCSDK.enterMeeting(ID);
+							const { nickname } = getApp().globalData.userInfo;
+							this.RTCSDK.enterMeeting(ID, nickname);
 						},
 						cancel: (res) => {
 							this.msgPush(`已拒绝，呼叫ID: ${callID}`)

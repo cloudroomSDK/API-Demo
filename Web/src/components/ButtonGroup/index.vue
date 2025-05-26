@@ -23,6 +23,7 @@
 import SDKError from '@/SDK/Code'
 import Cookies from 'js-cookie'
 import { mapGetters } from 'vuex'
+import RTCSDK from '@/SDK'
 
 const lastRoomId = 'LastRoomId'
 export default {
@@ -42,27 +43,27 @@ export default {
   },
   created() {
     this.$SDKCallBack.$on(
-      'CRVideo_CreateMeetingSuccess',
+      'CreateMeetingSuccess',
       this.CreateMeetingSuccess
     )
-    this.$SDKCallBack.$on('CRVideo_CreateMeetingFail', this.CreateMeetingFail)
-    this.$SDKCallBack.$on('CRVideo_EnterMeetingRslt', this.EnterMeetingRslt)
-    this.$SDKCallBack.$on('CRVideo_MeetingDropped', this.MeetingDropped)
+    this.$SDKCallBack.$on('CreateMeetingFail', this.CreateMeetingFail)
+    this.$SDKCallBack.$on('EnterMeetingRslt', this.EnterMeetingRslt)
+    this.$SDKCallBack.$on('MeetingDropped', this.MeetingDropped)
   },
   destroyed() {
     this.$SDKCallBack.$off(
-      'CRVideo_CreateMeetingSuccess',
+      'CreateMeetingSuccess',
       this.CreateMeetingSuccess
     )
-    this.$SDKCallBack.$off('CRVideo_CreateMeetingFail', this.CreateMeetingFail)
-    this.$SDKCallBack.$off('CRVideo_EnterMeetingRslt', this.EnterMeetingRslt)
-    this.$SDKCallBack.$off('CRVideo_MeetingDropped', this.MeetingDropped)
+    this.$SDKCallBack.$off('CreateMeetingFail', this.CreateMeetingFail)
+    this.$SDKCallBack.$off('EnterMeetingRslt', this.EnterMeetingRslt)
+    this.$SDKCallBack.$off('MeetingDropped', this.MeetingDropped)
   },
   methods: {
     // 点击创建按钮
     createRoom() {
       this.creating = true
-      CRVideo_CreateMeeting() // SDK主调接口：创建房间
+      RTCSDK.CreateMeeting2() // SDK主调接口：创建房间
     },
     // 点击加入按钮
     joinRoom() {
@@ -72,11 +73,11 @@ export default {
         )
       }
       this.$store.commit('state/SET_MEETING_STATE', 1)
-      CRVideo_EnterMeeting3(+this.roomId) // SDK主调接口：进入房间
+      RTCSDK.EnterMeeting3(+this.roomId) // SDK主调接口：进入房间
     },
     // 点击退出按钮
     exitRoom() {
-      CRVideo_ExitMeeting() // SDK主调接口：退出房间
+      RTCSDK.ExitMeeting() // SDK主调接口：退出房间
       this.$message.success(`您已退出房间`)
       this.$store.commit('state/SET_MEETING_STATE', 0)
     },

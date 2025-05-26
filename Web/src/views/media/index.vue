@@ -45,6 +45,7 @@ import MemberList from '@/components/MemberList'
 import SDKError from '@/SDK/Code'
 import { mapGetters } from 'vuex'
 import RoomIdMixin from '../RoomIdMixin'
+import RTCSDK from '@/SDK'
 
 export default {
   components: {
@@ -73,19 +74,19 @@ export default {
     }
   },
   created() {
-    CRVideo_NotifyMediaStart.callback = this.NotifyMediaStart // SDK通知接口：通知开启了影音共享
-    CRVideo_NotifyMediaStop.callback = this.NotifyMediaStop // SDK通知接口：通知结束了影音共享
-    CRVideo_NotifyMediaPause.callback = this.NotifyMediaPause // SDK通知接口：通知影音共享暂停了
+    RTCSDK.NotifyMediaStart.callback = this.NotifyMediaStart // SDK通知接口：通知开启了影音共享
+    RTCSDK.NotifyMediaStop.callback = this.NotifyMediaStop // SDK通知接口：通知结束了影音共享
+    RTCSDK.NotifyMediaPause.callback = this.NotifyMediaPause // SDK通知接口：通知影音共享暂停了
   },
   destroyed() {
-    CRVideo_NotifyMediaStart.callback = null
-    CRVideo_NotifyMediaStop.callback = null
-    CRVideo_NotifyMediaPause.callback = null
+    RTCSDK.NotifyMediaStart.callback = null
+    RTCSDK.NotifyMediaStop.callback = null
+    RTCSDK.NotifyMediaPause.callback = null
   },
   methods: {
     // 点击了播放或者暂停
     pauseMedia() {
-      CRVideo_PausePlayMedia(!this.isPause) // SDK主调接口：暂停屏幕共享
+      RTCSDK.PausePlayMedia(!this.isPause) // SDK主调接口：暂停屏幕共享
       this.isPause = !this.isPause
     },
     // 开始屏幕共享通知,进入已在共享中的房间也会有此通知
@@ -93,7 +94,7 @@ export default {
       if (UID === this.UID) return // 自己开启的共享在点击按钮的时候已经创建过媒体组件了
       this.shareUID = UID
       this.isMyShare = false
-      const mediaInfo = CRVideo_GetMediaInfo() // SDK通知接口：获取影音共享信息
+      const mediaInfo = RTCSDK.GetMediaInfo() // SDK通知接口：获取影音共享信息
       this.isPause = Boolean(mediaInfo.state)
     },
     // 结束屏幕共享通知
@@ -145,7 +146,7 @@ export default {
         fileList.shift()
       }
       if (this.shareUID) {
-        CRVideo_StopPlayMedia() // SDK主调接口：结束影音共享
+        RTCSDK.StopPlayMedia() // SDK主调接口：结束影音共享
         this.shareUID = null
         this.curPlayFile = null
         this.isMyShare = null
@@ -157,7 +158,7 @@ export default {
     // 移除文件
     handleUploadRemove(files, fileList) {
       if (this.shareUID) {
-        CRVideo_StopPlayMedia() // SDK主调接口：结束影音共享
+        RTCSDK.StopPlayMedia() // SDK主调接口：结束影音共享
         this.shareUID = null
         this.curPlayFile = null
       }

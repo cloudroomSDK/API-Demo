@@ -48,6 +48,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import RTCSDK from '@/SDK'
 
 export default {
   props: {
@@ -70,10 +71,10 @@ export default {
   watch: {
     meetingState(val) {
       if (val === 2) {
-        this.camID = CRVideo_GetDefaultVideo(this.UID) // SDK主调接口：获取自己的当前使用的摄像头ID
-        this.camList = CRVideo_GetAllVideoInfo(this.UID) // SDK主调接口：获取自己的摄像头列表
-        this.micID = CRVideo_GetAudioCfg().micID // SDK主调接口：获取自己当前使用的麦克风ID
-        this.micList = CRVideo_GetAudioMicNames() // SDK主调接口：获取自己的麦克风列表
+        this.camID = RTCSDK.GetDefaultVideo(this.UID) // SDK主调接口：获取自己的当前使用的摄像头ID
+        this.camList = RTCSDK.GetAllVideoInfo(this.UID) // SDK主调接口：获取自己的摄像头列表
+        this.micID = RTCSDK.GetAudioCfg().micID // SDK主调接口：获取自己当前使用的麦克风ID
+        this.micList = RTCSDK.GetAudioMicNames() // SDK主调接口：获取自己的麦克风列表
       } else if (val === 0) {
         this.camID = this.micID = ''
       }
@@ -82,11 +83,11 @@ export default {
   methods: {
     // 选择了其他摄像头
     camChange(camId) {
-      CRVideo_SetDefaultVideo(this.UID, camId) // SDK主调接口：切换默认摄像头
+      RTCSDK.SetDefaultVideo(this.UID, camId) // SDK主调接口：切换默认摄像头
     },
     // 选择了其他麦克风
     micChange(micId) {
-      CRVideo_SetAudioCfg({ micID: micId }) // SDK主调接口：切换默认麦克风
+      RTCSDK.SetAudioCfg({ micID: micId }) // SDK主调接口：切换默认麦克风
     }
   }
 }

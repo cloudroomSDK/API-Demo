@@ -7,6 +7,7 @@ import { getToken, removeToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 import { SDKInit } from '@/SDK/SDK_Init'
 import SDKError from '@/SDK/Code'
+import RTCSDK from '@/SDK'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -25,7 +26,7 @@ router.beforeEach(async(to, from, next) => {
       }
     )
       .then(() => {
-        CRVideo_ExitMeeting()
+        RTCSDK.ExitMeeting()
         store.commit('state/SET_MEETING_STATE', 0)
         next()
       })

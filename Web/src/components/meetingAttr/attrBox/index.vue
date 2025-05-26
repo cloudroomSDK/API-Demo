@@ -84,6 +84,8 @@
 
 <script>
 const attrOption = '{"notifyAll":1}' // 调用SDK接口时添加此参数，将会通知房间内所有成员
+
+import RTCSDK from '@/SDK'
 import SDKError from '@/SDK/Code'
 export default {
   props: {
@@ -111,44 +113,44 @@ export default {
   created() {
     if (this.otherId) {
       // 用户属性回调注册
-      CRVideo_GetUserAttrsSuccess.callback = this.GetUserAttrsSuccess // SDK回调接口：获取用户属性成功的通知
-      CRVideo_GetUserAttrsFail.callback = this.GetUserAttrsFail // SDK回调接口：获取用户属性失败的通知
-      CRVideo_AddOrUpdateUserAttrsRslt.callback = this.AddOrUpdatAttrsRslt // SDK回调接口：新增或修改用户属性的结果通知
-      CRVideo_DelUserAttrsRslt.callback = this.DelAttrsRslt // SDK回调接口：删除用户属性的结果通知
-      CRVideo_ClearUserAttrsRslt.callback = this.ClearAttrsRslt // SDK回调接口：清除用户属性的结果通知
-      CRVideo_NotifyUserAttrsChanged.callback = this.NotifyUserAttrsChanged // SDK通知接口：有用户属性更新通知
+      RTCSDK.GetUserAttrsSuccess.callback = this.GetUserAttrsSuccess // SDK回调接口：获取用户属性成功的通知
+      RTCSDK.GetUserAttrsFail.callback = this.GetUserAttrsFail // SDK回调接口：获取用户属性失败的通知
+      RTCSDK.AddOrUpdateUserAttrsRslt.callback = this.AddOrUpdatAttrsRslt // SDK回调接口：新增或修改用户属性的结果通知
+      RTCSDK.DelUserAttrsRslt.callback = this.DelAttrsRslt // SDK回调接口：删除用户属性的结果通知
+      RTCSDK.ClearUserAttrsRslt.callback = this.ClearAttrsRslt // SDK回调接口：清除用户属性的结果通知
+      RTCSDK.NotifyUserAttrsChanged.callback = this.NotifyUserAttrsChanged // SDK通知接口：有用户属性更新通知
 
-      CRVideo_GetUserAttrs([this.otherId]) // SDK主调接口：查询用户属性
+      RTCSDK.GetUserAttrs([this.otherId]) // SDK主调接口：查询用户属性
     } else {
-      CRVideo_GetMeetingAllAttrsSuccess.callback =
+      RTCSDK.GetMeetingAllAttrsSuccess.callback =
         this.GetMeetingAllAttrsSuccess // SDK回调接口：获取房间属性成功的通知
-      CRVideo_GetMeetingAllAttrsFail.callback = this.GetMeetingAllAttrsFail // SDK回调接口：获取房间属性失败的通知
-      CRVideo_AddOrUpdateMeetingAttrsRslt.callback = this.AddOrUpdatAttrsRslt // SDK回调接口：新增或修改房间属性的结果通知
-      CRVideo_DelMeetingAttrsRslt.callback = this.DelAttrsRslt // SDK回调接口：删除房间属性的结果通知
-      CRVideo_ClearMeetingAttrsRslt.callback = this.ClearAttrsRslt // SDK回调接口：清除房间属性的结果通知
-      CRVideo_NotifyMeetingAttrsChanged.callback =
+      RTCSDK.GetMeetingAllAttrsFail.callback = this.GetMeetingAllAttrsFail // SDK回调接口：获取房间属性失败的通知
+      RTCSDK.AddOrUpdateMeetingAttrsRslt.callback = this.AddOrUpdatAttrsRslt // SDK回调接口：新增或修改房间属性的结果通知
+      RTCSDK.DelMeetingAttrsRslt.callback = this.DelAttrsRslt // SDK回调接口：删除房间属性的结果通知
+      RTCSDK.ClearMeetingAttrsRslt.callback = this.ClearAttrsRslt // SDK回调接口：清除房间属性的结果通知
+      RTCSDK.NotifyMeetingAttrsChanged.callback =
         this.NotifyMeetingAttrsChanged // SDK通知接口：有房间属性更新通知
 
-      CRVideo_GetMeetingAllAttrs() // SDK主调接口：查询房间属性
+      RTCSDK.GetMeetingAllAttrs() // SDK主调接口：查询房间属性
     }
   },
   destroyed() {
     if (this.otherId) {
       // 解绑用户属性
-      CRVideo_GetUserAttrsSuccess.callback = null
-      CRVideo_GetUserAttrsFail.callback = null
-      CRVideo_AddOrUpdateUserAttrsRslt.callback = null
-      CRVideo_DelUserAttrsRslt.callback = null
-      CRVideo_ClearUserAttrsRslt.callback = null
-      CRVideo_NotifyUserAttrsChanged.callback = null
+      RTCSDK.GetUserAttrsSuccess.callback = null
+      RTCSDK.GetUserAttrsFail.callback = null
+      RTCSDK.AddOrUpdateUserAttrsRslt.callback = null
+      RTCSDK.DelUserAttrsRslt.callback = null
+      RTCSDK.ClearUserAttrsRslt.callback = null
+      RTCSDK.NotifyUserAttrsChanged.callback = null
     } else {
       // 解绑房间属性
-      CRVideo_GetMeetingAllAttrsSuccess.callback = null
-      CRVideo_GetMeetingAllAttrsFail.callback = null
-      CRVideo_AddOrUpdateMeetingAttrsRslt.callback = null
-      CRVideo_DelMeetingAttrsRslt.callback = null
-      CRVideo_ClearMeetingAttrsRslt.callback = null
-      CRVideo_NotifyMeetingAttrsChanged.callback = null
+      RTCSDK.GetMeetingAllAttrsSuccess.callback = null
+      RTCSDK.GetMeetingAllAttrsFail.callback = null
+      RTCSDK.AddOrUpdateMeetingAttrsRslt.callback = null
+      RTCSDK.DelMeetingAttrsRslt.callback = null
+      RTCSDK.ClearMeetingAttrsRslt.callback = null
+      RTCSDK.NotifyMeetingAttrsChanged.callback = null
     }
   },
   methods: {
@@ -173,13 +175,13 @@ export default {
       }
       if (this.otherId) {
         // SDK主调接口：新增或修改用户属性
-        CRVideo_AddOrUpdateUserAttrs(
+        RTCSDK.AddOrUpdateUserAttrs(
           this.otherId,
           JSON.stringify(json),
           attrOption
         )
       } else {
-        CRVideo_AddOrUpdateMeetingAttrs(JSON.stringify(json), attrOption)// SDK主调接口：新增或修改房间属性
+        RTCSDK.AddOrUpdateMeetingAttrs(JSON.stringify(json), attrOption)// SDK主调接口：新增或修改房间属性
       }
     },
     // 房间和用户属性新增或更新的结果回调
@@ -211,10 +213,10 @@ export default {
         this.deleting = true
         if (this.otherId) {
           // SDK主调接口：删除用户属性
-          CRVideo_DelUserAttrs(this.otherId, [this.currentRow.key], attrOption)
+          RTCSDK.DelUserAttrs(this.otherId, [this.currentRow.key], attrOption)
         } else {
           // SDK主调接口：删除房间属性
-          CRVideo_DelMeetingAttrs([this.currentRow.key], attrOption)
+          RTCSDK.DelMeetingAttrs([this.currentRow.key], attrOption)
         }
       })
     },
@@ -285,9 +287,9 @@ export default {
         this.updating = true
         this.deleting = true
         if (this.otherId) {
-          CRVideo_ClearUserAttrs(this.otherId, attrOption) // SDK主调接口：清除用户的所有属性
+          RTCSDK.ClearUserAttrs(this.otherId, attrOption) // SDK主调接口：清除用户的所有属性
         } else {
-          CRVideo_ClearMeetingAttrs(attrOption) // SDK主调接口：清除房间的所有属性
+          RTCSDK.ClearMeetingAttrs(attrOption) // SDK主调接口：清除房间的所有属性
         }
       })
     },

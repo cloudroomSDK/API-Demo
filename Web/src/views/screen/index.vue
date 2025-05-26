@@ -34,6 +34,7 @@ import MemberList from '@/components/MemberList'
 import SDKError from '@/SDK/Code'
 import { mapGetters } from 'vuex'
 import RoomIdMixin from '../RoomIdMixin'
+import RTCSDK from '@/SDK'
 
 export default {
   components: {
@@ -61,27 +62,27 @@ export default {
     }
   },
   created() {
-    CRVideo_NotifyScreenShareStarted.callback = this.ScreenShareStarted // SDK通知接口：通知开启了屏幕共享
-    CRVideo_NotifyScreenShareStopped.callback = this.NotifyScreenShareStopped // SDK通知接口：通知结束了屏幕共享
-    CRVideo_StartScreenShareRslt.callback = this.StartScreenShareRslt // SDK通知接口：通知屏幕共享开启的结果
-    CRVideo_StopScreenShareRslt.callback = this.StopScreenShareRslt // SDK通知接口：通知屏幕共享结束的结果
+    RTCSDK.NotifyScreenShareStarted.callback = this.ScreenShareStarted // SDK通知接口：通知开启了屏幕共享
+    RTCSDK.NotifyScreenShareStopped.callback = this.NotifyScreenShareStopped // SDK通知接口：通知结束了屏幕共享
+    RTCSDK.StartScreenShareRslt.callback = this.StartScreenShareRslt // SDK通知接口：通知屏幕共享开启的结果
+    RTCSDK.StopScreenShareRslt.callback = this.StopScreenShareRslt // SDK通知接口：通知屏幕共享结束的结果
   },
   destroyed() {
-    CRVideo_NotifyScreenShareStarted.callback = null
-    CRVideo_NotifyScreenShareStopped.callback = null
-    CRVideo_StartScreenShareRslt.callback = null
-    CRVideo_StopScreenShareRslt.callback = null
+    RTCSDK.NotifyScreenShareStarted.callback = null
+    RTCSDK.NotifyScreenShareStopped.callback = null
+    RTCSDK.StartScreenShareRslt.callback = null
+    RTCSDK.StopScreenShareRslt.callback = null
   },
   methods: {
     // 点击了开始共享
     startScreen() {
       this.starting = true
-      CRVideo_StartScreenShare() // SDK主调接口：开始屏幕共享
+      RTCSDK.StartScreenShare() // SDK主调接口：开始屏幕共享
     },
     // 点击了结束共享
     stopScreen() {
       this.stopping = true
-      CRVideo_StopScreenShare() // SDK主调接口：结束屏幕共享
+      RTCSDK.StopScreenShare() // SDK主调接口：结束屏幕共享
     },
     // 开始屏幕共享通知,进入已在共享中的房间也会有此通知
     ScreenShareStarted(UID) {

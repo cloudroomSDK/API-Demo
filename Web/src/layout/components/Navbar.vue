@@ -42,6 +42,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import RTCSDK from '@/SDK'
 
 export default {
   components: {
@@ -61,7 +62,7 @@ export default {
           type: 'warning'
         })
           .then(() => {
-            CRVideo_ExitMeeting()
+            RTCSDK.ExitMeeting()
             this.$store.commit('state/RESET_STATE')
             this.$store.dispatch('user/logout')
             this.$router.push(`/login`)

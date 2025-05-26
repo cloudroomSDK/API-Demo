@@ -2,6 +2,7 @@ import { setToken, removeToken } from '@/utils/auth'
 import { SDKInit } from '@/SDK/SDK_Init'
 import { randomNumber } from '@/utils/index'
 import Cookies from 'js-cookie'
+import RTCSDK from '@/SDK'
 
 const getDefaultState = () => {
   return {
@@ -35,7 +36,7 @@ const actions = {
       addr = Cookies.get('addr')
     } = token
 
-    CRVideo_SetServerAddr(addr) // 设置服务器地址
+    RTCSDK.SetServerAddr(addr) // 设置服务器地址
 
     UID = UID || `H5_${randomNumber(4)}`
     nickName = nickName || UID

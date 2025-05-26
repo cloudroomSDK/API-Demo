@@ -29,6 +29,7 @@ import ButtonGroup from '@/components/ButtonGroup'
 import MemberList from '@/components/MemberList'
 import MultipleCameras from '@/components/MultipleCameras'
 import RoomIdMixin from '../RoomIdMixin'
+import RTCSDK from '@/SDK'
 
 import { mapGetters } from 'vuex'
 
@@ -53,8 +54,8 @@ export default {
     meetingState(newValue) {
       // 该组件自动打开摄像头麦克风
       if (newValue === 2) {
-        CRVideo_OpenVideo(this.UID) // SDK主调接口：打开摄像头
-        CRVideo_OpenMic(this.UID) // SDK主调接口：打开麦克风
+        RTCSDK.OpenVideo(this.UID) // SDK主调接口：打开摄像头
+        RTCSDK.OpenMic(this.UID) // SDK主调接口：打开麦克风
 
         // 掉线重登后，根据当前状态是否开启多摄像头
         if (this.isCameras) {
@@ -65,7 +66,7 @@ export default {
   },
   methods: {
     toggleCameras(bool) {
-      CRVideo_SetEnableMutiVideo(this.UID, bool)
+      RTCSDK.SetEnableMutiVideo(this.UID, bool)
       this.isCameras = bool
     }
   }

@@ -22,6 +22,18 @@
             >
               <div class="top">{{ user.nickname }}-{{ openCamId }}</div>
               <div class="bottom">
+                <template v-if="user.spkStatus !== 0">
+                  <i
+                    v-if="user.spkStatus === 3"
+                    class="icon icon-spk-open"
+                    @click="toggleSpk(user.userID, false)"
+                  />
+                  <i
+                    v-else
+                    class="icon icon-spk-close"
+                    @click="toggleSpk(user.userID, true)"
+                  />
+                </template>
                 <i
                   v-if="user.videoStatus === 3"
                   class="icon icon-cam-open"
@@ -55,6 +67,18 @@
           <div class="video empty">
             <div class="top">{{ user.nickname }}</div>
             <div class="bottom">
+              <template v-if="user.spkStatus !== 0">
+                <i
+                  v-if="user.spkStatus === 3"
+                  class="icon icon-spk-open"
+                  @click="toggleSpk(user.userID, false)"
+                />
+                <i
+                  v-else
+                  class="icon icon-spk-close"
+                  @click="toggleSpk(user.userID, true)"
+                />
+              </template>
               <i
                 v-if="user.videoStatus === 3"
                 class="icon icon-cam-open"
@@ -76,9 +100,7 @@
                 @click="toggleMic(user.userID, true)"
               />
             </div>
-          </div>
-        </div>
-      </template>
+          </div></div></template>
       <!-- 放两个i标签是为了解决弹性布局最后一排的的元素能实现左对齐的效果 -->
       <i style="width: 400px" />
       <i style="width: 400px" />
@@ -89,6 +111,8 @@
 <script>
 import { mapGetters } from 'vuex'
 import { difference } from '@/utils'
+import RTCSDK from '@/SDK'
+
 export default {
   data() {
     return {
@@ -99,20 +123,20 @@ export default {
     ...mapGetters(['UID', 'memberList', 'isMobile'])
   },
   created() {
-    this.$SDKCallBack.$on('CRVideo_UserLeftMeeting', this.UserLeftMeeting)
-    this.$SDKCallBack.$on('CRVideo_VideoDevChanged', this.VideoDevChanged)
+    this.$SDKCallBack.$on('UserLeftMeeting', this.UserLeftMeeting)
+    this.$SDKCallBack.$on('VideoDevChanged', this.VideoDevChanged)
     this.start()
   },
   destroyed() {
-    this.$SDKCallBack.$off('CRVideo_UserLeftMeeting', this.UserLeftMeeting)
-    this.$SDKCallBack.$off('CRVideo_VideoDevChanged', this.VideoDevChanged)
+    this.$SDKCallBack.$off('UserLeftMeeting', this.UserLeftMeeting)
+    this.$SDKCallBack.$off('VideoDevChanged', this.VideoDevChanged)
   },
   methods: {
     start() {
       const watchList = {}
       this.memberList.forEach((item) => {
         const { userID: UID } = item
-        watchList[UID] = CRVideo_GetOpenedVideoIDs(UID) // SDK主调接口：获取房间内用户打开的摄像头列表
+        watchList[UID] = RTCSDK.GetOpenedVideoIDs(UID) // SDK主调接口：获取房间内用户打开的摄像头列表
       })
       this.watchList = watchList
     },
@@ -122,7 +146,7 @@ export default {
     },
     // 用户的摄像头设备变化了
     VideoDevChanged(UID) {
-      const openCamList = CRVideo_GetOpenedVideoIDs(UID)
+      const openCamList = RTCSDK.GetOpenedVideoIDs(UID)
       let curCamList = this.watchList[UID] || [] // 当前该用户的观看摄像头列表
       const addArr = difference(openCamList, curCamList) // 计算出新打开的摄像头
       const delArr = difference(curCamList, openCamList) // 计算出新关闭的摄像头
@@ -144,11 +168,11 @@ export default {
     },
     // 开关摄像头
     toggleCam(UID, operate) {
-      operate ? CRVideo_OpenVideo(UID) : CRVideo_CloseVideo(UID) // SDK主调接口：开关摄像头
+      operate ? RTCSDK.OpenVideo(UID) : RTCSDK.CloseVideo(UID) // SDK主调接口：开关摄像头
     },
     // 开关麦克风
     toggleMic(UID, operate) {
-      operate ? CRVideo_OpenMic(UID) : CRVideo_CloseMic(UID) // SDK主调接口：开关麦克风
+      operate ? RTCSDK.OpenMic(UID) : RTCSDK.CloseMic(UID) // SDK主调接口：开关麦克风
     }
   }
 }
@@ -177,14 +201,14 @@ export default {
       background-color: #19263d;
       position: relative;
       &.empty::after {
-        content: '';
+        content: "";
         position: absolute;
         top: 50%;
         left: 50%;
         width: 55px;
         height: 40px;
         transform: translate(-50%, -50%);
-        background: url('~@/assets/image/icon/no_video.png') no-repeat;
+        background: url("~@/assets/image/icon/no_video.png") no-repeat;
       }
       .top {
         position: absolute;
@@ -211,17 +235,35 @@ export default {
           height: 30px;
           cursor: pointer;
           background-repeat: no-repeat;
+          background-size: 20px 20px;
+          background-position: center;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+          }
+
+          &.icon-spk-open {
+            background-image: url("~@/assets/image/icon/video_spk_open.png");
+          }
+
+          &.icon-spk-close {
+            background-image: url("~@/assets/image/icon/video_spk_close.png");
+          }
+
           &.icon-cam-open {
-            background-image: url('~@/assets/image/icon/video_cam_open.png');
+            background-image: url("~@/assets/image/icon/video_cam_open.png");
           }
+
           &.icon-cam-close {
-            background-image: url('~@/assets/image/icon/video_cam_close.png');
+            background-image: url("~@/assets/image/icon/video_cam_close.png");
           }
+
           &.icon-mic-open {
-            background-image: url('~@/assets/image/icon/video_mic_open.png');
+            background-image: url("~@/assets/image/icon/video_mic_open.png");
           }
+
           &.icon-mic-mute {
-            background-image: url('~@/assets/image/icon/video_mic_mute.png');
+            background-image: url("~@/assets/image/icon/video_mic_mute.png");
           }
         }
       }

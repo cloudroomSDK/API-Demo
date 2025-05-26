@@ -40,6 +40,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import RTCSDK from '@/SDK'
 export default {
   data() {
     return {
@@ -51,10 +52,10 @@ export default {
     ...mapGetters(['UID'])
   },
   created() {
-    CRVideo_NotifyMeetingCustomMsg.callback = this.NotifyMediaStart // SDK通知接口：通知广播消息
+    RTCSDK.NotifyMeetingCustomMsg.callback = this.NotifyMediaStart // SDK通知接口：通知广播消息
   },
   destroyed() {
-    CRVideo_NotifyMeetingCustomMsg.callback = null
+    RTCSDK.NotifyMeetingCustomMsg.callback = null
   },
   methods: {
     NotifyMediaStart(UID, stringMsg) {
@@ -84,7 +85,7 @@ export default {
         CmdType: 'IM',
         IMMsg: this.textarea
       }
-      CRVideo_SendMeetingCustomMsg(JSON.stringify(json))
+      RTCSDK.SendMeetingCustomMsg(JSON.stringify(json))
       this.textarea = ''
     }
   }

@@ -1,4 +1,4 @@
-console.log(`version: 1.0.3`)
+console.log(`version: ${process.env.VUE_APP_VERSION}`)
 import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
@@ -18,6 +18,7 @@ import '@/icons' // icon
 import '@/permission' // permission control
 
 import '@/SDK/SDK_CallBack' // 注册SDK回调事件，并且将事件发布到vue实例中
+import RTCSDK from '@/SDK'
 
 Vue.use(ElementUI)
 
@@ -30,14 +31,14 @@ Vue.directive('SDKVideo', {
     if (modifiers.user) {
       // 添加成员视图容器
       const { UID, camId } = value
-      const userVideoObj = CRVideo_CreatVideoObj() // 创建视频对象
+      const userVideoObj = RTCSDK.CreatVideoObj() // 创建视频对象
       userVideoObj.setVideo(UID, camId) // 设置显示成员摄像头画面,camId为undefined时则订阅默认摄像头
 
       // 创建SDK视频对象，并挂载到DOM上
       el.appendChild(userVideoObj.handler()) // 将组件DOM放到页面上
     } else if (modifiers.screen) {
       // 插入屏幕共享视频容器
-      const screenObj = CRVideo_CreatScreenShareObj() // SDK主调接口：创建屏幕共享容器
+      const screenObj = RTCSDK.CreatScreenShareObj() // SDK主调接口：创建屏幕共享容器
       screenObj.setVideo(value) // setVideo后才会显示内容
       console.log(screenObj.handler())
       const dom = screenObj.handler()
@@ -46,9 +47,9 @@ Vue.directive('SDKVideo', {
     } else if (modifiers.media) {
       // 插入影音共享视频容器
       const { shareUID, curPlayFile } = value
-      const mediaObj = CRVideo_CreatMediaObj() // SDK通知接口：创建影音共享播放容器
+      const mediaObj = RTCSDK.CreatMediaObj() // SDK通知接口：创建影音共享播放容器
       if (curPlayFile) {
-        CRVideo_StartPlayMedia(mediaObj, curPlayFile) // SDK通知接口：开始播放影音共享
+        RTCSDK.StartPlayMedia(mediaObj, curPlayFile) // SDK通知接口：开始播放影音共享
       }
       mediaObj.setVideo(shareUID) // setVideo后才会显示视频
       el.appendChild(mediaObj.handler()) // 将组件DOM放到页面上

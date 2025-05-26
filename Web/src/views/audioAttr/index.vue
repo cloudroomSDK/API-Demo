@@ -43,6 +43,7 @@ import ButtonGroup from '@/components/ButtonGroup'
 import MemberList from '@/components/MemberList'
 import VideoView from '@/components/VideoView'
 import RoomIdMixin from '../RoomIdMixin'
+import RTCSDK from '@/SDK'
 
 import { mapGetters } from 'vuex'
 
@@ -69,10 +70,10 @@ export default {
     meetingState(newValue) {
       // 该组件自动打开摄像头麦克风
       if (newValue === 2) {
-        CRVideo_OpenVideo(this.UID) // SDK主调接口：打开摄像头
-        CRVideo_OpenMic(this.UID) // SDK主调接口：打开麦克风
-        this.speakerList = CRVideo_GetAudioSpkNames()
-        const { speakerID, speakerPause } = CRVideo_GetAudioCfg()
+        RTCSDK.OpenVideo(this.UID) // SDK主调接口：打开摄像头
+        RTCSDK.OpenMic(this.UID) // SDK主调接口：打开麦克风
+        this.speakerList = RTCSDK.GetAudioSpkNames()
+        const { speakerID, speakerPause } = RTCSDK.GetAudioCfg()
         this.speakerId = speakerID
         this.speakerPause = speakerPause
       }
@@ -81,11 +82,11 @@ export default {
   methods: {
     // 视频配置发生改变
     speakerChange(speakerId) {
-      CRVideo_SetAudioCfg({ speakerID: speakerId })
+      RTCSDK.SetAudioCfg({ speakerID: speakerId })
     },
     // 点击了静音按钮
     toggleMute() {
-      this.speakerPause ? CRVideo_PlaySpeaker() : CRVideo_PauseSpeaker()
+      this.speakerPause ? RTCSDK.PlaySpeaker() : RTCSDK.PauseSpeaker()
       this.speakerPause = !this.speakerPause
     }
   }

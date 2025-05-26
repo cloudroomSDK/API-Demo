@@ -1,4 +1,5 @@
-CRVideo_LoginSuccess.callback = (UID, cookie) => {
+import RTCSDK from '@/SDK'
+RTCSDK.LoginSuccess.callback = (UID, cookie) => {
   const { resolve, nickName } = cookie
   resolve({
     UID,
@@ -6,7 +7,7 @@ CRVideo_LoginSuccess.callback = (UID, cookie) => {
   })
 }
 
-CRVideo_LoginFail.callback = (errCode, cookie) => {
+RTCSDK.LoginFail.callback = (errCode, cookie) => {
   const { reject } = cookie
   reject(errCode)
 }
@@ -17,10 +18,7 @@ export const SDKInit = {
     if (this.isInit) {
       return Promise.resolve()
     }
-    return CRVideo_Init({
-      // isCallSer: false,
-      isUploadLog: false
-    })
+    return RTCSDK.Init()
       .then(() => {
         // 初始化成功
         this.isInit = true
@@ -33,7 +31,7 @@ export const SDKInit = {
   // 登录
   Login({ AppId, MD5_AppSecret, UID, nickName }) {
     return new Promise((resolve, reject) => {
-      CRVideo_Login(AppId, MD5_AppSecret, nickName, UID, undefined, {
+      RTCSDK.Login(AppId, MD5_AppSecret, nickName, UID, undefined, {
         AppId,
         MD5_AppSecret,
         nickName,
@@ -44,6 +42,6 @@ export const SDKInit = {
   },
   // 登录
   Logout() {
-    CRVideo_Logout()
+    RTCSDK.Logout()
   }
 }

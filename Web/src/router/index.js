@@ -106,6 +106,12 @@ export const constantRoutes = [
         name: 'meettingAttr',
         component: () => import('@/views/meettingAttr'),
         meta: { title: '房间和成员属性' }
+      },
+      {
+        path: 'netVideo',
+        name: 'netVideo',
+        component: () => import('@/views/netVideo'),
+        meta: { title: '监控摄像头对接' }
       }
     ]
   },

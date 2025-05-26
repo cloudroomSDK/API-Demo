@@ -40,8 +40,8 @@ export default {
     meetingState(newValue) {
       // 该组件自动打开摄像头麦克风
       if (newValue === 2) {
-        // CRVideo_OpenVideo(this.UID) // SDK主调接口：打开摄像头
-        // CRVideo_OpenMic(this.UID) // SDK主调接口：打开麦克风
+        // RTCSDK.OpenVideo(this.UID) // SDK主调接口：打开摄像头
+        // RTCSDK.OpenMic(this.UID) // SDK主调接口：打开麦克风
       }
     }
   }

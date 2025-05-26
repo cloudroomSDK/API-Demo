@@ -1,13 +1,13 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
 const name = defaultSettings.title // page title
+process.env.VUE_APP_VERSION = require('./package.json').version
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -51,14 +51,6 @@ module.exports = {
     }
   },
   chainWebpack(config) {
-    config.plugin('AddAssetHtmlPlugin').use(
-      new AddAssetHtmlPlugin({
-        // SDK可以在index.html里面引入，也可以在vue.config.js里面引入，
-        // 若在index.html引入，打包时需要手动拷贝SDK文件，在vue.config.js内用插件引入则可以直接将SDK打包到项目中
-        // 无论使用何种方式引入，都需要能全局调用
-        filepath: resolve('/src/SDK/RTCSDKV2.min.js')
-      })
-    )
     // it can improve the speed of the first screen, it is recommended to turn on preload
     config.plugin('preload').tap(() => [
       {

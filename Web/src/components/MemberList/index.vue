@@ -52,6 +52,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import RTCSDK from '@/SDK'
 export default {
   data() {
     return {
@@ -68,19 +69,19 @@ export default {
     }
   },
   created() {
-    this.$SDKCallBack.$on('CRVideo_MicEnergyUpdate', this.MicEnergyUpdate)
+    this.$SDKCallBack.$on('MicEnergyUpdate', this.MicEnergyUpdate)
   },
   destroyed() {
-    this.$SDKCallBack.$off('CRVideo_MicEnergyUpdate', this.MicEnergyUpdate)
+    this.$SDKCallBack.$off('MicEnergyUpdate', this.MicEnergyUpdate)
   },
   methods: {
     // 点击了开关摄像头
     openCam(UID, curStatue) {
-      curStatue ? CRVideo_CloseVideo(UID) : CRVideo_OpenVideo(UID) // SDK主调接口：开关摄像头
+      curStatue ? RTCSDK.CloseVideo(UID) : RTCSDK.OpenVideo(UID) // SDK主调接口：开关摄像头
     },
     // 点击了开关麦克风
     openMic(UID, curStatue) {
-      curStatue ? CRVideo_CloseMic(UID) : CRVideo_OpenMic(UID) // SDK主调接口：开关麦克风
+      curStatue ? RTCSDK.CloseMic(UID) : RTCSDK.OpenMic(UID) // SDK主调接口：开关麦克风
     },
     // 通知麦克风音量变化
     MicEnergyUpdate(UID, oldLevel, newLevel) {

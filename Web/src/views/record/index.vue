@@ -72,6 +72,7 @@ import RecordToast from '@/components/recordToast'
 import RoomIdMixin from '../RoomIdMixin'
 import SDKError from '@/SDK/Code'
 import { parseTime } from '@/utils'
+import RTCSDK from '@/SDK'
 
 import { mapGetters } from 'vuex'
 
@@ -127,8 +128,8 @@ export default {
     meetingState(newValue) {
       // 该组件自动打开摄像头麦克风
       if (newValue === 2) {
-        CRVideo_OpenVideo(this.UID) // SDK主调接口：打开摄像头
-        CRVideo_OpenMic(this.UID) // SDK主调接口：打开麦克风
+        RTCSDK.OpenVideo(this.UID) // SDK主调接口：打开摄像头
+        RTCSDK.OpenMic(this.UID) // SDK主调接口：打开麦克风
         this.updateRecordState() // 更新录制状态
       }
     },
@@ -142,21 +143,21 @@ export default {
     }
   },
   created() {
-    CRVideo_CreateCloudMixerFailed.callback = this.CreateCloudMixerFailed // SDK回调接口：启动云端录制、云端直播失败通知
-    CRVideo_CloudMixerStateChanged.callback = this.CloudMixerStateChanged // SDK回调接口：通知云端录制状态发生了变化
-    CRVideo_CloudMixerOutputInfoChanged.callback =
+    RTCSDK.CreateCloudMixerFailed.callback = this.CreateCloudMixerFailed // SDK回调接口：启动云端录制、云端直播失败通知
+    RTCSDK.CloudMixerStateChanged.callback = this.CloudMixerStateChanged // SDK回调接口：通知云端录制状态发生了变化
+    RTCSDK.CloudMixerOutputInfoChanged.callback =
       this.CloudMixerOutputInfoChanged // SDK回调接口：通知云端录制文件生成进度
   },
   destroyed() {
-    CRVideo_CreateCloudMixerFailed.callback = null
-    CRVideo_CloudMixerOutputInfoChanged.callback = null
-    CRVideo_CloudMixerStateChanged.callback = null
+    RTCSDK.CreateCloudMixerFailed.callback = null
+    RTCSDK.CloudMixerOutputInfoChanged.callback = null
+    RTCSDK.CloudMixerStateChanged.callback = null
   },
   methods: {
     // 更新录制状态
     updateRecordState() {
       // SDK主调接口：获取云端录制状态
-      CRVideo_GetAllCloudMixerInfo().some((item) => {
+      RTCSDK.GetAllCloudMixerInfo().some((item) => {
         if (item.owner === this.UID) {
           this.mixerId = item.ID
           this.recordState = item.state
@@ -186,11 +187,11 @@ export default {
           layoutConfig: this.createVideoLayout()
         }
       }
-      this.mixerId = CRVideo_CreateCloudMixer(cfg) // SDK主调接口：创建云端混图器
+      this.mixerId = RTCSDK.CreateCloudMixer(cfg) // SDK主调接口：创建云端混图器
       this.recordState = 1
     },
     clickEndBtn() {
-      CRVideo_DestroyCloudMixer(this.mixerId) // SDK主调接口：消毁云端混图器
+      RTCSDK.DestroyCloudMixer(this.mixerId) // SDK主调接口：消毁云端混图器
     },
     // 创建录制内容
     createVideoLayout() {
@@ -306,7 +307,7 @@ export default {
         }
       }
 
-      CRVideo_UpdateCloudMixerContent(this.mixerId, cloudMixerCfg) // SDK主调接口：更新云端混图器
+      RTCSDK.UpdateCloudMixerContent(this.mixerId, cloudMixerCfg) // SDK主调接口：更新云端混图器
     },
     // 启动云端录制、云端直播失败通知
     CreateCloudMixerFailed(mixerID, sdkErr) {

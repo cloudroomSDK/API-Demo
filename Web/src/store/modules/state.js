@@ -1,3 +1,4 @@
+import RTCSDK from '@/SDK'
 const getDefaultState = () => {
   return {
     meetingState: 0, // 表示当前会议状态 0未开始，1进入中，2正在会议中
@@ -13,7 +14,7 @@ const mutations = {
   },
   SET_MEETING_STATE: (state, meetingState) => {
     state.meetingState = meetingState
-    state.memberList = meetingState === 2 ? CRVideo_GetAllMembers() : []
+    state.memberList = meetingState === 2 ? RTCSDK.GetAllMembers() : []
   },
   DEL_MEMBER: (state, UID) => {
     const idx = state.memberList.findIndex((item) => item.userID === UID)
@@ -22,7 +23,7 @@ const mutations = {
     }
   },
   ADD_MEMBER: (state, UID) => {
-    const userInfo = CRVideo_GetMemberInfo(UID)
+    const userInfo = RTCSDK.GetMemberInfo(UID)
     if (userInfo) {
       state.memberList.push(userInfo)
     }

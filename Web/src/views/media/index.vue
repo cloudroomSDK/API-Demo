@@ -19,7 +19,7 @@
         drag
         :multiple="false"
         :auto-upload="false"
-        action="sdk.cloudroom.com"
+        action="example.com"
         :on-change="handleUploadChange"
         :on-remove="handleUploadRemove"
         accept="video/*"

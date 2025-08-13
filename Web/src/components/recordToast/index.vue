@@ -65,7 +65,7 @@ export default {
         fileName: this.info.fileName
       }
       jsonp({
-        url: `https://${Cookies.get('addr')}/CLOUDROOM-API/netDisk/query`,
+        url: `https://${Cookies.get('addr')}/CLOUDMEETING-API/netDisk/query`,
         data,
         success: (data) => {
           try {

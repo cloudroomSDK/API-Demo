@@ -15,18 +15,6 @@
           <i class="icon-menu" />
         </span>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <a target="_blank" href="https://sdk.cloudroom.com/">
-            <el-dropdown-item><i class="icon icon-home" />官网</el-dropdown-item>
-          </a>
-          <a
-            target="_blank"
-            href="https://github.com/cloudroomSDK/API-Demo/tree/main/Web"
-          >
-            <el-dropdown-item><i class="icon icon-github" />Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://sdk.cloudroom.com/sdkdoc/H5/">
-            <el-dropdown-item><i class="icon icon-word" />文档</el-dropdown-item>
-          </a>
           <el-dropdown-item @click.native="logout">
             <span
               style="display: block" class="logout"

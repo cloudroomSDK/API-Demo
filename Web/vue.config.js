@@ -36,8 +36,8 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
-    }
-    // https: true,
+    },
+    https: true,
     // host: '0.0.0.0'
   },
   configureWebpack: {

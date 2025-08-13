@@ -7,7 +7,7 @@
       :class="{ mobile: isMobile }"
     >
       <div class="title-container">
-        <h3 class="title">Cloudroom Web Demo</h3>
+        <h3 class="title">RTC Web API Demo</h3>
       </div>
       <div class="w">
         <el-form-item>
@@ -27,7 +27,7 @@
           <el-input
             ref="appId"
             v-model="loginForm.appId"
-            placeholder="默认APPID"
+            placeholder=""
             name="appId"
             type="text"
             tabindex="2"
@@ -63,11 +63,6 @@
           type="primary"
           @click.native.prevent="handleLogin"
         >登录</el-button>
-      </div>
-      <div class="link">
-        <a
-          target="_blank" href="https://sdk.cloudroom.com/mgr_sdk/login.html"
-        >没有APPID?</a>
       </div>
     </el-form>
   </div>
@@ -188,7 +183,6 @@ $dark_gray: #999;
         line-height: 44px;
         .el-input {
           height: 100%;
-          font-size: 16px;
           .text {
             display: inline-block;
             width: 100px;

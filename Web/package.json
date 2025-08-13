@@ -1,8 +1,9 @@
 {
-  "name": "h5_api_demo",
-  "version": "1.0.6",
-  "description": "云屋H5_SDK API演示Demo",
-  "author": "Siman <siman@cloudroom.com>",
+  "name": "rtc_sdk_api_demo",
+  "version": "1.0.8",
+  "Date": "2025/08/13",
+  "description": "RTC SDK API演示Demo",
+  "author": "Siman",
   "scripts": {
     "dev": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
@@ -12,7 +13,6 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
-    "@cloudroom/web-rtc-sdk": "latest",
     "core-js": "3.6.5",
     "crypto-js": "^4.1.1",
     "element-ui": "^2.15.6",

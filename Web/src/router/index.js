@@ -115,17 +115,6 @@ export const constantRoutes = [
       }
     ]
   },
-  /*
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://sdk.cloudroom.com/sdkdoc/H5/',
-        meta: { title: 'H5_SDK帮助文档', icon: 'link' }
-      }
-    ]
-  }, */
 
   // 404 page must be placed at the end !!!
   { path: '*', component: () => import('@/views/404'), hidden: true }

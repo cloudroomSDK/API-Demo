@@ -1,6 +1,5 @@
 let RTCSDK;
-
-// 生产环境
-RTCSDK = require('@/SDK/SDK/RTCSDKV2.min.js').default;
+// 开发环境
+RTCSDK = require('@src/index.js').default;
 
 export default RTCSDK;

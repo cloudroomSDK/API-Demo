@@ -1,7 +1,7 @@
 {
   "name": "rtc_sdk_api_demo",
-  "version": "1.0.9",
-  "Date": "2025/08/22",
+  "version": "1.1.0",
+  "Date": "2025/09/17",
   "description": "RTC SDK API演示Demo",
   "author": "Siman",
   "scripts": {

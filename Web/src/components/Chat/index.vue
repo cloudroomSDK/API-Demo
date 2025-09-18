@@ -52,13 +52,13 @@ export default {
     ...mapGetters(['UID'])
   },
   created() {
-    RTCSDK.NotifyMeetingCustomMsg.callback = this.NotifyMediaStart // SDK通知接口：通知广播消息
+    RTCSDK.NotifyMeetingCustomMsg.callback = this.NotifyMeetingCustomMsg // SDK通知接口：通知广播消息
   },
   destroyed() {
     RTCSDK.NotifyMeetingCustomMsg.callback = null
   },
   methods: {
-    NotifyMediaStart(UID, stringMsg) {
+    NotifyMeetingCustomMsg(UID, stringMsg) {
       try {
         // {"CmdType":"IM","IMMsg":"2222"}
         const { CmdType, IMMsg } = JSON.parse(stringMsg)

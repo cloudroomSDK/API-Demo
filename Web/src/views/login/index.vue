@@ -63,12 +63,17 @@
           type="primary"
           @click.native.prevent="handleLogin"
         >登录</el-button>
+       <div class="version">
+          <span>Ver：{{ demoVer }}</span>
+          <span>SDKVer：{{ sdkVer }}</span>
+        </div>
       </div>
     </el-form>
   </div>
 </template>
 
 <script>
+import packageJson from '../../../package.json'
 import SDKError from '@/SDK/Code'
 import config from '@/config/sdk'
 import MD5 from 'crypto-js/md5'
@@ -80,8 +85,8 @@ export default {
   data() {
     return {
       loginForm: {
-        addr: Cookies.get('addr') || config.addr,
-        appId: '',
+        addr: Cookies.get('addr') || config.addr || window.location.host,
+        appId: '默认',
         appSecret: config.appSecret
       },
       loading: false,
@@ -90,11 +95,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isMobile'])
+    ...mapGetters(['isMobile']),
+    sdkVer() {
+      return CRVideo_GetSDKVersion()
+    },
+    demoVer() {
+      return packageJson.version
+    }
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
@@ -124,7 +135,7 @@ export default {
         .dispatch('user/login', {
           addr,
           AppId: appId,
-          MD5_AppSecret: MD5(appSecret).toString()
+          MD5_AppSecret: appId != '默认' ? MD5(appSecret).toString() : '默认'
         })
         .then(() => {
           this.loading = false
@@ -215,6 +226,14 @@ $dark_gray: #999;
         height: 44px;
         width: 100%;
         margin-bottom: 16px;
+      }
+
+      .version {
+        padding: 0 10px;
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+        font-size: 14px;
       }
     }
     .link {

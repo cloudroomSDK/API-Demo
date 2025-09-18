@@ -102,6 +102,12 @@ export const constantRoutes = [
         meta: { title: '聊天' }
       },
       {
+        path: 'audioSubscribe',
+        name: 'audioSubscribe',
+        component: () => import('@/views/audioSubscribe'),
+        meta: { title: '音频订阅' }
+      },
+      {
         path: 'meettingAttr',
         name: 'meettingAttr',
         component: () => import('@/views/meettingAttr'),

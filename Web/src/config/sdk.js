@@ -1,5 +1,5 @@
 export default {
   addr: '',
-  appId: '',
-  appSecret: ''
+  appId: '默认',
+  appSecret: '默认'
 }

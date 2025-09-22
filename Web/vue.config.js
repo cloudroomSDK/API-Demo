@@ -2,7 +2,7 @@
 const path = require('path');
 const defaultSettings = require('./src/settings.js');
 const webpack = require('webpack');
-const SDKInfo = require('../../SDKInfo.js');
+const SDKInfo = require('./SDKInfo.js');
 
 function resolve(dir) {
   return path.join(__dirname, dir);

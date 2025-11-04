@@ -27,16 +27,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import RTCSDK from '@/SDK';
+import { mapGetters } from 'vuex'
+import RTCSDK from '@/SDK'
 
 export default {
   data() {
     return {
-      mode: RTCSDK.GetAudioSubscribeMode(), //音频订阅模式 0-混流模式 1-独立流模式
-      listType: 0, //音频订阅名单类型 0-白名单 1-黑名单
-      list: [], //音频订阅名单
-    };
+      mode: RTCSDK.GetAudioSubscribeMode(), // 音频订阅模式 0-混流模式 1-独立流模式
+      listType: 0, // 音频订阅名单类型 0-白名单 1-黑名单
+      list: [] // 音频订阅名单
+    }
   },
   computed: {
     ...mapGetters(['UID', 'memberList', 'isMobile']),
@@ -45,27 +45,27 @@ export default {
         .filter((item) => item.userID !== this.UID)
         .map((item) => ({
           key: item.userID,
-          label: item.nickname,
-        }));
-    },
+          label: item.nickname
+        }))
+    }
   },
   destroyed() {
-    RTCSDK.SetAudioSubscribeMode(0);
-    RTCSDK.SetAudioSubscribeList([], 0);
+    RTCSDK.SetAudioSubscribeMode(0)
+    RTCSDK.SetAudioSubscribeList([], 0)
   },
   methods: {
     // 音频订阅模式切换
     modeChange(value) {
-      console.log(value);
-      this.mode = value;
-      RTCSDK.SetAudioSubscribeMode(value);
-      this.refershSubscribeList();
+      console.log(value)
+      this.mode = value
+      RTCSDK.SetAudioSubscribeMode(value)
+      this.refershSubscribeList()
     },
     refershSubscribeList() {
-      RTCSDK.SetAudioSubscribeList(this.list, this.listType);
-    },
-  },
-};
+      RTCSDK.SetAudioSubscribeList(this.list, this.listType)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

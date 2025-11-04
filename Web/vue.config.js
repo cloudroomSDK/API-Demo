@@ -2,7 +2,6 @@
 const path = require('path');
 const defaultSettings = require('./src/settings.js');
 const webpack = require('webpack');
-const SDKInfo = require('./SDKInfo.js');
 
 function resolve(dir) {
   return path.join(__dirname, dir);
@@ -27,7 +26,7 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
   publicPath: '/web/rtc/apidemo/',
-  outputDir: '../../apidemo',
+  outputDir: '/apidemo',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
@@ -48,17 +47,9 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve('./src'),
-        '@src': resolve('../../src'),
       },
     },
-    plugins: [
-      new webpack.DefinePlugin({
-        CRVideoSdkver: JSON.stringify(SDKInfo.version), // sdk版本号
-        CRVideoSdkInfo: JSON.stringify(SDKInfo.info), // sdk打包信息
-        CRMeetAppVer: JSON.stringify(SDKInfo.meetAppVer), // 会议产品版本号
-        CRMeetAppInfo: JSON.stringify(SDKInfo.meetAppInfo), // 会议产品打包信息
-      }),
-    ],
+    plugins: [],
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload

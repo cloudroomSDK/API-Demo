@@ -63,7 +63,7 @@
           type="primary"
           @click.native.prevent="handleLogin"
         >登录</el-button>
-       <div class="version">
+        <div class="version">
           <span>Ver：{{ demoVer }}</span>
           <span>SDKVer：{{ sdkVer }}</span>
         </div>
@@ -97,7 +97,7 @@ export default {
   computed: {
     ...mapGetters(['isMobile']),
     sdkVer() {
-      return CRVideo_GetSDKVersion()
+      return window.CRVideo_GetSDKVersion()
     },
     demoVer() {
       return packageJson.version
@@ -105,7 +105,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function (route) {
+      handler: function(route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
@@ -119,7 +119,8 @@ export default {
       })
     },
     handleLogin() {
-      let { appId, appSecret, addr } = this.loginForm
+      const { addr } = this.loginForm
+      let { appId, appSecret } = this.loginForm
 
       if (appId === '') {
         appId = config.appId
@@ -135,7 +136,7 @@ export default {
         .dispatch('user/login', {
           addr,
           AppId: appId,
-          MD5_AppSecret: appId != '默认' ? MD5(appSecret).toString() : '默认'
+          MD5_AppSecret: appId !== '默认' ? MD5(appSecret).toString() : '默认'
         })
         .then(() => {
           this.loading = false

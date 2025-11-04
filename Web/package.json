@@ -1,16 +1,12 @@
 {
   "name": "rtc_sdk_api_demo",
-  "version": "1.1.0",
-  "Date": "2025/09/17",
+  "version": "1.2.1",
+  "Date": "2025/11/04",
   "description": "RTC SDK API演示Demo",
   "author": "Siman",
   "scripts": {
     "dev": "vue-cli-service serve",
-    "build:prod": "vue-cli-service build",
-    "build:stage": "vue-cli-service build --mode staging",
-    "preview": "node build/index.js --preview --report",
-    "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
-    "lint": "eslint --ext .js,.vue src"
+    "build": "vue-cli-service build"
   },
   "dependencies": {
     "core-js": "3.6.5",

@@ -7,7 +7,7 @@
 
 
 #import "SampleHandler.h"
-#import <CloudroomReplayKitExt/CRReplayKitExt.h>
+#import <RTCReplayKitExt/CRReplayKitExt.h>
 
 @implementation SampleHandler
 

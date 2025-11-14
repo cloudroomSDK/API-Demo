@@ -15,6 +15,7 @@ class PageStyle {
   static const Color cff4e4e = Color(0xfff44e4e);
   static const Color c1D232F = Color(0xff1D232F);
   static const Color cB1B1B1 = Color(0xffB1B1B1);
+  static const Color ce8eaef = Color(0xffE8EAEF);
 
   static const Color backgroundColor1 = Color(0xff1D232F);
   // 不get .sp 太快使用有问题

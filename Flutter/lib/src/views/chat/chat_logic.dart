@@ -54,7 +54,7 @@ class ChatLogic extends GetxController {
 
   newMessage(CustomMsg msg) {
     Map message = json.decode(msg.text);
-    // 兼容云屋其它SDK端的APIDEMO约定格式
+    // 兼容其它SDK APIDEMO的约定格式
     if (message.containsKey("CmdType") && message["CmdType"] == "IM") {
       final CustomMsg crmsg = CustomMsg(msg.fromUserID, message["IMMsg"]);
       lists.add(crmsg);

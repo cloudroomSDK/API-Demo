@@ -70,17 +70,18 @@ class LocalRecord extends StatelessWidget {
                             children: [
                               Expanded(
                                   child: Container(
-                                height: 30.h,
+                                height: 32.h,
                                 decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(4.w))),
                                 child: CustomTextFormField(
                                   controller: logic.fileNameController,
+                                  isDense: true,
                                 ),
                               )),
                               Container(
-                                height: 30.h,
+                                height: 32.h,
                                 margin: EdgeInsets.only(left: 10.w),
                                 child: ElevatedButton(
                                     style: logic.isRecord.value

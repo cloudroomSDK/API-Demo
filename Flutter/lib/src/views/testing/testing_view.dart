@@ -1,12 +1,10 @@
-import 'package:rtcsdk/rtcsdk.dart';
 import 'package:rtcsdk_demo/src/controller/app_controller.dart';
 import 'package:rtcsdk_demo/src/controller/rtc_controller.dart';
-import 'package:rtcsdk_demo/src/models/video_position.dart';
 import 'package:rtcsdk_demo/src/widgets/custom_appbar.dart';
-import 'package:rtcsdk_demo/src/widgets/video_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rtcsdk_demo/src/resources/styles.dart';
+import 'package:rtcsdk_demo/src/extension/custom_ext.dart';
 import 'package:get/get.dart';
 
 import 'testing_logic.dart';
@@ -17,129 +15,143 @@ class Testing extends StatelessWidget {
   final rtcLogic = Get.find<RTCController>();
   final logic = Get.find<TestingLogic>();
 
-  List<Widget> smallVideoComponents() {
-    List<Widget> items = [];
-    for (int i = 0; i < logic.uvids.length; i++) {
-      UsrVideoId item = logic.uvids[i];
-      VideoPosition vps = logic.vps[i];
-      items.add(
-        Positioned(
-          left: vps.left,
-          top: vps.top,
-          width: vps.width,
-          height: vps.height,
-          child: VideoComponent(
-              key: Key('${item.userId}_${item.videoID}'), usrVideoId: item),
-        ),
-      );
-    }
-    return items;
+  Widget button(
+    String text, {
+    void Function()? onPressed,
+  }) {
+    return ElevatedButton(
+        style: PageStyle.getButtonStyle(),
+        onPressed: rtcLogic.isLogined.value ? onPressed : null,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 4.h),
+          child: text.toText..style = PageStyle.ts_12cffffff,
+        ));
   }
 
-  Widget button({
-    void Function()? onPressed,
-    Widget? child,
-  }) {
-    return SizedBox(
-      width: 155.w,
-      height: 30.h,
-      child: ElevatedButton(
-        style: PageStyle.getButtonStyle(),
-        onPressed: onPressed,
-        child: child,
-      ),
+  Widget title(String text) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+      child: text.toText..style = PageStyle.ts_12c666666,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "房间号：${logic.confId}"),
-      body: Obx(() => Stack(
-            children: [
-              VideoComponent(
-                usrVideoId: rtcLogic.selfUsrVideoId,
-                key: logic.vcKey,
-              ),
-              ...smallVideoComponents(),
-              Positioned(
-                left: 0,
-                bottom: 0,
-                child: Container(
-                  width: 1.sw,
-                  height: 130.h,
-                  color: Colors.black54,
-                  padding: EdgeInsets.symmetric(vertical: 6.h),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          button(
-                            onPressed: logic.videoEffects,
-                            child: Text(
-                              "videoEffects",
-                              style: PageStyle.ts_14cffffff,
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          button(
-                            onPressed: logic.viewSetting,
-                            child: Text(
-                              "viewSetting",
-                              style: PageStyle.ts_14cffffff,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          button(
-                            onPressed: rtcLogic.switchDefaultVideo,
-                            child: Text(
-                              "${rtcLogic.myCameraPosition.value == CAMERA_POSITION.FRONT ? '后置' : '前置'}摄像头",
-                              style: PageStyle.ts_14cffffff,
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          button(
-                            onPressed: rtcLogic.switchCamera,
-                            child: Text(
-                              "${rtcLogic.isOpenMyCamera.value ? '关闭' : '打开'}摄像头",
-                              style: PageStyle.ts_14cffffff,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          button(
-                            onPressed: rtcLogic.switchMic,
-                            child: Text(
-                              "${rtcLogic.isOpenMyMic.value ? '关闭' : '打开'}麦克风",
-                              style: PageStyle.ts_14cffffff,
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          button(
-                            onPressed: rtcLogic.switchSpeakerOut,
-                            child: Text(
-                              "切换为${rtcLogic.isOpenMySpeaker.value ? '听筒' : '扬声器'}",
-                              style: PageStyle.ts_14cffffff,
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
+      appBar: const CustomAppBar(title: "测试"),
+      body: Column(
+        children: [
+          Container(
+            height: 150.h,
+            padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.w),
+            decoration: const BoxDecoration(color: PageStyle.cf2f2f2),
+            child: Obx(() => ListView.builder(
+                  controller: logic.controller,
+                  itemBuilder: (_, index) => logic.logs.elementAt(index).toText
+                    ..style = PageStyle.ts_12c333333,
+                  itemCount: logic.logs.length,
+                )),
+          ),
+          Obx(
+            () => Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    title('呼叫'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        button(
+                          '用户列表',
+                          onPressed: logic.selCallUser,
+                        ),
+                        10.horizontalSpace,
+                        button(
+                          '${logic.statusNotify.value ? '关闭' : '开启'}用户的状态推送',
+                          onPressed: logic.switchUserStatusNotify,
+                        ),
+                        10.horizontalSpace,
+                        button(
+                          '${logic.dndType.value ? '关闭' : '开启'}免打扰',
+                          onPressed: logic.switchUserDndType,
+                        ),
+                      ],
+                    ),
+                    title('队列（坐席）'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        button(
+                          '${logic.isSerivceQueueing.value ? '停止' : '开始'}服务队列',
+                          onPressed: logic.switchServiceQueue,
+                        ),
+                        10.horizontalSpace,
+                        button(
+                          '获取我服务的所有队列',
+                          onPressed: logic.isSerivceQueueing.value
+                              ? logic.getServiceQueues
+                              : null,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        button(
+                          '获取我的队列状态',
+                          onPressed: logic.isSerivceQueueing.value
+                              ? logic.getQueueStatus
+                              : null,
+                        ),
+                        10.horizontalSpace,
+                        button(
+                          '请求分配客户',
+                          onPressed: logic.isSerivceQueueing.value
+                              ? logic.reqAssignUser
+                              : null,
+                        ),
+                      ],
+                    ),
+                    title('队列（客户）'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        button(
+                          '${logic.isQueueing.value ? '停止' : '开始'}排队',
+                          onPressed: logic.switchQueue,
+                        ),
+                        10.horizontalSpace,
+                        button(
+                          '获取我的排队信息',
+                          onPressed: logic.getQueuingInfo,
+                        ),
+                      ],
+                    ),
+                    title('透明通道'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        button(
+                          '发送点对点消息',
+                          onPressed: logic.sendCmd,
+                        ),
+                        10.horizontalSpace,
+                        button(
+                          '发送点对点大数据',
+                          onPressed: logic.sendBuffer,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              )
-            ],
-          )),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

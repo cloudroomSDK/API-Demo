@@ -105,15 +105,20 @@ class JoinRoomLogic extends GetxController {
       Permission.microphone,
       Permission.phone,
       Permission.storage,
+      Permission.videos,
     ]);
   }
 
   enterRoom(int confid) async {
     EasyLoading.show();
     AppNavigator.toDemoPage(target, confid);
-    int sdkErr = await rtcLogic.enterMeeting(confid);
-    if (sdkErr != 0) {
-      if (sdkErr == 807) await rtcLogic.exitMeeting();
+    try {
+      int sdkErr = await rtcLogic.enterMeeting(confid);
+      if (sdkErr != 0) {
+        if (sdkErr == 807) await rtcLogic.exitMeeting();
+        AppNavigator.back();
+      }
+    } catch (e) {
       AppNavigator.back();
     }
     EasyLoading.dismiss();

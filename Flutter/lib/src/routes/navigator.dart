@@ -33,8 +33,30 @@ class AppNavigator {
     );
   }
 
-  static void toDemoPage(String target, int confID) {
-    String confId = confID.toString();
-    Get.toNamed(target, arguments: {"confId": confId});
+  static Future<T?>? toDemoPage<T>(String target, int confID) {
+    return Get.toNamed(target, arguments: {"confId": '$confID'});
+  }
+
+  static Future<T?>? toMembers<T>({int? type, String? action}) {
+    return Get.toNamed(AppRoutes.MEMBERS, arguments: {
+      "type": type ?? 0,
+      "action": action ?? '',
+    });
+  }
+
+  static Future<T?>? toVideoStream<T>(String userID) {
+    return Get.toNamed(AppRoutes.VIDEOSTREAM, arguments: {"userID": userID});
+  }
+
+  static Future<T?>? toTest<T>() {
+    return Get.toNamed(AppRoutes.TESTING);
+  }
+
+  static Future<T?>? toTestRoom<T>(int confID) {
+    return Get.toNamed(AppRoutes.TESTROOM, arguments: {"confId": '$confID'});
+  }
+
+  static Future<T?>? toQueueList<T>() {
+    return Get.toNamed(AppRoutes.QUEUELIST);
   }
 }

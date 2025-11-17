@@ -1,3 +1,4 @@
+import 'package:rtcsdk_demo/src/config/config.dart';
 import 'package:rtcsdk_demo/src/controller/app_controller.dart';
 import 'package:rtcsdk_demo/src/controller/rtc_controller.dart';
 import 'package:rtcsdk_demo/src/models/app_config.dart';
@@ -18,7 +19,13 @@ class SettingsLogic extends GetxController {
   onInit() {
     serverAddrController =
         TextEditingController(text: appLogic.appConfig.serverAddr);
-    appIdController = TextEditingController(text: appLogic.appConfig.appId);
+    appIdController = TextEditingController(text: appLogic.appConfig.showAppId);
+    appIdController.addListener(() {
+      String text = appIdController.text;
+      if (text == Config.appId) {
+        appIdController.text = '默认';
+      }
+    });
     appSecretController =
         TextEditingController(text: appLogic.appConfig.appSecret);
     super.onInit();
@@ -65,8 +72,8 @@ class SettingsLogic extends GetxController {
     try {
       await rtcLogic.logout();
       await rtcLogic.setServerAddr(serverAddr);
-      await rtcLogic.login();
       await appLogic.saveAppConfig(serverAddr, appId, appSecret);
+      await rtcLogic.login();
       EasyLoading.showToast("保存设置成功！");
       AppNavigator.toMain();
     } catch (e) {

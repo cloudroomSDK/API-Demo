@@ -4,9 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final List<Widget>? actions;
+
   const CustomAppBar({
     Key? key,
     required this.title,
+    this.actions,
   }) : super(key: key);
 
   @override
@@ -17,6 +20,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         icon: Icon(Icons.arrow_back_ios_new_rounded),
         onPressed: AppNavigator.back,
       ),
+      actions: actions,
     );
   }
 

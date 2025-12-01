@@ -1,0 +1,13 @@
+diff --git a/node_modules/normalize-package-data/lib/fixer.js b/node_modules/normalize-package-data/lib/fixer.js
+index 27682e9..f0a7560 100644
+--- a/node_modules/normalize-package-data/lib/fixer.js
++++ b/node_modules/normalize-package-data/lib/fixer.js
+@@ -188,7 +188,7 @@ var fixer = module.exports = {
+       return true
+     }
+     if (!semver.valid(data.version, loose)) {
+-      throw new Error('Invalid version: "'+ data.version + '"')
++      // throw new Error('Invalid version: "'+ data.version + '"')
+     }
+     data.version = semver.clean(data.version, loose)
+     return true

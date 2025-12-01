@@ -1,10 +1,11 @@
 {
   "name": "rtc_sdk_api_demo",
-  "version": "1.3.0",
-  "Date": "2025/11/17",
+  "version": "1.3.2",
+  "Date": "2025/12/01",
   "description": "RTC SDK API演示Demo",
   "author": "Siman",
   "scripts": {
+    "postinstall": "patch-package",
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
@@ -34,6 +35,7 @@
     "eslint": "6.7.2",
     "eslint-plugin-vue": "6.2.2",
     "html-webpack-plugin": "3.2.0",
+    "patch-package": "^8.0.1",
     "runjs": "4.3.2",
     "sass": "1.26.8",
     "sass-loader": "8.0.2",

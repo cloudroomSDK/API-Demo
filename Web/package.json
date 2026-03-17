@@ -1,13 +1,13 @@
 {
   "name": "rtc_sdk_api_demo",
-  "version": "1.3.2",
-  "Date": "2025/12/01",
+  "version": "1.3.6",
+  "Date": "2026/03/17",
   "description": "RTC SDK API演示Demo",
   "author": "Siman",
   "scripts": {
     "postinstall": "patch-package",
     "dev": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build"
   },
   "dependencies": {
     "core-js": "3.6.5",

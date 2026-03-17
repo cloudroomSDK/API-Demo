@@ -7,7 +7,7 @@
           type="primary"
           :disabled="meetingState !== 2"
           @click="toggleMute"
-        >{{ speakerPause ? '解除静音' : '静音' }}</el-button>
+        >{{ speakerPause ? '解除静音' : '扬声器静音' }}</el-button>
       </ButtonGroup>
       <div class="attr">
         <div class="select">
@@ -73,7 +73,8 @@ export default {
         RTCSDK.OpenVideo(this.UID) // SDK主调接口：打开摄像头
         RTCSDK.OpenMic(this.UID) // SDK主调接口：打开麦克风
         this.speakerList = RTCSDK.GetAudioSpkNames()
-        const { speakerID, speakerPause } = RTCSDK.GetAudioCfg()
+        const { speakerID } = RTCSDK.GetAudioCfg()
+        const speakerPause = RTCSDK.GetSpeakerMute()
         this.speakerId = speakerID
         this.speakerPause = speakerPause
       }

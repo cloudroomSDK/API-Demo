@@ -2,7 +2,7 @@ import Observer from "./observer.js";
 
 const RtcPlugin = uni.requireNativePlugin("rtcsdk-plugin");
 const globalEvent = uni.requireNativePlugin("globalEvent");
-const version = "1.3.5";
+const version = "1.4.7";
 const eventBus = new Observer();
 
 const isAndroid = uni.getSystemInfoSync().platform == "android";
@@ -417,7 +417,7 @@ export default class RtcCloud {
 		const res = {};
 		if (isIos) {
 			res.maxFps = cfg.maxFPS;
-			res.maxBps = cfg.maxKbps === -1 ? -1 : Math.floor(cfg.maxKbps / 1024);
+			res.maxBps = cfg.maxKbps === -1 ? -1 : Math.floor(cfg.maxKbps / 1000);
 		}
 		if (isAndroid) {
 			res.maxFps = cfg.maxFps;
@@ -429,7 +429,7 @@ export default class RtcCloud {
 		const obj = {};
 		if (isIos) {
 			obj.maxFPS = maxFps;
-			obj.maxKbps = maxBps === -1 ? -1 : maxBps * 1024;
+			obj.maxKbps = maxBps === -1 ? -1 : Math.floor(cfg.maxKbps / 1000);
 		}
 		if (isAndroid) {
 			obj.maxFps = maxFps;

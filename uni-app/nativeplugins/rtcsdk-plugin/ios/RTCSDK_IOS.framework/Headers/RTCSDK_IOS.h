@@ -2,10 +2,11 @@
 //  RTCSDK_IOS.h
 //  RTCSDK_IOS
 //
-//  Created by YunWu01 on 2021/12/20.
+//  Created by LyuBook on 2019/7/19.
+//  Copyright © 2019 tom. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 //! Project version number for RTCSDK_IOS.
 FOUNDATION_EXPORT double RTCSDK_IOSVersionNumber;
@@ -21,3 +22,4 @@ FOUNDATION_EXPORT const unsigned char RTCSDK_IOSVersionString[];
 #import <RTCSDK_IOS/RTCMeeting.h>
 #import <RTCSDK_IOS/RTCQueue.h>
 #import <RTCSDK_IOS/RTCCommonType.h>
+

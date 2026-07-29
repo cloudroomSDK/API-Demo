@@ -2,7 +2,7 @@
 //  RTCCommonType.h
 //  RTCSDK_IOS
 //
-//  Created by RTC on 2018/11/22.
+//  Created by rtc on 2018/11/22.
 //  Copyright © 2018年 lake. All rights reserved.
 //
 

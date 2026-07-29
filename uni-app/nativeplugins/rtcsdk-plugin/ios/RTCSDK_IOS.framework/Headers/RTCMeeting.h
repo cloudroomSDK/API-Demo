@@ -1,11 +1,12 @@
-#ifndef __RTC_MEETING_H__
-#define __RTC_MEETING_H__
+#ifndef __RTCMEETING_H__
+#define __RTCMEETING_H__
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CGGeometry.h>
-#import <RTCSDK_IOS/RTCQueue.h>
-#import <RTCSDK_IOS/RTCSDK_Def.h>
+#include <RTCSDK_IOS/RTCQueue.h>
+#include <RTCSDK_IOS/RTCSDK_Def.h>
 #import <RTCSDK_IOS/RTCCommonType.h>
+
 
 /* 会议成员信息 */
 CRVSDK_EXPORT
@@ -79,13 +80,11 @@ typedef enum {
 /* 音频数据信息 */
 CRVSDK_EXPORT
 @interface AudioFrame : NSObject
-{
-    @public uint8_t* data; //音频数据
-}
 @property (nonatomic, assign) AUDIO_FORMAT format; //音频格式
 @property (nonatomic, assign) int sampleRate;  //采样率
 @property (nonatomic, assign) AUDIO_CHLAYOUT chLayout; //声道布局
-@property (nonatomic, assign) NSTimeInterval timestamp; //时间戳（ms)
+@property (nonatomic, assign) uint64_t timestamp; //时间戳（ms)
+@property (nonatomic, assign) uint8_t *data; //音频数据 borrowed buffer
 @property (nonatomic, assign) int datLen; //音频数据长度
 @end
 
@@ -569,7 +568,7 @@ CRVSDK_EXPORT
 @property (nonatomic, copy) NSString *serverPathFileName; //文件上传后在服务器上的相对路径和文件名
 //直播配置
 @property (nonatomic, copy) NSString *liveUrl; //目标url
-@property (nonatomic, assign) BOOL live; //开启云屋直播（由服务器替换_liveUrl）
+@property (nonatomic, assign) BOOL live; //开启直播（由服务器替换_liveUrl）
 @property (nonatomic, assign) int errRetryTimes; //失败时重试次数CRVSDK_EXPORT
 @end
 
@@ -1208,6 +1207,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cloudMixerStateChanged:(NSString *)operatorID mixerID:(NSString *)mixerID state:(MIXER_STATE)state exParam:(NSString *)exParam;
 - (void)cloudMixerInfoChanged:(NSString *)mixerID;
 - (void)cloudMixerOutputInfoChanged:(NSString *)mixerID jsonStr:(NSString *)jsonStr;
+- (void)cloudMixerEvent:(NSString *)mixerID eventType:(CRVIDEOSDK_CLOUDMIXER_EVENT_TYPE)eventType jsonStr:(NSString *)jsonStr;
 
 
 /**********影音**********/
@@ -1415,10 +1415,11 @@ CRVSDK_EXPORT
  移除回调
  @param callBack 多代理模式移除代理对象
  */
--(void) removeMeetingCallBack:(id<RTCMeetingCallBack>)callBack;
+- (void)removeMeetingCallBack:(id<RTCMeetingCallBack>)callBack;
+
 /**
  设置音频数据回调
- @param callBack 代理对象，传入nil移除回调
+ @param callback 代理对象，传入nil移除回调
 */
 - (void)setAudioFrameObserver:(id<CRAudioFrameCallBack>)callback;
 
@@ -1634,10 +1635,10 @@ CRVSDK_EXPORT
 
 /**
  向sdk送入自定义音频采集数据
- @param pcmDat 音频帧数据
+ @param frm 音频帧数据，参考AudioFrame
  @return 错误码，CRVIDEOSDK_NOERR 代表调用成功
 */
-- (CRVIDEOSDK_ERR_DEF)pushCustomAudioDat:(NSData *)pcmDat;
+- (CRVIDEOSDK_ERR_DEF)pushCustomAudioDat:(AudioFrame *)frm;
 
 /**
  自定义音频渲染
@@ -1649,9 +1650,9 @@ CRVSDK_EXPORT
 
 /**
  从sdk获取音频数据用于自渲染
- @return pcmDat 音频帧数据
+ @return AudioFrame 音频帧数据
 */
-- (NSData *)pullCustomAudioDat;
+- (AudioFrame *)pullCustomAudioDat;
 
 
 // added by king 201710131139
@@ -2207,7 +2208,7 @@ CRVSDK_EXPORT
 - (void)delUserAttrs:(NSString *)uid keys:(NSArray<NSString *> *)keys options:(NSMutableDictionary *)options cookie:(NSString *)cookie;
 //清空)指定用户的属性
 - (void)clearAllUserAttrs:(NSMutableDictionary *)options cookie:(NSString *)cookie;
-- (void)clearUserAttrs:(NSString *)uID options:(NSString *)options cookie:(NSString *)cookie;
+- (void)clearUserAttrs:(NSString *)uID options:(NSMutableDictionary *)options cookie:(NSString *)cookie;
 
 
 - (void)setVideoBlur:(BOOL)blur;
@@ -2218,5 +2219,6 @@ CRVSDK_EXPORT
 @end
 
 NS_ASSUME_NONNULL_END
-#endif  // __RTC_MEETING_H__
+
+#endif  // __RTCMEETING_H__
 

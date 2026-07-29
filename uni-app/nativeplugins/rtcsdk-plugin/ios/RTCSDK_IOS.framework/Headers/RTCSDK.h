@@ -1,5 +1,5 @@
-#ifndef __RTC_SDK_H__
-#define __RTC_SDK_H__
+#ifndef __RTCSDK_H__
+#define __RTCSDK_H__
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CGGeometry.h>
 #include <RTCSDK_IOS/RTCQueue.h>
@@ -8,6 +8,7 @@
 /* SDK 日志级别*/
 typedef NS_ENUM(NSInteger, SDK_LOG_LEVEL)
 {
+    SDK_LOG_LEVEL_TRACE = 0,
     SDK_LOG_LEVEL_DEBUG, // 调试日志
     SDK_LOG_LEVEL_INFO, // 重要日志
     SDK_LOG_LEVEL_WARN, // 警告日志
@@ -99,8 +100,8 @@ CRVSDK_EXPORT
 /**
  服务器配置
  支持如下格式:
- www.rtc.com
- www.rtc.com:8080;183.60.47.52:8080;
+ www.bestroom9.com
+ www.bestroom9.com:8080;183.60.47.52:8080;
  @param serverList 服务器列表
  */
 - (void)setServerAddr:(NSString *)serverList;
@@ -113,5 +114,5 @@ CRVSDK_EXPORT
 
 @end
 
-#endif  // __RTC_SDK_H__
+#endif  // __RTCSDK_H__
 

@@ -303,7 +303,7 @@ CRVSDK_EXPORT
  (在免打扰状态下,系统不会自动分配,可以主动请求分配一个任务)
  @param cookie 用户自定义数据
  */
-- (void)reqAssignUser:(NSObject *)cookie;
+- (void)reqAssignUser:(NSString *)cookie;
 
 @end
 

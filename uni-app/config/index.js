@@ -1,5 +1,5 @@
 export const defaultLoginInfo = {
-	addr: 'sdk.cloudroom.com',
+	addr: '',
 	appId: '',
 	appSecret: '',
 	useHttps: true,

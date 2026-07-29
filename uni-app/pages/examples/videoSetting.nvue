@@ -275,20 +275,20 @@
 				display: flex;
 				flex-wrap: wrap-reverse;
 				flex-direction: column;
-				width: 492rpx;
-				height: 830rpx;
+				width: 681rpx;
+				height: 1164rpx;
 
 				.video {
-					width: 144rpx;
-					height: 256rpx;
+					width: 207rpx;
+					height: 368rpx;
 					background-color: #000;
 					margin-bottom: 20rpx;
 					margin-left: 20rpx;
 					position: relative;
 
 					.video-ui {
-						width: 144rpx;
-						height: 256rpx;
+						width: 207rpx;
+						height: 368rpx;
 					}
 
 					.video-text {

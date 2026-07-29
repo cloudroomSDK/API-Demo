@@ -1,5 +1,5 @@
-#ifndef __RTC_SDK_ERRDEF_H__
-#define __RTC_SDK_ERRDEF_H__
+#ifndef __RTCSDK_ERRDEF_H__
+#define __RTCSDK_ERRDEF_H__
 
 #ifdef __cplusplus
 #define CRVSDK_EXPORT       extern "C" __attribute__((visibility ("default")))
@@ -151,6 +151,27 @@ typedef enum
 
 } CRVIDEOSDK_ERR_DEF;
 
+/*
+云端录制、直播输出事件
+*/
+typedef enum
+{
+    CRVIDEOSDK_EVT_OUTPUT_START = 1,    //输出开始
+    CRVIDEOSDK_EVT_OUTPUT_END = 2,        //输出结束
+    CRVIDEOSDK_EVT_OUTPUT_FAILED = 3,    //输出错误
+    CRVIDEOSDK_EVT_FILE_UPLOADING = 4,    //文件上传中
+    CRVIDEOSDK_EVT_FILE_UPLOADED = 5,    //文件上传完成
+    CRVIDEOSDK_EVT_FILE_UPLOADFAILED = 6,    //文件上传失败
+    CRVIDEOSDK_EVT_ALLFILE_FINISHED = 8,    //所有文件完成
+
+    //录制服务运行告警，均可能多次通知
+    CRVIDEOSDK_EVT_NOT_RECV_STREAM = 100,                //未接收到流数据
+    CRVIDEOSDK_EVT_PUSH_STREAM_FAILED,                    //推流失败
+    CRVIDEOSDK_EVT_MAKE_COVER_FAILED,                    //生成封面失败
+    CRVIDEOSDK_EVT_NETDISK_FILEALREADYEXISTS,            //录像文件已经上传
+    CRVIDEOSDK_EVT_MCU_RUN_TIMEOUT = 200,        //录制服务运行超时（超过12小时）
+    CRVIDEOSDK_EVT_MCU_SHAKEHAND_TIMEOUT,        //录制服务握手超时
+} CRVIDEOSDK_CLOUDMIXER_EVENT_TYPE;
 
 /*
 sdk日志等级

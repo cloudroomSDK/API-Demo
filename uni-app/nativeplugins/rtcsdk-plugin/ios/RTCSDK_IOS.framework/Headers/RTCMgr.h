@@ -1,5 +1,5 @@
-#ifndef __RTC_MGR_H__
-#define __RTC_MGR_H__
+#ifndef __RTCMGR_H__
+#define __RTCMGR_H__
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CGGeometry.h>
 #include <RTCSDK_IOS/RTCQueue.h>
@@ -25,9 +25,9 @@ typedef NS_ENUM(NSInteger, CR_INVITE_STATUS) {
 CRVSDK_EXPORT
 @interface LoginDat : NSObject
 
-@property (nonatomic, copy) NSString *authAcnt; // 云屋鉴权帐号
-@property (nonatomic, copy) NSString *authPswd; // 云屋鉴权密码
-@property (nonatomic, copy) NSString *privAcnt; // 自定义帐号,云屋服务器将会去配置的服务器进行认证(当不使用自定义帐号时,acnt,pswd应为NULL)
+@property (nonatomic, copy) NSString *authAcnt; // 鉴权帐号
+@property (nonatomic, copy) NSString *authPswd; // 鉴权密码
+@property (nonatomic, copy) NSString *privAcnt; // 自定义帐号,服务器将会去配置的服务器进行认证(当不使用自定义帐号时,acnt,pswd应为NULL)
 @property (nonatomic, copy) NSString *privAuthCode; // 自定义验证码(有复杂要求的,可以使用json格式)
 @property (nonatomic, copy) NSString *param; // 用户扩展信息
 
@@ -600,7 +600,7 @@ CRVSDK_EXPORT
 - (NSString*)getAllMarks:(NSString*)videoFilePathName;
 
 // 获取打点文件的绝对文件路径名
-- (NSString*)getVideoMarkFile:(NSString*)videoFilePathName;
+- (NSString*)getMarkFile:(NSString*)videoFilePathName;
 
 #pragma mark ----------------------------------------------- 邀请功能
 - (NSString*)invite:(NSString*)invitedUserID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
@@ -612,5 +612,5 @@ CRVSDK_EXPORT
 - (void)cancelInvite:(NSString*)inviteID usrExtDat:(NSString*)usrExtDat cookie:(NSString*)cookie;
 @end
 
-#endif  // __RTC_MGR_H__
+#endif  // __RTCMGR_H__
 

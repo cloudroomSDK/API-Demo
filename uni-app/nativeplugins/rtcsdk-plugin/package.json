@@ -1,7 +1,7 @@
 {
 	"name": "rtcsdk-plugin",
 	"id": "rtcsdk-plugin",
-	"version": "1.3.5",
+	"version": "1.4.7",
 	"description": "",
 	"_dp_type": "nativeplugin",
 	"_dp_nativeplugin": {
@@ -9,19 +9,19 @@
 			"plugins": [{
 				"type": "module",
 				"name": "rtcsdk-plugin",
-				"class": "com.rtc.sdk.Main"
+				"class": "com.rtc.uniappWrap.Main"
 			}, {
 				"type": "component",
 				"name": "rtcsdk-videoView",
-				"class": "com.rtc.sdk.VideoUIViewComponent"
+				"class": "com.rtc.uniappWrap.VideoUIViewComponent"
 			}, {
 				"type": "component",
 				"name": "rtcsdk-screenView",
-				"class": "com.rtc.sdk.ScreenShareUIViewComponent"
+				"class": "com.rtc.uniappWrap.ScreenShareUIViewComponent"
 			}, {
 				"type": "component",
 				"name": "rtcsdk-mediaView",
-				"class": "com.rtc.sdk.MediaUIViewComponent"
+				"class": "com.rtc.uniappWrap.MediaUIViewComponent"
 			}],
 
 			"integrateType": "aar",
@@ -32,7 +32,7 @@
 				"x86"
 			],
 			"dependencies": [
-				"com.github.cloudroomSDK:cloudroomvideo_android_library:4.7.1"
+				"com.github.crbase:rtcsdk_android_library:4.8.5"
 			]
 		},
 		"ios": {

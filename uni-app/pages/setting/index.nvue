@@ -61,7 +61,6 @@
 				addr: '',
 				appId: '',
 				appSecret: '',
-				appSecret: '',
 				version: app.globalData.version
 			}
 		},
@@ -73,28 +72,29 @@
 			this.useHttps = useHttps;
 			this.useToken = useToken;
 			this.addr = addr;
-			this.appId = appId;
 			this.token = token;
+			this.appId = (defaultLoginInfo.appId && appId === defaultLoginInfo.appId) ? '默认' : appId;
 			setTimeout(() => {
 				this.appSecret = appSecret; //官方bug，密码框要延迟一会才能赋值
 			}, 500)
 		},
 		onNavigationBarButtonTap(e) {
-			const { useHttps, useToken, addr, appId, appSecret, token } = loginInfo;
+			const appIdVal = this.appId === '默认' ? defaultLoginInfo.appId : this.appId;
 
 			if (this.useToken && !this.token.trim()) {
 				return showToast(`请输入token`);;
 			}
 
-			if (!this.useToken && (!this.appId || !this.appSecret)) {
+			if (!this.useToken && (!appIdVal || !this.appSecret)) {
 				return showToast(`请输入appId和appSecret`);;
 			}
 
+			const { useHttps, useToken, addr, appId, appSecret, token } = loginInfo;
 			if (this.useHttps !== useHttps) {
 				this.RTCSDK.uninit();
 				app.globalData.initState = false;
 				app.globalData.isLogin = false;
-			} else if (useToken !== this.useToken || addr !== this.addr || appId !== this.appId || appSecret !== this.appSecret || token !== this.token) {
+			} else if (useToken !== this.useToken || addr !== this.addr || appId !== appIdVal || appSecret !== this.appSecret || token !== this.token) {
 				if (app.globalData.isLogin) {
 					this.RTCSDK.logout();
 					app.globalData.isLogin = false;
@@ -109,7 +109,7 @@
 				if (this.useToken) {
 					loginInfo.token = this.token;
 				} else {
-					loginInfo.appId = this.appId;
+					loginInfo.appId = appIdVal;
 					loginInfo.appSecret = this.appSecret;
 				}
 				uni.setStorageSync('loginInfo', loginInfo)
@@ -136,7 +136,7 @@
 				this.useHttps = useHttps;
 				this.useToken = useToken;
 				this.addr = addr;
-				this.appId = appId;
+				this.appId = appId ? '默认' : '';
 				this.token = token;
 				setTimeout(() => {
 					this.appSecret = appSecret;

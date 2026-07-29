@@ -72,7 +72,7 @@
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "云屋API DEMO",
+		"navigationBarTitleText": "API DEMO",
 		"navigationBarBackgroundColor": "#3981FC",
 		"backgroundColor": "#f0f0f0",
 		"app-plus": {

@@ -113,11 +113,11 @@
 					const path = await readAppDir();
 					this.RTCSDK.init({
 						sdkDatSavePath: path, //SDK内部使用文件位置
-						noCall: false,
-						noQueue: false,
-						noMediaDatToSvr: null,
 						timeOut: 120000,
 						datEncType: useHttps ? "1" : "0",
+						params: {
+							// VerifyHttpsCert: "0" //不校验证书
+						}
 					}, (sdkErr) => {
 						if (sdkErr !== 0) {
 							return reject(sdkErr);
@@ -135,6 +135,18 @@
 				try {
 					if (!app.globalData.initState) {
 						await this.init(useHttps);
+					}
+
+					if (!addr) {
+						return showToast(`请设置服务器地址`);
+					}
+
+					if (!appId) {
+						return showToast(`请设置appId`);
+					}
+
+					if (!appSecret) {
+						return showToast(`请设置appSecret`);
 					}
 
 					const { userId } = app.globalData.userInfo;

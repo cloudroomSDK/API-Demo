@@ -20,7 +20,7 @@
 </template>
 
 <script>
-	import RTCSDK from "./CRSDK";
+	import RTCSDK from "./RTCSDK";
 	import { getUserInfo } from "../store.js";
 	import { parseTime } from "./utils"
 	export default {

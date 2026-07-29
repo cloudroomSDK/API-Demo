@@ -24,6 +24,7 @@
 </template>
 
 <script>
+	import { getConfig } from "../store.js"
 	export default {
 		data() {
 			return {
@@ -40,6 +41,15 @@
 				});
 			},
 			gotoJoin(type) {
+				const { server } = getConfig();
+				if (!server) {
+					uni.showToast({
+						title: '请设置服务器地址、AppID、AppSecret！',
+						icon: 'none',
+						duration: 2000
+					});
+					return;
+				}
 				uni.navigateTo({
 					url: `/package/join?type=${type}`
 				});

@@ -1,35 +1,32 @@
 # MiniApp Uniapp Api Demo
 
-MiniApp Uniapp Api Demo是一个开源项目，它基于uniapp + vue技术栈，方便客户了解 API 接口功能并快速接入到现有项目中。
+MiniApp Uniapp Api Demo是一个开源项目，它基于uniapp + vue技术栈，将向您展示如何将RTC SDK集成到您的项目中的不同场景。
 
 ## 🚀 快速开始
 
 ### 创建账号
-  1. 您需要在云屋[SDK官网](https://sdk.cloudroom.com/)注册账号并创建项目，具体流程参见[准备工作](https://docs.cloudroom.com/sdk/document/fastIntegration/beforeDevelop?platform=miniprogram)
-  1. 项目创建完成，获取到`AppId`和`AppSecret`，选择以下之一方式：
-      - 在`store.js`文件中修改`defaultConfig`对应的值
-      - 启动项目后，在设置界面中填入对应的值
+
+1. 您需要在云屋[SDK官网](https://sdk.cloudroom.com/)注册账号并创建项目，具体流程参见[准备工作](https://docs.cloudroom.com/sdk/document/fastIntegration/beforeDevelop?platform=miniprogram)
+2. 项目创建完成，获取到`AppId`和`AppSecret`，选择以下之一方式：
+    - 在`auth.js`文件中修改对应的值
+    - 启动项目后，在设置界面中填入对应的值
 
 ### 注意事项
-  1. [小程序后台不可缺少的配置](https://docs.cloudroom.com/sdk/document/fastIntegration/beforeDevelop?platform=miniprogram#doc_6)
-  1. [小程序后台开发相关的配置](https://docs.cloudroom.com/sdk/document/fastIntegration/wxconfig?platform=miniprogram)
-  1. demo中的SDK由官网SDK包中的js文件修改后缀名得到，升级SDK需做同样的操作
+1. [小程序后台不可缺少的配置](https://docs.cloudroom.com/sdk/document/fastIntegration/beforeDevelop?platform=miniprogram#doc_6)
+2. [小程序后台开发相关的配置](https://docs.cloudroom.com/sdk/document/fastIntegration/wxconfig?platform=miniprogram)
+3. demo中的SDK文件由SDK包中的js文件修改后缀名得到，后续升级SDK需做同样的操作
 
 ### 步骤
-
-```bash
-git clone git@github.com:cloudroomSDK/API-Demo.git
-```
-1. 在Hbuilder 编译器中导入项目`MiniApp`
+1. 在Hbuilder 编译器中导入项目`Uniapp Api Demo`
 2. 在`manifest.json`中重新获取uni-app的应用标识
 3. 在`manifest.json`小程序配置中，配置开发者小程序的AppID
 4. 在Hbuilder 编译器点击`运行`-`运行到小程序模拟器`-`微信开发者工具`
 
 ### 使用Vue2版本
 1. 在`manifest.json`中切换Vue2版本
-2. 将`package/CRSDK/RTC_Miniapp_SDK.min.cjs`重命名为`RTC_Miniapp_SDK.min.js`
+2. 将`package/RTCSDK/RTC_Miniapp_SDK.min.cjs`重命名为`RTC_Miniapp_SDK.min.js`
 3. 将`RTC_Miniapp_SDK.min.cjs.map`重命名为`RTC_Miniapp_SDK.min.js.map`
-4. 修改`package/CRSDK/index.js`里的RTCSDK的导入路径
+4. 修改`package/RTCSDK/index.js`里的RTCSDK的导入路径
 
 ## 📖 演示场景
 

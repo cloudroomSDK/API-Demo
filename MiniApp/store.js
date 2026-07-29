@@ -1,12 +1,12 @@
-const defaultConfig = {
-	server: "sdk.cloudroom.com",
+import { defaultServer, defaultAppID, defaultAppSecret } from './auth.js';
+let config = uni.getStorageSync('config') || {
+	server: defaultServer,
+	appId: defaultAppID,
+	appSecret: defaultAppSecret,
 	useToken: false,
-	appId: "",
-	appSecret: "",
 	token: "",
+	auth: "",
 };
-
-let config = uni.getStorageSync('config') || defaultConfig;
 
 export const changeConfig = (newConfig) => {
 	Object.assign(config, newConfig);
@@ -17,7 +17,14 @@ export const changeConfig = (newConfig) => {
 }
 
 export const resetConfig = () => {
-	config = defaultConfig;
+	config = {
+		server: defaultServer,
+		appId: defaultAppID,
+		appSecret: defaultAppSecret,
+		useToken: false,
+		token: "",
+		auth: "",
+	};
 	uni.removeStorage({
 		key: 'config',
 	})

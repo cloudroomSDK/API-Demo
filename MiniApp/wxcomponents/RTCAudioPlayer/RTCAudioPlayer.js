@@ -1,14 +1,5 @@
 let RTCSDK;
 
-let mode = null;
-try {
-	const res = wx.getSystemInfoSync()
-	//ios使用live模式，安卓使用rtc模式
-	mode = res.system.indexOf('iOS') > -1 ? 'live' : 'RTC';
-} catch (e) {
-	mode = 'RTC';
-}
-
 Component({
 	/**
 	 * 组件的属性列表
@@ -31,7 +22,7 @@ Component({
 		RTCAudioPlayer: {
 			src: '', // 音视频地址。目前仅支持 flv, rtmp 格式
 			src2: '', // 音视频地址。目前仅支持 flv, rtmp 格式
-			mode: mode, // live（直播），RTC（实时通话，该模式时延更低）
+			mode: 'RTC', // live（直播），RTC（实时通话，该模式时延更低）
 			autoplay: true, // 是否自动播放
 			muted: false, // 是否静音
 			orientation: 'vertical', // 画面方向，可选值有 vertical，horizontal

@@ -1,4 +1,4 @@
-import RTCSDK from './CRSDK';
+import RTCSDK from './RTCSDK';
 import { getDesc } from './sdkErrDesc.js';
 import { getUserInfo, getLastRoomId } from '../store.js'
 
@@ -47,7 +47,7 @@ const sendPage = (callback, isAllPage = true, arg) => {
 	"MicEnergyUpdate",
 	"NotifyMeetingCustomMsg",
 	"CloudMixerStateChanged",
-	"CloudMixerOutputInfoChanged",
+	"CloudMixerEvent",
 ].forEach(key => {
 	RTCSDK[key].callback = (...arg) => {
 		sendPage(key, false, arg)

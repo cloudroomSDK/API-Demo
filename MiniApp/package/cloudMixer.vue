@@ -35,7 +35,7 @@
 </template>
 
 <script>
-	import RTCSDK from "./CRSDK";
+	import RTCSDK from "./RTCSDK";
 	import { getUserInfo } from "../store.js";
 	import { parseTime } from "./utils";
 	export default {
@@ -119,20 +119,32 @@
 					this.isSvrRecording = false;
 				}
 			},
-			callback_CloudMixerOutputInfoChanged(mixerID, outputInfo) {
+			callback_CloudMixerEvent(mixerID, state, eventInfoObj) {
 				if (this.lastMixerID !== mixerID) return;
-				if (outputInfo.state === 5) {
-					uni.showToast({
-						title: '录制已生成，请前往SDK后台查看',
-						icon: 'none',
-						duration: 4000
-					});
-				} else if (outputInfo.state === 6) {
-					uni.showToast({
-						title: '上传失败',
-						icon: 'none',
-						duration: 2000
-					});
+				switch (state) {
+					case 3:
+						uni.showToast({
+							title: `录制出错！错误码：${eventInfoObj.errCode},${eventInfoObj.errDesc}`,
+							icon: 'none',
+							duration: 3e3
+						});
+						break;
+					case 5:
+						uni.showToast({
+							title: `录制已完成，可在后台中查看录像文件`,
+							icon: 'none',
+							duration: 3e3
+						});
+						break;
+					case 6:
+						uni.showToast({
+							title: `录制上传出错！错误码：${eventInfoObj.errCode},${eventInfoObj.errDesc}`,
+							icon: 'none',
+							duration: 3e3
+						});
+						break;
+					default:
+						break;
 				}
 			},
 			start() {

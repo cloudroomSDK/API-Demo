@@ -97,7 +97,7 @@
 </template>
 
 <script>
-	import RTCSDK from "./CRSDK";
+	import RTCSDK from "./RTCSDK";
 	import { getUserInfo } from "../store.js";
 	export default {
 		data() {

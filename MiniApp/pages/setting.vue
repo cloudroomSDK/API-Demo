@@ -41,43 +41,69 @@
 
 <script>
 	import { getConfig, changeConfig, resetConfig } from "../store.js";
+	import { defaultServer, defaultAppID, defaultAppSecret } from '../auth.js';
+	const DefaultAppIDText = '默认AppID';
+
 	export default {
 		data() {
 			return {
 				server: "",
-				token: "",
+				useToken: false,
 				appId: "",
 				appSecret: "",
+				token: "",
 				auth: "",
-				useToken: true,
 			};
 		},
 		onLoad() {
-			const config = getConfig();
-			this.server = config.server;
-			this.useToken = config.useToken;
-			this.appId = config.appId;
-			this.appSecret = config.appSecret;
-			this.token = config.token;
-			this.auth = config.auth || "";
+			const { server, useToken, appId, appSecret, token, auth } = getConfig();
+			this.server = server;
+			this.useToken = useToken;
+			this.appId = appId === defaultAppID && defaultAppID !== '' ? DefaultAppIDText : appId;
+			this.appSecret = appSecret;
+			this.token = token;
+			this.auth = auth;
 		},
 		methods: {
 			model(event, key) {
 				this[key] = event.detail.value;
 			},
-			formSubmit: function(e) {
+			formSubmit(e) {
 				console.log(
 					"form发生了submit事件，携带数据为：" + JSON.stringify(e.detail.value)
 				);
-				const { value } = e.detail;
-				changeConfig(value);
+				const { server, useToken, appId, appSecret, token, auth } = e.detail.value;
+				if (!server) {
+					uni.showToast({
+						title: '服务器不能为空',
+						icon: 'none'
+					});
+					return;
+				}
+				if (useToken) {
+					if (!token) {
+						uni.showToast({
+							title: 'token不能为空',
+							icon: 'none'
+						});
+						return;
+					}
+				} else if (!appId || !appSecret) {
+					uni.showToast({
+						title: 'AppID和AppSecret不能为空',
+						icon: 'none'
+					});
+					return;
+				}
+				changeConfig({ server, useToken, appSecret, token, auth, appId: appId === DefaultAppIDText ? defaultAppID : appId });
+				uni.navigateBack()
 			},
 			formReset() {
 				const config = resetConfig();
 				this.server = config.server;
 				this.useToken = config.useToken;
 				this.token = config.token;
-				this.appId = config.appId;
+				this.appId = defaultAppID === '' ? '' : DefaultAppIDText;
 				this.appSecret = config.appSecret;
 				this.auth = "";
 			},

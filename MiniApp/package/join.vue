@@ -12,20 +12,21 @@
 			<button class="btn primary" @click="createMeeting" plain :disabled="!canCreate">创建房间</button>
 		</view>
 		<div class="version">
-			<view>Demo: v1.0.3</view>
+			<view>Demo: v{{demoVersion}}</view>
 			<view>SDK: v{{sdkVersion}}</view>
 		</div>
 	</view>
 </template>
 
 <script>
-	import RTCSDK from './CRSDK';
+	import RTCSDK from './RTCSDK';
 	import { getConfig, getUserInfo, getLastRoomId, setLastRoomId } from "../store.js"
 	import './sdkCallback.js'
 	import { getDesc } from './sdkErrDesc.js'
 	export default {
 		data() {
 			return {
+				demoVersion: uni.getAppBaseInfo().appVersion,
 				sdkVersion: '',
 				roomId: '',
 				sdkStatus: 0, //SDK状态，0未初始化，1初始化成功，2，初始化失败
@@ -117,13 +118,13 @@
 				uni.navigateTo({ url: `./${this.$scope.options.type}?roomId=${this.roomId}` });
 			},
 			login() {
-				const config = getConfig();
-				RTCSDK.SetServerAddr(config.server); //设置服务器地址
+				const { server, useToken, appId, appSecret, token, auth } = getConfig();
+				RTCSDK.SetServerAddr(server); //设置服务器地址
 				const { nickname, userID } = getUserInfo();
-				if (config.useToken) {
-					RTCSDK.LoginByToken(config.token, nickname, userID, config.auth)
+				if (useToken) {
+					RTCSDK.LoginByToken(token, nickname, userID, auth)
 				} else {
-					RTCSDK.Login(config.appId, RTCSDK.MD5(config.appSecret), nickname, userID, config.auth)
+					RTCSDK.Login(appId, RTCSDK.MD5(appSecret), nickname, userID, auth)
 				}
 				this.loginStatus = 1;
 			},

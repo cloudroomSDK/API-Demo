@@ -6,7 +6,7 @@
     url='{{url}}'
     mode='{{mode}}'
     autopush='{{autopush}}'
-    muted='{{muted}}'
+    enable-mic='{{!muted}}'
     enable-camera='{{enableCamera}}'
     auto-focus='{{autoFocus}}'
     orientation='{{orientation}}'

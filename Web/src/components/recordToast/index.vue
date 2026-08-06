@@ -1,70 +1,73 @@
 <template>
   <div>
-    <p>大小: {{ (info.fileSize / 1000000) | keepTwoDecimal }}MB</p>
-    <p>视频时长: {{ parseInt(info.duration / 1000) }}秒</p>
+    <p v-if="currentJsonState.size">大小: {{ (currentJsonState.size / 1000000) | keepTwoDecimal }}MB</p>
+    <p v-if="currentJsonState.duration">视频时长: {{ parseInt(currentJsonState.duration / 1000) }}秒</p>
     <p>
       状态:
-      <span v-if="state === 2">正在进行...</span>
-      <span v-if="state === 4">正在上传...</span>
-      <span v-if="state === 5">上传完成...</span>
-      <span v-if="state === 6">上传出错...</span>
-      <span
-        v-if="state === 7 && !downloadUrl"
-      >录制完成,正在查询下载地址...</span>
-      <span v-if="state === 7 && downloadUrl">完成</span>
+      <span v-if="currentState === 2 || currentState === 4">正在处理...</span>
+      <span v-if="currentState === 3 || currentState === 6">录制出错,错误码:{{ currentJsonState.errCode }},{{ currentJsonState.errDesc }}</span>
+      <template v-if="currentState === 5">
+        <span v-if="downloadUrl">完成</span>
+        <span v-else>录制完成,正在查询下载地址...</span>
+      </template>
     </p>
-    <p>
+    <p v-if="downloadUrl">
       下载地址：<a :href="downloadUrl">{{ downloadUrl }}</a>
     </p>
   </div>
 </template>
 
 <script>
-import { jsonp } from '@/utils'
-import { getToken } from '@/utils/auth'
-import Cookies from 'js-cookie'
-import MD5 from 'crypto-js/md5'
+import { jsonp } from '@/utils';
+import { getToken } from '@/utils/auth';
+import Cookies from 'js-cookie';
+import MD5 from 'crypto-js/md5';
 
 export default {
   filters: {
     // 四舍五入保留两位小数
     keepTwoDecimal(num) {
-      return Math.round(num * 100) / 100
-    }
+      return Math.round(num * 100) / 100;
+    },
   },
   props: {
-    info: {
+    fileName: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: Number,
+      required: true,
+    },
+    jsonState: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      downloadUrl: ''
-    }
-  },
-  computed: {
-    state() {
-      return this.info.state
-    }
-  },
-  watch: {
-    state(newVal, oldVal) {
-      if (newVal === 7) {
-        this.getDownload()
-        console.log(this.info.id)
-      }
-    }
+      downloadUrl: '',
+      currentState: this.state,
+      currentJsonState: this.jsonState,
+    };
   },
   methods: {
+    // 供父组件调用，更新状态
+    updateState(state, jsonState) {
+      this.currentState = state;
+      this.currentJsonState = jsonState;
+      if (state === 5) {
+        this.getDownload();
+      }
+    },
     // 调用服务端api，获取录像下载地址
     getDownload() {
-      const { AppId, MD5_AppSecret } = JSON.parse(getToken())
+      const { AppId, MD5_AppSecret } = JSON.parse(getToken());
       const serverAddr = Cookies.get('addr');
       const data = {
         RequestId: '' + new Date().getTime(),
-        fileName: this.info.fileName
-      }
+        fileName: this.fileName,
+      };
 
       // appID为‘默认’的情况下，要用compID和compSecret鉴权
       if (AppId === '默认') {
@@ -81,7 +84,7 @@ export default {
           CompSecret = '1hm4fn0lop79oyz7kjorzp0szis95uia';
         }
         data['CompID'] = CompID;
-        data['SecretKey'] = MD5((`${CompID}&${CompSecret}`).toString());
+        data['SecretKey'] = MD5(`${CompID}&${CompSecret}`.toString());
 
         // appID不为‘默认’的情况下，可以用userName和userPswd鉴权
       } else {
@@ -89,23 +92,22 @@ export default {
         data['UserPswd'] = MD5_AppSecret;
       }
 
-
       jsonp({
         url: `https://${serverAddr}/CLOUDMEETING-API/netDisk/query`,
         data,
         success: (data) => {
           try {
-            this.downloadUrl = data.Data.fileList[0].downUrl
+            this.downloadUrl = data.Data.fileList[0].downUrl;
           } catch (error) {
-            this.downloadUrl = '查询失败'
-            console.log(error)
+            this.downloadUrl = '查询失败';
+            console.log(error);
           }
         },
-        fail: (e) => {}
-      })
-    }
-  }
-}
+        fail: (e) => {},
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

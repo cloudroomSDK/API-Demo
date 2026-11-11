@@ -85,8 +85,12 @@ export default {
         CmdType: 'IM',
         IMMsg: this.textarea
       }
-      RTCSDK.SendMeetingCustomMsg(JSON.stringify(json))
-      this.textarea = ''
+      RTCSDK.SendMeetingCustomMsg(JSON.stringify(json)).then((res) => {
+        this.$message.success('发送成功')
+        this.textarea = ''
+      }).catch((err) => {
+        this.$message.error(`发送失败: ${err.errCode},${err.errDesc}`)
+      })
     }
   }
 }

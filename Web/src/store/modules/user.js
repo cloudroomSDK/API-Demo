@@ -27,30 +27,44 @@ const mutations = {
 
 const actions = {
   // SDK login
-  login({ commit }, token) {
+  login({ commit }, loginInfo) {
     var {
+      authType = '1', // '1' 密码登录 '2' Token登录
       AppId,
       MD5_AppSecret,
+      token,
       UID,
       nickName,
       addr = Cookies.get('addr')
-    } = token
+    } = loginInfo
 
     RTCSDK.SetServerAddr(addr) // 设置服务器地址
 
     UID = UID || `H5_${randomNumber(4)}`
     nickName = nickName || UID
 
-    return SDKInit.Login({ AppId, MD5_AppSecret, UID, nickName }).then(
-      (res) => {
-        Cookies.set('addr', addr) // 添加cookie
-        const { UID, nickName } = res
+    // Token登录时userID由SDK从token中解析，登录成功后返回
+    const loginPromise =
+      authType === '2'
+        ? SDKInit.LoginByToken({ token })
+        : SDKInit.Login({ AppId, MD5_AppSecret, UID, nickName })
 
-        commit('SET_NICKNAME', nickName)
-        commit('SET_UID', UID)
-        setToken(JSON.stringify({ AppId, MD5_AppSecret, UID, nickName })) // 保存toekn用于下次自动登录
-      }
-    )
+    return loginPromise.then((res) => {
+      Cookies.set('addr', addr) // 添加cookie
+      const { UID, nickName } = res
+      commit('SET_NICKNAME', nickName || UID)
+      commit('SET_UID', UID)
+      setToken(
+        JSON.stringify({
+          authType,
+          AppId,
+          MD5_AppSecret,
+          token,
+          UID,
+          nickName: nickName || UID
+        })
+      ) // 保存toekn用于下次自动登录
+    })
   },
   // SDK logout
   logout({ commit }) {

@@ -96,6 +96,7 @@ export default {
   },
   created() {
     this.$SDKCallBack.$on('OpenVideoFailed', this.OpenVideoFailed)
+    this.$SDKCallBack.$on('OpenMicFailed', this.OpenMicFailed)
     this.$SDKCallBack.$on('UserLeftMeeting', this.UserLeftMeeting)
     RTCSDK.NotifyInviteAccepted.callback = this.NotifyInviteAccepted // SDK通知接口：对端接受邀请
     RTCSDK.InviteFail.callback = this.InviteFail // SDK通知接口：邀请失败
@@ -104,6 +105,7 @@ export default {
   },
   destroyed() {
     this.$SDKCallBack.$off('OpenVideoFailed', this.OpenVideoFailed)
+    this.$SDKCallBack.$off('OpenMicFailed', this.OpenMicFailed)
     this.$SDKCallBack.$off('UserLeftMeeting', this.UserLeftMeeting)
     RTCSDK.NotifyInviteAccepted.callback = null
     RTCSDK.InviteFail.callback = null
@@ -150,7 +152,12 @@ export default {
     },
     OpenVideoFailed(errDesc) {
       this.$message.error(
-        '打开摄像头失败,可能的原因有：设备被占用、用户未授权访问、硬件设备发生错误等'
+        '打开摄像头失败,可能的原因有：设备被占用、用户未授权访问、硬件设备发生错误、用户没有权限等'
+      )
+    },
+    OpenMicFailed(errDesc) {
+      this.$message.error(
+        '打开麦克风失败,可能的原因有：设备被占用、用户未授权访问、硬件设备发生错误、用户没有权限等'
       )
     },
     UserLeftMeeting(UID) {

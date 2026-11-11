@@ -18,7 +18,9 @@ export const SDKInit = {
     if (this.isInit) {
       return Promise.resolve()
     }
-    return RTCSDK.Init()
+    return RTCSDK.Init({
+      permissionRequirement: false,
+    })
       .then(() => {
         // 初始化成功
         this.isInit = true
@@ -28,13 +30,30 @@ export const SDKInit = {
         throw err
       })
   },
-  // 登录
+  // 密码登录
   Login({ AppId, MD5_AppSecret, UID, nickName }) {
     return new Promise((resolve, reject) => {
-      RTCSDK.Login(AppId, MD5_AppSecret, nickName, UID, undefined, {
-        AppId,
-        MD5_AppSecret,
-        nickName,
+      RTCSDK.Login2(
+        {
+          appID: AppId,
+          appSecret: MD5_AppSecret,
+          userID: UID,
+          isDemo: true
+        },
+        {
+          AppId,
+          MD5_AppSecret,
+          nickName,
+          resolve,
+          reject
+        }
+      )
+    })
+  },
+  // Token登录
+  LoginByToken({ token, userAuthCode }) {
+    return new Promise((resolve, reject) => {
+      RTCSDK.LoginByToken2(token, userAuthCode, {
         resolve,
         reject
       })

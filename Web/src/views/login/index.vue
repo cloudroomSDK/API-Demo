@@ -23,38 +23,62 @@
           </el-input>
         </el-form-item>
 
-        <el-form-item>
+        <el-form-item class="auth-type">
+          <span class="auth-type-label">鉴权方式：</span>
+          <el-radio-group v-model="loginForm.authType">
+            <el-radio label="1">密码</el-radio>
+            <el-radio label="2">Token</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <template v-if="loginForm.authType === '1'">
+          <el-form-item>
+            <el-input
+              ref="appId"
+              v-model="loginForm.appId"
+              placeholder=""
+              name="appId"
+              type="text"
+              tabindex="2"
+              auto-complete="on"
+            >
+              <span slot="prefix" class="text">AppID：</span>
+            </el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-input
+              :key="passwordType"
+              ref="appSecret"
+              v-model="loginForm.appSecret"
+              :type="passwordType"
+              name="appSecret"
+              tabindex="3"
+              auto-complete="on"
+              @keyup.enter.native="handleLogin"
+            >
+              <span slot="prefix" class="text">AppSecret：</span>
+            </el-input>
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon
+                :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+              />
+            </span>
+          </el-form-item>
+        </template>
+
+        <el-form-item v-else>
           <el-input
-            ref="appId"
-            v-model="loginForm.appId"
-            placeholder=""
-            name="appId"
+            ref="token"
+            v-model="loginForm.token"
+            name="token"
             type="text"
             tabindex="2"
             auto-complete="on"
-          >
-            <span slot="prefix" class="text">AppID：</span>
-          </el-input>
-        </el-form-item>
-
-        <el-form-item>
-          <el-input
-            :key="passwordType"
-            ref="appSecret"
-            v-model="loginForm.appSecret"
-            :type="passwordType"
-            name="appSecret"
-            tabindex="3"
-            auto-complete="on"
             @keyup.enter.native="handleLogin"
           >
-            <span slot="prefix" class="text">AppSecret：</span>
+            <span slot="prefix" class="text">Token：</span>
           </el-input>
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon
-              :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-            />
-          </span>
         </el-form-item>
 
         <el-button
@@ -86,8 +110,10 @@ export default {
     return {
       loginForm: {
         addr: Cookies.get('addr') || config.addr || window.location.host,
+        authType: '1', // '1' 密码登录 '2' Token登录
         appId: '默认',
-        appSecret: config.appSecret
+        appSecret: config.appSecret,
+        token: ''
       },
       loading: false,
       passwordType: 'password',
@@ -119,25 +145,42 @@ export default {
       })
     },
     handleLogin() {
-      const { addr } = this.loginForm
-      let { appId, appSecret } = this.loginForm
+      const { addr, authType } = this.loginForm
+      const params = { addr, authType }
 
-      if (appId === '') {
-        appId = config.appId
-        appSecret = config.appSecret
-      }
+      if (authType === '1') {
+        // 密码登录
+        let { appId, appSecret } = this.loginForm
 
-      if (!appSecret) {
-        return this.$message.error('请输入AppSecret')
+        if (appId === '') {
+          appId = config.appId
+          appSecret = config.appSecret
+        }
+
+        if (!appSecret) {
+          return this.$message.error('请输入AppSecret')
+        }
+
+        params.AppId = appId
+        // appSecret已是32位MD5或为'默认'时直接使用，否则先MD5
+        params.MD5_AppSecret =
+          appSecret.length === 32 || appSecret === '默认'
+            ? appSecret
+            : MD5(appSecret).toString()
+      } else {
+        // Token登录
+        const { token } = this.loginForm
+
+        if (!token) {
+          return this.$message.error('请输入Token')
+        }
+
+        params.token = token
       }
 
       this.loading = true
       this.$store
-        .dispatch('user/login', {
-          addr,
-          AppId: appId,
-          MD5_AppSecret: appId !== '默认' ? MD5(appSecret).toString() : '默认'
-        })
+        .dispatch('user/login', params)
         .then(() => {
           this.loading = false
           this.$router.push({ path: this.redirect || '/' })
@@ -158,7 +201,7 @@ $dark_gray: #999;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background: url('~@/assets/image/bg.jpg') center center no-repeat;
+  background: url('~@/assets/image/bg.jpg') center center / cover no-repeat;
   overflow: hidden;
 
   .login-form {
@@ -168,7 +211,7 @@ $dark_gray: #999;
     top: 50%;
     transform: translate(-50%, -50%);
     width: 416px;
-    height: 452px;
+    height: 518px;
     border-radius: 7px;
     padding-top: 70px;
     overflow: hidden;
@@ -197,12 +240,12 @@ $dark_gray: #999;
           height: 100%;
           .text {
             display: inline-block;
-            width: 100px;
+            width: 85px;
             text-align: right;
             color: $dark_gray;
           }
           input {
-            padding-left: 110px;
+            padding-left: 90px;
             &::-webkit-input-placeholder {
               color: #666;
             }
@@ -221,6 +264,17 @@ $dark_gray: #999;
           color: $dark_gray;
           cursor: pointer;
           user-select: none;
+        }
+      }
+      .auth-type {
+        .auth-type-label {
+          display: inline-block;
+          width: 90px;
+          text-align: right;
+          color: $dark_gray;
+        }
+        .el-radio-group {
+          margin-left: 10px;
         }
       }
       .loginBtn {

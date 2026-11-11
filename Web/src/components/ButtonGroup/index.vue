@@ -1,5 +1,15 @@
 <template>
   <div>
+    <div class="form">
+      <div class="item">
+        <div class="label">房间Token：</div>
+        <el-input
+          v-model="roomToken"
+          :disabled="!!meetingState"
+          placeholder="未启用房间Token则无需填写"
+        />
+      </div>
+    </div>
     <div class="button-container">
       <el-button
         v-if="!meetingState"
@@ -26,6 +36,7 @@ import { mapGetters } from 'vuex'
 import RTCSDK from '@/SDK'
 
 const lastRoomId = 'LastRoomId'
+const lastRoomToken = 'LastRoomToken'
 export default {
   props: {
     roomId: {
@@ -35,11 +46,12 @@ export default {
   },
   data() {
     return {
-      creating: false
+      creating: false,
+      roomToken: Cookies.get(lastRoomToken) || ''
     }
   },
   computed: {
-    ...mapGetters(['meetingState', 'UID'])
+    ...mapGetters(['meetingState', 'UID', 'nickname'])
   },
   created() {
     this.$SDKCallBack.$on(
@@ -73,7 +85,12 @@ export default {
         )
       }
       this.$store.commit('state/SET_MEETING_STATE', 1)
-      RTCSDK.EnterMeeting3(+this.roomId) // SDK主调接口：进入房间
+      const enterParams = {
+        meetID: +this.roomId,
+        nickName: this.nickname
+      }
+      if (this.roomToken) enterParams.roomToken = this.roomToken // 填写了房间Token才携带
+      RTCSDK.EnterMeeting4(enterParams) // SDK主调接口：进入房间
     },
     // 点击退出按钮
     exitRoom() {
@@ -106,6 +123,7 @@ export default {
       }
 
       Cookies.set(lastRoomId, this.roomId) // 添加cookie，刷新或者下次进入再填充此房间号
+      Cookies.set(lastRoomToken, this.roomToken) // 添加cookie，刷新或者下次进入再填充此房间Token
       this.$message.success(`已加入房间`)
       this.$store.commit('state/SET_MEETING_STATE', 2)
     },

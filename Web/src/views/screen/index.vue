@@ -3,18 +3,8 @@
     <div class="control">
       <BaseForm v-model="roomId" />
       <ButtonGroup :room-id="roomId" @updateRoomId="updateRoomId">
-        <el-button
-          type="primary"
-          :disabled="meetingState !== 2 || !!shareUID"
-          :loading="starting"
-          @click="startScreen"
-        >开始共享</el-button>
-        <el-button
-          type="primary"
-          :disabled="meetingState !== 2 || !shareUID"
-          :loading="stopping"
-          @click="stopScreen"
-        >停止共享</el-button>
+        <el-button type="primary" :disabled="meetingState !== 2 || !!shareUID" :loading="starting" @click="startScreen">开始共享</el-button>
+        <el-button type="primary" :disabled="meetingState !== 2 || !shareUID" :loading="stopping" @click="stopScreen">停止共享</el-button>
       </ButtonGroup>
       <MemberList />
       <QRCode v-if="!isMobile" />
@@ -102,7 +92,12 @@ export default {
       }
     },
     // 结束共享的结果
-    StopScreenShareRslt() {
+    StopScreenShareRslt(sdkErr) {
+      if (sdkErr !== 0) {
+        this.$message.error(
+          `结束屏幕共享失败: ${sdkErr},${SDKError[sdkErr]}`
+        )
+      }
       this.stopping = false
     }
   }

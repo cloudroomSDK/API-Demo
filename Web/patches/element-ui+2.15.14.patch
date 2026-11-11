@@ -1,0 +1,36 @@
+diff --git a/node_modules/element-ui/lib/element-ui.common.js b/node_modules/element-ui/lib/element-ui.common.js
+index 5631486..566b79c 100644
+--- a/node_modules/element-ui/lib/element-ui.common.js
++++ b/node_modules/element-ui/lib/element-ui.common.js
+@@ -5560,7 +5560,6 @@ var radiovue_type_template_id_69cd6268_render = function() {
+             staticClass: "el-radio__original",
+             attrs: {
+               type: "radio",
+-              "aria-hidden": "true",
+               name: _vm.name,
+               disabled: _vm.isDisabled,
+               tabindex: "-1",
+diff --git a/node_modules/element-ui/lib/radio.js b/node_modules/element-ui/lib/radio.js
+index 6143ef6..12d7c3c 100644
+--- a/node_modules/element-ui/lib/radio.js
++++ b/node_modules/element-ui/lib/radio.js
+@@ -263,7 +263,6 @@ var render = function() {
+             staticClass: "el-radio__original",
+             attrs: {
+               type: "radio",
+-              "aria-hidden": "true",
+               name: _vm.name,
+               disabled: _vm.isDisabled,
+               tabindex: "-1",
+diff --git a/node_modules/element-ui/packages/radio/src/radio.vue b/node_modules/element-ui/packages/radio/src/radio.vue
+index 4db6501..2641080 100644
+--- a/node_modules/element-ui/packages/radio/src/radio.vue
++++ b/node_modules/element-ui/packages/radio/src/radio.vue
+@@ -26,7 +26,6 @@
+         class="el-radio__original"
+         :value="label"
+         type="radio"
+-        aria-hidden="true"
+         v-model="model"
+         @focus="focus = true"
+         @blur="focus = false"

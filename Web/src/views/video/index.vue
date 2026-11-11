@@ -45,13 +45,18 @@ export default {
   },
   created() {
     this.$SDKCallBack.$on('OpenVideoFailed', this.OpenVideoFailed)
+    this.$SDKCallBack.$on('OpenMicFailed', this.OpenMicFailed)
   },
   destroyed() {
     this.$SDKCallBack.$off('OpenVideoFailed', this.OpenVideoFailed)
+    this.$SDKCallBack.$off('OpenMicFailed', this.OpenMicFailed)
   },
   methods: {
-    OpenVideoFailed(errDesc) {
-      this.$message.error('打开摄像头失败,可能的原因有：设备被占用、用户未授权访问、硬件设备发生错误等')
+    OpenVideoFailed(errCode, errDesc) {
+      this.$message.error(`打开摄像头失败， ${errCode} ${errDesc}`)
+    },
+    OpenMicFailed(errCode, errDesc) {
+      this.$message.error(`打开麦克风失败， ${errCode} ${errDesc}`)
     }
   }
 }

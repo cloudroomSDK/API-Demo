@@ -10,6 +10,7 @@ const Arr = [
   'MeetingDropped',
   'MicEnergyUpdate',
   'OpenVideoFailed',
+  'OpenMicFailed',
   'VideoDevChanged'
 ]
 
